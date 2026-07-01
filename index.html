@@ -21,6 +21,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Tabler Icons — ใช้ class="ti ti-*" ทั่วทั้งแอป 61 จุด ต้องโหลดเองในโหมด standalone -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
 
 <style>
 /* ===== Base theme tokens (standalone fallback for var(--color-*) used by original CSS) ===== */
@@ -200,6 +202,8 @@ input, select, textarea, .nfi, .insel, .fi select{
 .txf-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .tx-del{padding:2px 8px;font-size:10px;color:var(--red);background:none;border:0.5px solid var(--red);border-radius:var(--radius-sm);cursor:pointer;opacity:.7}
 .tx-del:hover{opacity:1;background:var(--red-light)}
+.tx-edit{padding:2px 8px;font-size:10px;color:var(--blue);background:none;border:0.5px solid var(--blue);border-radius:var(--radius-sm);cursor:pointer;opacity:.7}
+.tx-edit:hover{opacity:1;background:rgba(61,127,255,.1)}
 
 /* ═══════════════════════════════════════
    DARK GLOW THEME OVERRIDE
@@ -902,6 +906,56 @@ input:focus, select:focus, .nfi:focus {
   </div>
 </div>
 
+<div class="modal-bg" id="editDepositModal" style="display:none" onclick="if(event.target===this)closeEditDepositModal()">
+  <div class="modal-box">
+    <div class="modal-title"><i class="ti ti-edit" style="color:var(--gold)"></i> แก้ไขรายการเงินฝาก</div>
+    <input type="hidden" id="edpIdx">
+    <div class="modal-row">
+      <div class="modal-label">วันที่ *</div>
+      <input class="modal-input" id="edpDate" type="date">
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">ธนาคาร / บัญชี *</div>
+      <select class="modal-input" id="edpBank">
+        <option value="กรุงเทพ">ธนาคารกรุงเทพ</option>
+        <option value="กสิกรไทย">ธนาคารกสิกรไทย</option>
+        <option value="ไทยพาณิชย์">ธนาคารไทยพาณิชย์</option>
+        <option value="กรุงไทย">ธนาคารกรุงไทย</option>
+        <option value="ทหารไทยธนชาต">ธนาคารทหารไทยธนชาต</option>
+        <option value="อื่นๆ">อื่นๆ</option>
+      </select>
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">ชื่อบัญชี (ไม่บังคับ)</div>
+      <input class="modal-input" id="edpAccName" type="text" placeholder="เช่น ออมทรัพย์หลัก">
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">ประเภทรายการ</div>
+      <select class="modal-input" id="edpTxType">
+        <option value="deposit">ฝากเงิน (+)</option>
+        <option value="withdraw">ถอนเงิน (−)</option>
+        <option value="interest">รับดอกเบี้ย</option>
+      </select>
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">จำนวนเงิน (฿) *</div>
+      <input class="modal-input" id="edpAmount" type="number" placeholder="0.00" min="0" step="0.01">
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">ดอกเบี้ย (฿) (ถ้ามี)</div>
+      <input class="modal-input" id="edpInterest" type="number" placeholder="0.00" min="0" step="0.01">
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">หมายเหตุ</div>
+      <input class="modal-input" id="edpNote" type="text" placeholder="เช่น ฝากเพิ่ม, ถอนบางส่วน">
+    </div>
+    <div class="modal-actions">
+      <button class="bs" onclick="closeEditDepositModal()">ยกเลิก</button>
+      <button class="bp" onclick="confirmEditDeposit()"><i class="ti ti-check"></i> บันทึกการแก้ไข</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
@@ -1028,7 +1082,7 @@ const THC={'S&P500':'#2C5BDB','NASDAQ100':'#D44B2A','WORLD':'#0D9373','GOLD':'#B
 
 const BASE_NAV=[{"d":"2026-03-23","K-CHANGE":18.1208,"K-GTECH":18.8379,"K-US-500X":13.6874,"K-WORLDX":15.5833,"SCBGOLDE":23.5584,"SCBNDQE":14.022,"SCBS&P500E":38.1176,"SCBWORLDE":12.7201},{"d":"2026-03-24","K-CHANGE":17.7884,"K-GTECH":18.2924,"K-US-500X":13.8457,"K-WORLDX":15.8578,"SCBGOLDE":24.1561,"SCBNDQE":14.1999,"SCBS&P500E":38.5653,"SCBWORLDE":12.9101},{"d":"2026-03-25","K-CHANGE":18.01,"K-GTECH":18.4958,"K-US-500X":13.7917,"K-WORLDX":15.7576,"SCBGOLDE":25.0266,"SCBNDQE":14.094,"SCBS&P500E":38.3983,"SCBWORLDE":12.8527},{"d":"2026-03-26","K-CHANGE":18.202,"K-GTECH":18.5186,"K-US-500X":13.8689,"K-WORLDX":15.913,"SCBGOLDE":24.4223,"SCBNDQE":14.1864,"SCBS&P500E":38.619,"SCBWORLDE":12.9525},{"d":"2026-03-27","K-CHANGE":18.2089,"K-GTECH":18.6489,"K-US-500X":13.6284,"K-WORLDX":15.583,"SCBGOLDE":24.4684,"SCBNDQE":13.8548,"SCBS&P500E":37.9309,"SCBWORLDE":12.7264},{"d":"2026-03-30","K-CHANGE":17.9919,"K-GTECH":17.9108,"K-US-500X":13.3968,"K-WORLDX":15.373,"SCBGOLDE":25.0746,"SCBNDQE":13.5928,"SCBS&P500E":37.2973,"SCBWORLDE":12.5346},{"d":"2026-03-31","K-CHANGE":17.6238,"K-GTECH":17.5393,"K-US-500X":13.3466,"K-WORLDX":15.323,"SCBGOLDE":25.2351,"SCBNDQE":13.4796,"SCBS&P500E":37.1544,"SCBWORLDE":12.496},{"d":"2026-04-01","K-CHANGE":17.6047,"K-GTECH":17.0338,"K-US-500X":13.7286,"K-WORLDX":15.7994,"SCBGOLDE":25.875,"SCBNDQE":13.9235,"SCBS&P500E":38.1917,"SCBWORLDE":12.8548},{"d":"2026-04-02","K-CHANGE":18.1209,"K-GTECH":17.9436,"K-US-500X":13.8114,"K-WORLDX":15.9242,"SCBGOLDE":25.376,"SCBNDQE":14.077,"SCBS&P500E":38.4344,"SCBWORLDE":12.9674},{"d":"2026-04-03","K-CHANGE":18.0009,"K-GTECH":18.2467,"K-US-500X":13.8368,"K-WORLDX":15.9068,"SCBGOLDE":25.3764,"SCBNDQE":14.1029,"SCBS&P500E":38.5063,"SCBWORLDE":12.963},{"d":"2026-04-07","K-CHANGE":18.0009,"K-GTECH":18.2467,"K-US-500X":13.8368,"K-WORLDX":15.9068,"SCBGOLDE":25.5914,"SCBNDQE":14.1018,"SCBS&P500E":38.5034,"SCBWORLDE":12.962},{"d":"2026-04-08","K-CHANGE":18.1378,"K-GTECH":18.2998,"K-US-500X":13.892,"K-WORLDX":15.9751,"SCBGOLDE":25.7982,"SCBNDQE":14.1794,"SCBS&P500E":38.6663,"SCBWORLDE":13.0076},{"d":"2026-04-09","K-CHANGE":18.4821,"K-GTECH":18.5221,"K-US-500X":14.2049,"K-WORLDX":16.4341,"SCBGOLDE":25.4809,"SCBNDQE":14.5724,"SCBS&P500E":39.5687,"SCBWORLDE":13.3595},{"d":"2026-04-10","K-CHANGE":18.4266,"K-GTECH":19.2723,"K-US-500X":14.2909,"K-WORLDX":16.4892,"SCBGOLDE":25.5879,"SCBNDQE":14.67,"SCBS&P500E":39.7992,"SCBWORLDE":13.4081},{"d":"2026-04-15","K-CHANGE":18.4266,"K-GTECH":19.2723,"K-US-500X":14.2909,"K-WORLDX":16.4892,"SCBGOLDE":25.5879,"SCBNDQE":14.6882,"SCBS&P500E":39.7735,"SCBWORLDE":13.4088},{"d":"2026-04-17","K-CHANGE":18.9469,"K-GTECH":19.686,"K-US-500X":14.7139,"K-WORLDX":16.8883,"SCBGOLDE":25.8915,"SCBNDQE":15.3559,"SCBS&P500E":40.9939,"SCBWORLDE":13.7511},{"d":"2026-04-20","K-CHANGE":18.8998,"K-GTECH":20.8483,"K-US-500X":14.8921,"K-WORLDX":17.1142,"SCBGOLDE":25.8479,"SCBNDQE":15.5456,"SCBS&P500E":41.4816,"SCBWORLDE":13.9203},{"d":"2026-04-21","K-CHANGE":19.1192,"K-GTECH":21.1819,"K-US-500X":14.8645,"K-WORLDX":17.0558,"SCBGOLDE":25.7883,"SCBNDQE":15.4924,"SCBS&P500E":41.3943,"SCBWORLDE":13.8984},{"d":"2026-04-22","K-CHANGE":19.3369,"K-GTECH":21.379,"K-US-500X":14.7646,"K-WORLDX":16.8718,"SCBGOLDE":25.7011,"SCBNDQE":15.4387,"SCBS&P500E":41.1244,"SCBWORLDE":13.7418},{"d":"2026-04-23","K-CHANGE":19.1438,"K-GTECH":21.5136,"K-US-500X":14.9215,"K-WORLDX":17.0375,"SCBGOLDE":25.5951,"SCBNDQE":15.6929,"SCBS&P500E":41.5576,"SCBWORLDE":13.8586},{"d":"2026-04-24","K-CHANGE":19.2053,"K-GTECH":21.9112,"K-US-500X":14.8742,"K-WORLDX":16.9457,"SCBGOLDE":25.5726,"SCBNDQE":15.6169,"SCBS&P500E":41.4057,"SCBWORLDE":13.7816},{"d":"2026-04-27","K-CHANGE":19.1143,"K-GTECH":21.819,"K-US-500X":14.9912,"K-WORLDX":17.0888,"SCBGOLDE":25.4939,"SCBNDQE":15.9148,"SCBS&P500E":41.7287,"SCBWORLDE":13.8867},{"d":"2026-04-28","K-CHANGE":19.2607,"K-GTECH":22.0957,"K-US-500X":15.0062,"K-WORLDX":17.0793,"SCBGOLDE":25.2667,"SCBNDQE":15.9153,"SCBS&P500E":41.7824,"SCBWORLDE":13.8941},{"d":"2026-04-29","K-CHANGE":19.1445,"K-GTECH":22.0088,"K-US-500X":14.9392,"K-WORLDX":16.9872,"SCBGOLDE":25.1091,"SCBNDQE":15.7609,"SCBS&P500E":41.5829,"SCBWORLDE":13.8236},{"d":"2026-04-30","K-CHANGE":18.9814,"K-GTECH":21.5801,"K-US-500X":14.9478,"K-WORLDX":16.9446,"SCBGOLDE":25.3256,"SCBNDQE":15.8612,"SCBS&P500E":41.5982,"SCBWORLDE":13.7873},{"d":"2026-05-06","K-CHANGE":19.1413,"K-GTECH":22.656,"K-US-500X":15.2003,"K-WORLDX":17.3109,"SCBGOLDE":25.4235,"SCBNDQE":16.3483,"SCBS&P500E":42.3343,"SCBWORLDE":14.0117},{"d":"2026-05-07","K-CHANGE":19.3741,"K-GTECH":23.2551,"K-US-500X":15.3879,"K-WORLDX":17.6193,"SCBGOLDE":25.5227,"SCBNDQE":16.6568,"SCBS&P500E":42.8884,"SCBWORLDE":14.254},{"d":"2026-05-08","K-CHANGE":19.6743,"K-GTECH":23.4611,"K-US-500X":15.3291,"K-WORLDX":17.4452,"SCBGOLDE":25.4947,"SCBNDQE":16.6346,"SCBS&P500E":42.736,"SCBWORLDE":14.1449},{"d":"2026-05-11","K-CHANGE":19.4021,"K-GTECH":23.0339,"K-US-500X":15.4576,"K-WORLDX":17.613,"SCBGOLDE":25.4209,"SCBNDQE":17.0166,"SCBS&P500E":43.0823,"SCBWORLDE":14.2515},{"d":"2026-05-12","K-CHANGE":19.261,"K-GTECH":23.5646,"K-US-500X":15.5021,"K-WORLDX":17.6382,"SCBGOLDE":25.5446,"SCBNDQE":17.073,"SCBS&P500E":43.1891,"SCBWORLDE":14.2668,"TLUS500-UH-X":13.0224,"TLUSNDQ-UH-X":12.4449,"TLWORLD-X":10.9009},{"d":"2026-05-13","K-CHANGE":19.1642,"K-GTECH":23.8191,"K-US-500X":15.4754,"K-WORLDX":17.5354,"SCBGOLDE":25.5639,"SCBNDQE":17.0962,"SCBS&P500E":43.3576,"SCBWORLDE":14.3195,"TLUS500-UH-X":13.0812,"TLUSNDQ-UH-X":12.5609,"TLWORLD-X":10.9618},{"d":"2026-05-14","K-CHANGE":19.2105,"K-GTECH":23.4424,"K-US-500X":15.5608,"K-WORLDX":17.6746,"SCBGOLDE":25.4796,"SCBNDQE":17.0962,"SCBS&P500E":43.3576,"SCBWORLDE":14.3195,"TLUS500-UH-X":13.1632,"TLUSNDQ-UH-X":12.6359,"TLWORLD-X":10.9888},{"d":"2026-05-15","K-CHANGE":19.2031,"K-GTECH":23.4424,"K-US-500X":15.6783,"K-WORLDX":17.756,"SCBGOLDE":24.9291,"SCBNDQE":17.2175,"SCBS&P500E":43.6844,"SCBWORLDE":14.3942,"TLUS500-UH-X":13.1632,"TLUSNDQ-UH-X":12.6359,"TLWORLD-X":10.9888},{"d":"2026-05-18","K-CHANGE":19.2059,"K-GTECH":23.7584,"K-US-500X":15.5019,"K-WORLDX":17.4814,"SCBGOLDE":24.8635,"SCBNDQE":16.9685,"SCBS&P500E":43.1759,"SCBWORLDE":14.1965,"TLUS500-UH-X":13.1257,"TLUSNDQ-UH-X":12.5627,"TLWORLD-X":10.914},{"d":"2026-05-19","K-CHANGE":19.0717,"K-GTECH":23.6808,"K-US-500X":15.4862,"K-WORLDX":17.5078,"SCBGOLDE":24.8699,"SCBNDQE":16.8968,"SCBS&P500E":43.1412,"SCBWORLDE":14.2169,"TLUS500-UH-X":13.0904,"TLUSNDQ-UH-X":12.4838,"TLWORLD-X":10.9059},{"d":"2026-05-20","K-CHANGE":19.0713,"K-GTECH":23.3228,"K-US-500X":15.3877,"K-WORLDX":17.3696,"SCBGOLDE":24.6508,"SCBNDQE":16.7883,"SCBS&P500E":42.8605,"SCBWORLDE":14.1255,"TLUS500-UH-X":13.0324,"TLUSNDQ-UH-X":12.4317,"TLWORLD-X":10.8505},{"d":"2026-05-21","K-CHANGE":18.9851,"K-GTECH":23.145,"K-US-500X":15.55,"K-WORLDX":17.5979,"SCBGOLDE":24.8036,"SCBNDQE":17.0756,"SCBS&P500E":43.3149,"SCBWORLDE":14.3072,"TLUS500-UH-X":13.1924,"TLUSNDQ-UH-X":12.6636,"TLWORLD-X":11.0141},{"d":"2026-05-22","K-CHANGE":19.248,"K-GTECH":23.837,"K-US-500X":15.5748,"K-WORLDX":17.66,"SCBGOLDE":24.8278,"SCBNDQE":17.104,"SCBS&P500E":43.3833,"SCBWORLDE":14.346,"TLUS500-UH-X":13.185,"TLUSNDQ-UH-X":12.6578,"TLWORLD-X":11.0284},{"d":"2026-05-25","K-CHANGE":19.476,"K-GTECH":24.1611,"K-US-500X":15.6387,"K-WORLDX":17.6977,"SCBGOLDE":24.8105,"SCBNDQE":17.1779,"SCBS&P500E":43.5641,"SCBWORLDE":14.3803,"TLUS500-UH-X":13.256,"TLUSNDQ-UH-X":12.7293,"TLWORLD-X":11.0698},{"d":"2026-05-26","K-CHANGE":19.476,"K-GTECH":24.1611,"K-US-500X":15.6387,"K-WORLDX":17.6977,"SCBGOLDE":24.8199,"SCBNDQE":17.1707,"SCBS&P500E":43.5452,"SCBWORLDE":14.3738,"TLUS500-UH-X":13.3378,"TLUSNDQ-UH-X":12.9506,"TLWORLD-X":11.1937},{"d":"2026-05-27","K-CHANGE":19.5,"K-GTECH":24.4374,"K-US-500X":15.7344,"K-WORLDX":17.9015,"SCBGOLDE":24.7479,"SCBNDQE":17.4761,"SCBS&P500E":43.8306,"SCBWORLDE":14.479,"TLUS500-UH-X":13.3378,"TLUSNDQ-UH-X":12.9506,"TLWORLD-X":11.1937},{"d":"2026-05-28","K-CHANGE":19.6293,"K-GTECH":24.8967,"K-US-500X":15.7305,"K-WORLDX":17.871,"SCBGOLDE":24.0979,"SCBNDQE":17.4535,"SCBS&P500E":43.8282,"SCBWORLDE":14.4703,"TLUS500-UH-X":13.3013,"TLUSNDQ-UH-X":12.8993,"TLWORLD-X":11.1456},{"d":"2026-05-29","K-CHANGE":19.5812,"K-GTECH":24.6314,"K-US-500X":15.8185,"K-WORLDX":17.946,"SCBGOLDE":24.7022,"SCBNDQE":17.5978,"SCBS&P500E":44.0609,"SCBWORLDE":14.5327,"TLUS500-UH-X":13.4212,"TLUSNDQ-UH-X":13.0546,"TLWORLD-X":11.2371},{"d":"2026-06-02","K-CHANGE":19.9188,"K-GTECH":24.8068,"K-US-500X":15.8495,"K-WORLDX":17.9706,"SCBGOLDE":24.7633,"SCBKEQTGE":29.8334,"SCBNDQE":17.6556,"SCBS&P500E":44.1545,"SCBSEMIE":39.5419,"SCBWORLDE":14.5375,"TLUS500-UH-X":13.416,"TLUSNDQ-UH-X":13.0643,"TLWORLD-X":11.2228},{"d":"2026-06-04","K-CHANGE":20.4427,"K-GTECH":25.0218,"K-US-500X":15.9052,"K-WORLDX":18.1244,"SCBGOLDE":24.5182,"SCBKEQTGE":31.0937,"SCBNDQE":17.8374,"SCBS&P500E":44.3139,"SCBSEMIE":41.1821,"SCBWORLDE":14.6224,"TLUS500-UH-X":13.4558,"TLUSNDQ-UH-X":13.1917,"TLWORLD-X":11.2971},{"d":"2026-06-05","K-CHANGE":20.1281,"K-GTECH":26.5285,"K-US-500X":15.8619,"K-WORLDX":18.0319,"SCBGOLDE":24.5182,"SCBKEQTGE":29.5563,"SCBNDQE":17.7056,"SCBS&P500E":44.1807,"SCBSEMIE":40.9552,"SCBWORLDE":14.5841,"TLUS500-UH-X":13.4651,"TLUSNDQ-UH-X":13.142,"TLWORLD-X":11.2791},{"d":"2026-06-08","K-CHANGE":20.1218,"K-GTECH":26.2729,"K-US-500X":15.4411,"K-WORLDX":17.4884,"SCBGOLDE":23.7258,"SCBKEQTGE":25.3742,"SCBNDQE":16.8561,"SCBS&P500E":43.0211,"SCBSEMIE":38.6606,"SCBWORLDE":14.2078,"TLUS500-UH-X":13.0939,"TLUSNDQ-UH-X":12.4966,"TLWORLD-X":10.9176},{"d":"2026-06-09","K-CHANGE":19.7267,"K-GTECH":24.5471,"K-US-500X":15.4825,"K-WORLDX":17.5559,"SCBGOLDE":23.8554,"SCBKEQTGE":26.8559,"SCBNDQE":17.1148,"SCBS&P500E":43.1211,"SCBSEMIE":39.4685,"SCBWORLDE":14.2551,"TLUS500-UH-X":13.2185,"TLUSNDQ-UH-X":12.7798,"TLWORLD-X":11.0523},{"d":"2026-06-10","K-CHANGE":19.7724,"K-GTECH":24.9222,"K-US-500X":15.4483,"K-WORLDX":17.5161,"SCBGOLDE":23.0008,"SCBKEQTGE":26.6181,"SCBNDQE":16.9221,"SCBS&P500E":42.9985,"SCBSEMIE":38.0288,"SCBWORLDE":14.2049,"TLUS500-UH-X":13.174,"TLUSNDQ-UH-X":12.6266,"TLWORLD-X":11.0306},{"d":"2026-06-11","K-CHANGE":19.6107,"K-GTECH":24.6435,"K-US-500X":15.1996,"K-WORLDX":17.243,"SCBGOLDE":22.6233,"SCBKEQTGE":25.8036,"SCBNDQE":16.5912,"SCBS&P500E":42.3131,"SCBSEMIE":37.9998,"SCBWORLDE":13.9943,"TLUS500-UH-X":12.98,"TLUSNDQ-UH-X":12.3991,"TLWORLD-X":10.8754},{"d":"2026-06-12","K-CHANGE":19.5067,"K-GTECH":23.8905,"K-US-500X":15.4605,"K-WORLDX":17.6584,"SCBGOLDE":23.1775,"SCBKEQTGE":28.7849,"SCBNDQE":17.1214,"SCBS&P500E":43.0079,"SCBSEMIE":38.9341,"SCBWORLDE":14.2862,"TLUS500-UH-X":13.216,"TLUSNDQ-UH-X":12.8112,"TLWORLD-X":11.156},{"d":"2026-06-15","K-CHANGE":19.8916,"K-GTECH":24.7755,"K-US-500X":15.529,"K-WORLDX":17.7117,"SCBGOLDE":23.7349,"SCBKEQTGE":28.5142,"SCBNDQE":17.2252,"SCBS&P500E":43.2323,"SCBSEMIE":41.3169,"SCBWORLDE":14.3362,"TLUS500-UH-X":13.1875,"TLUSNDQ-UH-X":12.799,"TLWORLD-X":11.1199},{"d":"2026-06-16","K-CHANGE":20.2366,"K-GTECH":25.0252,"K-US-500X":15.7827,"K-WORLDX":17.9754,"SCBGOLDE":23.7643,"SCBKEQTGE":30.4916,"SCBNDQE":17.7479,"SCBS&P500E":43.9899,"SCBSEMIE":42.8078,"SCBWORLDE":14.5171,"TLUS500-UH-X":13.3669,"TLUSNDQ-UH-X":13.1444,"TLWORLD-X":11.247},{"d":"2026-06-17","K-CHANGE":20.3689,"K-GTECH":25.9609,"K-US-500X":15.69,"K-WORLDX":17.8924,"SCBGOLDE":23.6931,"SCBKEQTGE":29.6931,"SCBNDQE":17.4224,"SCBS&P500E":43.732,"SCBSEMIE":41.6859,"SCBWORLDE":14.4787,"TLUS500-UH-X":13.2699,"TLUSNDQ-UH-X":12.8808,"TLWORLD-X":11.1777},{"d":"2026-06-18","K-CHANGE":20.2943,"K-GTECH":25.5448,"K-US-500X":15.4979,"K-WORLDX":17.722,"SCBGOLDE":23.5206,"SCBKEQTGE":29.5777,"SCBNDQE":17.2535,"SCBS&P500E":43.1892,"SCBSEMIE":42.2162,"SCBWORLDE":14.3298,"TLUS500-UH-X":13.1284,"TLUSNDQ-UH-X":12.7761,"TLWORLD-X":11.086},{"d":"2026-06-19","K-CHANGE":20.432,"K-GTECH":25.4983,"K-US-500X":15.6651,"K-WORLDX":17.9586,"SCBGOLDE":23.0405,"SCBKEQTGE":31.6825,"SCBNDQE":17.6668,"SCBS&P500E":43.637,"SCBSEMIE":43.8022,"SCBWORLDE":14.4579,"TLUS500-UH-X":13.3377,"TLUSNDQ-UH-X":13.1512,"TLWORLD-X":11.2724},{"d":"2026-06-22","K-CHANGE":20.432,"K-GTECH":25.4983,"K-US-500X":15.6651,"K-WORLDX":17.9586,"SCBGOLDE":23.2579,"SCBKEQTGE":31.6995,"SCBNDQE":17.6763,"SCBS&P500E":43.6521,"SCBSEMIE":44.0684,"SCBWORLDE":14.4598,"TLUS500-UH-X":13.3608,"TLUSNDQ-UH-X":13.2065,"TLWORLD-X":11.3241},{"d":"2026-06-23","K-CHANGE":20.7778,"K-GTECH":26.4586,"K-US-500X":15.6209,"K-WORLDX":17.9487,"SCBGOLDE":22.858,"SCBKEQTGE":31.6898,"SCBNDQE":17.6602,"SCBS&P500E":43.4985,"SCBSEMIE":44.4061,"SCBWORLDE":14.4188,"TLUS500-UH-X":13.3608,"TLUSNDQ-UH-X":13.2065,"TLWORLD-X":11.3241},{"d":"2026-06-24","K-CHANGE":20.2685,"K-GTECH":26.554,"K-US-500X":15.409,"K-WORLDX":17.5813,"SCBGOLDE":22.8954,"SCBKEQTGE":28.4668,"SCBNDQE":17.003,"SCBS&P500E":42.8697,"SCBSEMIE":41.6797,"SCBWORLDE":14.1826,"TLUS500-UH-X":13.3461,"TLUSNDQ-UH-X":12.8946,"TLWORLD-X":11.2419},{"d":"2026-06-25","K-CHANGE":20.2685,"K-GTECH":26.554,"K-US-500X":15.409,"K-WORLDX":17.5813,"SCBGOLDE":22.8954,"SCBKEQTGE":28.4668,"SCBNDQE":17.003,"SCBS&P500E":42.8697,"SCBSEMIE":41.6797,"SCBWORLDE":14.1826,"TLUS500-UH-X":13.3461,"TLUSNDQ-UH-X":12.8946,"TLWORLD-X":11.2419}];
 
-let STOCKS_DATA={'SCBS&P500E':[{c:'NVIDIA',p:7.8},{c:'Apple',p:6.8},{c:'Microsoft',p:5.1},{c:'Amazon',p:4.0},{c:'Google A',p:3.3},{c:'Google C',p:2.7},{c:'Broadcom',p:2.9},{c:'Meta',p:1.9},{c:'Tesla',p:1.7},{c:'Micron',p:1.8}],'SCBNDQE':[{c:'NVIDIA',p:9.0},{c:'Apple',p:7.0},{c:'Google A',p:6.0},{c:'Amazon',p:5.0},{c:'Microsoft',p:5.0},{c:'Micron',p:4.0},{c:'Meta',p:3.5},{c:'Broadcom',p:3.5},{c:'Tesla',p:3.5}],'SCBWORLDE':[{c:'NVIDIA',p:5.42},{c:'Apple',p:5.09},{c:'Microsoft',p:3.53},{c:'Amazon',p:2.91},{c:'Google A',p:2.46},{c:'Broadcom',p:2.23},{c:'Meta',p:1.54},{c:'Tesla',p:1.36},{c:'Micron',p:1.22}],'SCBGOLDE':[{c:'Gold',p:100}],'SCBKEQTGE':[{c:'SK hynix',p:25.97},{c:'Samsung Elec',p:23.69},{c:'SK square',p:4.02},{c:'Samsung E-M',p:3.43},{c:'Hyundai',p:1.97},{c:'KB Finance',p:1.50}],'SCBSEMIE':[{c:'AMD',p:10.33},{c:'Broadcom',p:9.57},{c:'Micron',p:9.39},{c:'TSMC',p:8.75},{c:'NVIDIA',p:8.4},{c:'ASML',p:8.13},{c:'Lam Research',p:5.62},{c:'Applied Mat.',p:5.53},{c:'Texas Inst.',p:4.52}],'K-CHANGE':[{c:'TSMC',p:8.6},{c:'ASML',p:5.8},{c:'Arm Holding',p:5.8},{c:'Microsoft',p:4.4},{c:'Remitly',p:4.0},{c:'Deere & Co',p:3.7},{c:'Illumina',p:3.3},{c:'NY Times',p:3.1},{c:'KLA Tencor',p:3.0},{c:'Ecolab',p:3.0}],'K-US-500X':[{c:'NVIDIA',p:7.88},{c:'Apple',p:7.04},{c:'Microsoft',p:5.14},{c:'Amazon',p:4.06},{c:'Google A',p:3.4},{c:'Broadcom',p:3.25},{c:'Google C',p:2.7},{c:'Meta',p:2.13},{c:'Tesla',p:1.88},{c:'Micron',p:1.68}],'K-GTECH':[{c:'Bloom Energy',p:10.08},{c:'Lam Research',p:7.22},{c:'Marvell',p:5.12},{c:'NVIDIA',p:5.6},{c:'Broadcom',p:5.3},{c:'Microsoft',p:4.5},{c:'Google A',p:4.5},{c:'WD',p:4.6},{c:'Applied Mat.',p:3.68},{c:'Apple',p:2.95}],'K-WORLDX':[{c:'NVIDIA',p:4.75},{c:'Apple',p:4.46},{c:'Microsoft',p:3.1},{c:'Amazon',p:2.55},{c:'Google A',p:2.16},{c:'Broadcom',p:1.96},{c:'TSMC',p:1.8},{c:'Meta',p:1.35},{c:'Tesla',p:1.2}],'TLUS500-UH-X':[{c:'NVIDIA',p:7.88},{c:'Apple',p:7.04},{c:'Microsoft',p:5.14},{c:'Amazon',p:4.06},{c:'Google A',p:3.4},{c:'Broadcom',p:3.25},{c:'Google C',p:2.7},{c:'Meta',p:2.13},{c:'Tesla',p:1.88},{c:'Micron',p:1.68}],'TLUSNDQ-UH-X':[{c:'NVIDIA',p:8.12},{c:'Apple',p:6.93},{c:'Micron',p:5.58},{c:'Microsoft',p:4.47},{c:'Amazon',p:4.16},{c:'AMD',p:3.83},{c:'Google A',p:3.4},{c:'Tesla',p:3.17},{c:'Broadcom',p:3.09}],'TLWORLD-X':[{c:'NVIDIA',p:4.2},{c:'Apple',p:3.82},{c:'Microsoft',p:2.84},{c:'Amazon',p:2.21},{c:'Google A',p:1.9},{c:'Broadcom',p:1.76},{c:'TSMC',p:1.53},{c:'Meta',p:1.17},{c:'Tesla',p:1.05}]};
+let STOCKS_DATA={'SCBS&P500E':[{c:'NVIDIA',p:7.8},{c:'Apple',p:6.8},{c:'Microsoft',p:5.1},{c:'Amazon',p:4.0},{c:'Google A',p:3.3},{c:'Google C',p:2.7},{c:'Broadcom',p:2.9},{c:'Meta',p:1.9},{c:'Tesla',p:1.7},{c:'Micron',p:1.8}],'SCBS&P500OLD':[{c:'NVIDIA',p:7.8},{c:'Apple',p:6.8},{c:'Microsoft',p:5.1},{c:'Amazon',p:4.0},{c:'Google A',p:3.3},{c:'Google C',p:2.7},{c:'Broadcom',p:2.9},{c:'Meta',p:1.9},{c:'Tesla',p:1.7},{c:'Micron',p:1.8}],'SCBCEH':[{c:'Tencent',p:10.5},{c:'Alibaba',p:9.2},{c:'Meituan',p:7.8},{c:'JD.com',p:5.1},{c:'NetEase',p:4.3},{c:'Baidu',p:3.8},{c:'Xiaomi',p:3.5},{c:'CNOOC',p:2.9},{c:'BYD',p:2.7},{c:'Li Auto',p:2.1}],'SCBSET1':[{c:'PTT',p:8.2},{c:'ADVANC',p:7.1},{c:'CPALL',p:6.8},{c:'SCB',p:5.9},{c:'GULF',p:5.1},{c:'BBL',p:4.7},{c:'BH',p:4.2},{c:'SCC',p:3.8},{c:'KBANK',p:3.5},{c:'AOT',p:3.1}],'SCBSET2':[{c:'PTT',p:8.2},{c:'ADVANC',p:7.1},{c:'CPALL',p:6.8},{c:'SCB',p:5.9},{c:'GULF',p:5.1},{c:'BBL',p:4.7},{c:'BH',p:4.2},{c:'SCC',p:3.8},{c:'KBANK',p:3.5},{c:'AOT',p:3.1}],'SCBSFF':[{c:'PTT',p:8.2},{c:'ADVANC',p:7.1},{c:'CPALL',p:6.8},{c:'SCB',p:5.9},{c:'GULF',p:5.1},{c:'BBL',p:4.7},{c:'BH',p:4.2},{c:'SCC',p:3.8},{c:'KBANK',p:3.5},{c:'AOT',p:3.1}],'SCBNDQE':[{c:'NVIDIA',p:9.0},{c:'Apple',p:7.0},{c:'Google A',p:6.0},{c:'Amazon',p:5.0},{c:'Microsoft',p:5.0},{c:'Micron',p:4.0},{c:'Meta',p:3.5},{c:'Broadcom',p:3.5},{c:'Tesla',p:3.5}],'SCBWORLDE':[{c:'NVIDIA',p:5.42},{c:'Apple',p:5.09},{c:'Microsoft',p:3.53},{c:'Amazon',p:2.91},{c:'Google A',p:2.46},{c:'Broadcom',p:2.23},{c:'Meta',p:1.54},{c:'Tesla',p:1.36},{c:'Micron',p:1.22}],'SCBGOLDE':[{c:'Gold',p:100}],'SCBKEQTGE':[{c:'SK hynix',p:25.97},{c:'Samsung Elec',p:23.69},{c:'SK square',p:4.02},{c:'Samsung E-M',p:3.43},{c:'Hyundai',p:1.97},{c:'KB Finance',p:1.50}],'SCBSEMIE':[{c:'AMD',p:10.33},{c:'Broadcom',p:9.57},{c:'Micron',p:9.39},{c:'TSMC',p:8.75},{c:'NVIDIA',p:8.4},{c:'ASML',p:8.13},{c:'Lam Research',p:5.62},{c:'Applied Mat.',p:5.53},{c:'Texas Inst.',p:4.52}],'K-CHANGE':[{c:'TSMC',p:8.6},{c:'ASML',p:5.8},{c:'Arm Holding',p:5.8},{c:'Microsoft',p:4.4},{c:'Remitly',p:4.0},{c:'Deere & Co',p:3.7},{c:'Illumina',p:3.3},{c:'NY Times',p:3.1},{c:'KLA Tencor',p:3.0},{c:'Ecolab',p:3.0}],'K-US-500X':[{c:'NVIDIA',p:7.88},{c:'Apple',p:7.04},{c:'Microsoft',p:5.14},{c:'Amazon',p:4.06},{c:'Google A',p:3.4},{c:'Broadcom',p:3.25},{c:'Google C',p:2.7},{c:'Meta',p:2.13},{c:'Tesla',p:1.88},{c:'Micron',p:1.68}],'K-GTECH':[{c:'Bloom Energy',p:10.08},{c:'Lam Research',p:7.22},{c:'Marvell',p:5.12},{c:'NVIDIA',p:5.6},{c:'Broadcom',p:5.3},{c:'Microsoft',p:4.5},{c:'Google A',p:4.5},{c:'WD',p:4.6},{c:'Applied Mat.',p:3.68},{c:'Apple',p:2.95}],'K-WORLDX':[{c:'NVIDIA',p:4.75},{c:'Apple',p:4.46},{c:'Microsoft',p:3.1},{c:'Amazon',p:2.55},{c:'Google A',p:2.16},{c:'Broadcom',p:1.96},{c:'TSMC',p:1.8},{c:'Meta',p:1.35},{c:'Tesla',p:1.2}],'TLUS500-UH-X':[{c:'NVIDIA',p:7.88},{c:'Apple',p:7.04},{c:'Microsoft',p:5.14},{c:'Amazon',p:4.06},{c:'Google A',p:3.4},{c:'Broadcom',p:3.25},{c:'Google C',p:2.7},{c:'Meta',p:2.13},{c:'Tesla',p:1.88},{c:'Micron',p:1.68}],'TLUSNDQ-UH-X':[{c:'NVIDIA',p:8.12},{c:'Apple',p:6.93},{c:'Micron',p:5.58},{c:'Microsoft',p:4.47},{c:'Amazon',p:4.16},{c:'AMD',p:3.83},{c:'Google A',p:3.4},{c:'Tesla',p:3.17},{c:'Broadcom',p:3.09}],'TLWORLD-X':[{c:'NVIDIA',p:4.2},{c:'Apple',p:3.82},{c:'Microsoft',p:2.84},{c:'Amazon',p:2.21},{c:'Google A',p:1.9},{c:'Broadcom',p:1.76},{c:'TSMC',p:1.53},{c:'Meta',p:1.17},{c:'Tesla',p:1.05}]};
 (function(){try{const s=localStorage.getItem('stocks_v1');if(s)STOCKS_DATA=JSON.parse(s);}catch(e){}})();
 function saveSD(){try{localStorage.setItem('stocks_v1',JSON.stringify(STOCKS_DATA));}catch(e){toast('Storage เต็ม','#D44B2A');}}
 
@@ -1038,6 +1092,7 @@ function saveSD(){try{localStorage.setItem('stocks_v1',JSON.stringify(STOCKS_DAT
     const cf=localStorage.getItem('custom_funds_v1');
     if(cf){
       const parsed=JSON.parse(cf);
+      const builtinCount=FUNDS.length;
       parsed.forEach(f=>{
         if(!FUNDS.includes(f.code)){
           FUNDS.push(f.code);
@@ -1050,6 +1105,21 @@ function saveSD(){try{localStorage.setItem('stocks_v1',JSON.stringify(STOCKS_DAT
           UNITS[f.code]=f.units||0;
         }
       });
+      // Sort the custom-fund tail so known legacy funds appear in a fixed order:
+      // CEH, S&P500 (old), SET1, SET2, SFF — any other custom funds keep their original order after them
+      const tailPriority=code=>{
+        const n=(FN[code]||code).toUpperCase().replace(/[^A-Z0-9]/g,'');
+        if(n.includes('CEH'))return 0;
+        if(n.includes('SP500')&&n.includes('OLD'))return 1;
+        if(n.includes('SET1'))return 2;
+        if(n.includes('SET2'))return 3;
+        if(n.includes('SFF'))return 4;
+        return 99;
+      };
+      const builtin=FUNDS.slice(0,builtinCount);
+      const tail=FUNDS.slice(builtinCount).map((code,i)=>({code,i,p:tailPriority(code)}))
+        .sort((a,b)=>a.p-b.p||a.i-b.i).map(x=>x.code);
+      FUNDS.length=0;FUNDS.push(...builtin,...tail);
       // Recompute APCT
       const total=FUNDS.reduce((s,f)=>s+(ALLOC[f]||0),0);
       if(total>0)FUNDS.forEach(f=>{APCT[f]=parseFloat(((ALLOC[f]||0)/total*100).toFixed(2));});
@@ -1525,6 +1595,23 @@ function recomputeUnits(){
   });
 }
 
+// Recompute invested amount (ALLOC) from all TX, then refresh allocation % (APCT)
+function recomputeAlloc(){
+  const all=getAllTx();
+  FUNDS.forEach(f=>{
+    const buys=all.filter(t=>t.fund===f&&t.type==='Buy');
+    const sells=all.filter(t=>t.fund===f&&t.type==='Sell');
+    if(buys.length>0||sells.length>0){
+      const totalBuy=parseFloat(buys.reduce((s,t)=>s+(t.amount||0),0).toFixed(2));
+      const totalSell=parseFloat(sells.reduce((s,t)=>s+(t.amount||0),0).toFixed(2));
+      const net=parseFloat((totalBuy-totalSell).toFixed(2));
+      ALLOC[f]=net>0?net:0;
+    }
+  });
+  const total=FUNDS.reduce((s,f)=>s+(ALLOC[f]||0),0);
+  if(total>0)FUNDS.forEach(f=>{APCT[f]=parseFloat(((ALLOC[f]||0)/total*100).toFixed(2));});
+}
+
 let txEditIdx=-1; // -1=new, >=0=editing customTx index; negative < -1 = base TX index (-(idx+2))
 let txEditIsBase=false;
 let txEditBaseKey='';
@@ -1600,6 +1687,7 @@ function saveTxForm(){
 
 function _finishSave(){
   recomputeUnits();
+  recomputeAlloc();
   txEditIdx=-1;txEditIsBase=false;txEditBaseKey='';
   document.getElementById('txFStat').textContent='บันทึกแล้ว ✓ '+new Date().toLocaleTimeString('th-TH');
   document.querySelector('#txFormBox .txf-title span').innerHTML='<i class="ti ti-plus"></i> บันทึกรายการซื้อ/ขาย';
@@ -1672,6 +1760,7 @@ function deleteTxRecord(idx, isBase){
   }
   if(!isBase&&txEditIdx===idx)cancelTxEdit();
   recomputeUnits();
+  recomputeAlloc();
   buildTxDateDrop();renderTx();renderOverview();
   toast('ลบรายการแล้ว','#D44B2A');
 }
@@ -1701,7 +1790,13 @@ function renderTx(){
     let editBtn='', delBtn='';
     if(isCustom){
       const customIdx=customTx.findIndex(c=>c.date===t.date&&c.fund===t.fund&&c.type===t.type&&c.amount===t.amount);
-      if(customIdx>=0&&t.type!=='Deposit'){
+      if(t.type==='Deposit'){
+        const deps=getDeposits();
+        const depIdx=deps.findIndex(d=>d.date===t.date&&d.amount===t.amount&&d.fund===t.fund);
+        if(depIdx>=0){
+          editBtn=`<button class="tx-del" style="color:var(--blue);border-color:var(--blue)" onclick="showEditDepositModal(${depIdx})" title="แก้ไข"><i class="ti ti-pencil"></i></button>`;
+        }
+      } else if(customIdx>=0){
         editBtn=`<button class="tx-del" style="color:var(--blue);border-color:var(--blue)" onclick="editTxRecord(${customIdx},false)" title="แก้ไข"><i class="ti ti-pencil"></i></button>`;
       }
       if(customIdx>=0){
@@ -1961,6 +2056,64 @@ function deleteDeposit(date,bank,amount){
   toast('ลบรายการเงินฝากแล้ว','#D44B2A');
 }
 
+function showEditDepositModal(idx){
+  const deps=getDeposits();
+  const d=deps[idx];
+  if(!d)return;
+  document.getElementById('edpIdx').value=idx;
+  document.getElementById('edpDate').value=d.date||'';
+  document.getElementById('edpBank').value=d.bank||'กรุงเทพ';
+  document.getElementById('edpAccName').value=d.accName||'';
+  // Detect tx type from note or default to deposit
+  const noteLC=(d.note||'').toLowerCase();
+  let txType='deposit';
+  if(noteLC.includes('ถอน')||noteLC.includes('withdraw'))txType='withdraw';
+  else if(noteLC.includes('ดอกเบี้ย')||noteLC.includes('interest'))txType='interest';
+  document.getElementById('edpTxType').value=txType;
+  document.getElementById('edpAmount').value=d.amount||'';
+  document.getElementById('edpInterest').value=d.interest||'';
+  document.getElementById('edpNote').value=d.note||'';
+  document.getElementById('editDepositModal').style.display='flex';
+}
+
+function closeEditDepositModal(){
+  document.getElementById('editDepositModal').style.display='none';
+}
+
+function confirmEditDeposit(){
+  const idx=parseInt(document.getElementById('edpIdx').value);
+  const deps=getDeposits();
+  if(isNaN(idx)||!deps[idx])return;
+  const date=document.getElementById('edpDate').value;
+  const bank=document.getElementById('edpBank').value;
+  const accName=document.getElementById('edpAccName').value.trim();
+  const txType=document.getElementById('edpTxType').value;
+  const amount=parseFloat(document.getElementById('edpAmount').value)||0;
+  const interest=parseFloat(document.getElementById('edpInterest').value)||0;
+  const note=document.getElementById('edpNote').value.trim();
+  if(!date||!bank||amount<=0){toast('กรุณากรอกวันที่ ธนาคาร และจำนวนเงิน','#D44B2A');return;}
+  // Build display label same as confirmDeposit
+  const bankNames={'กรุงเทพ':'กรุงเทพ','กสิกรไทย':'กสิกรไทย','ไทยพาณิชย์':'ไทยพาณิชย์','กรุงไทย':'กรุงไทย','ทหารไทยธนชาต':'ทหารไทยธนชาต','อื่นๆ':'อื่นๆ'};
+  const label=accName?`${bankNames[bank]||bank} (${accName})`:(bankNames[bank]||bank);
+  // Sign: withdraw is negative, interest goes to interest field
+  let finalAmount=amount;
+  let finalNote=note;
+  if(txType==='withdraw'){finalNote=(note?note+' | ':'')+'ถอนเงิน';finalAmount=amount;}
+  if(txType==='interest'){finalNote=(note?note+' | ':'')+'รับดอกเบี้ย';}
+  const oldRec=deps[idx];
+  const newRec={...oldRec,date,fund:label,bank,accName,amount:finalAmount,interest:txType==='interest'?amount:interest,note:finalNote,type:'Deposit',amc:'',_custom:true};
+  deps[idx]=newRec;
+  setDeposits(deps);
+  // Update matching custom tx entry
+  const cTx=getCustomTx();
+  const ti=cTx.findIndex(t=>t.date===oldRec.date&&t.type==='Deposit'&&t.amount===oldRec.amount);
+  if(ti>=0){cTx[ti]={...cTx[ti],date,fund:label,bank,accName,amount:finalAmount,interest:txType==='interest'?amount:interest,note:finalNote};}
+  setCustomTx(cTx);
+  closeEditDepositModal();
+  buildTxDateDrop();renderTx();renderDepositOverview();updateDepositBankFilter();
+  toast('แก้ไขรายการเงินฝากแล้ว ✓');
+}
+
 function updateDepositBankFilter(){
   const deps=getDeposits();
   const banks=[...new Set(deps.map(d=>d.fund))];
@@ -1998,15 +2151,21 @@ function renderDepositOverview(){
   leg('lDP',['ยอดสะสม'+(bankFilter!=='ALL'?' ('+bankFilter+')':'')],['#B8820A']);
   dc('cDP');CC['cDP']=new Chart(document.getElementById('cDP'),{type:'bar',data:{labels:dates,datasets:[{label:'ยอดฝากสะสม',data:cumData,backgroundColor:'rgba(184,130,10,0.5)',borderColor:'#B8820A',borderWidth:1.5,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'฿'+fmtMoney(c.raw)}}},scales:{x:{ticks:{font:{size:9}}},y:{ticks:{callback:v=>'฿'+(v/1000).toFixed(0)+'K',font:{size:9}}}}}});
   // Table
-  document.getElementById('dpBody').innerHTML=[...filtered].sort((a,b)=>b.date.localeCompare(a.date)).map(d=>`
-    <tr>
+  const sortedDeps=[...filtered].sort((a,b)=>b.date.localeCompare(a.date));
+  document.getElementById('dpBody').innerHTML=sortedDeps.map(d=>{
+    const realIdx=deps.findIndex(x=>x.date===d.date&&x.bank===d.bank&&x.amount===d.amount);
+    return`<tr>
       <td>${d.date}</td>
       <td style="font-weight:500"><i class="ti ti-piggy-bank" style="color:var(--gold);margin-right:4px"></i>${d.fund}</td>
       <td style="font-family:var(--f-mono);color:var(--gold)">฿${fmtMoney(d.amount)}</td>
-      <td style="font-family:var(--f-mono)" class="${(d.interest||0)>0?'pos':''}">${(d.interest||0)>0?'฿'+fmtMoney(d.interest):'-'}</td>
+      <td style="font-family:var(--f-mono)" class="${(d.interest||0)>0?'pos':''}">฿${(d.interest||0)>0?fmtMoney(d.interest):'-'}</td>
       <td style="color:var(--t2);font-size:10px">${d.note||'-'}</td>
-      <td><button class="tx-del" onclick="deleteDeposit('${d.date}','${d.bank}',${d.amount})"><i class="ti ti-trash"></i></button></td>
-    </tr>`).join('')||'<tr><td colspan="6" style="text-align:center;padding:10px;color:var(--t2)">ไม่มีรายการ</td></tr>';
+      <td style="display:flex;gap:4px">
+        <button class="tx-edit" onclick="showEditDepositModal(${realIdx})" title="แก้ไข"><i class="ti ti-edit"></i></button>
+        <button class="tx-del" onclick="deleteDeposit('${d.date}','${d.bank}',${d.amount})" title="ลบ"><i class="ti ti-trash"></i></button>
+      </td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="6" style="text-align:center;padding:10px;color:var(--t2)">ไม่มีรายการ</td></tr>';
 }
 
 function showAddFundFromTx(){
@@ -2276,6 +2435,7 @@ async function syncNow(){
     // 4. Refresh all UI (unconditional — don't depend on which tab is active,
     //    otherwise merged data sits in localStorage but never reaches the screen)
     recomputeUnits();
+    recomputeAlloc();
     buildTxDateDrop();
     renderTx();
     renderOverview();
@@ -2363,8 +2523,9 @@ window.setBaseEdit = function(a){
 // ═══════════════════════════════════════
 const css=document.createElement('style');css.textContent='@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}';document.head.appendChild(css);
 document.getElementById('eDate').value=new Date().toISOString().slice(0,10);
-// Recompute units from all TX on load (4 decimal places)
+// Recompute units and invested amount from all TX on load (4 decimal places)
 recomputeUnits();
+recomputeAlloc();
 
 // Build all dropdowns
 FUNDS.forEach(f=>{
