@@ -1,0 +1,2547 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Portfolio Dashboard</title>
+
+<!-- ===== Apple Web App / PWA ===== -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Portfolio">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0e1d30">
+<meta name="format-detection" content="telephone=no">
+
+<!-- App icon (inline SVG data URI — no external file needed) -->
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%230e1d30'/%3E%3Cpath d='M40 130 L40 90 L65 90 L65 130 Z M80 130 L80 60 L105 60 L105 130 Z M120 130 L120 40 L145 40 L145 130 Z' fill='%233d7fff'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%230e1d30'/%3E%3Cpath d='M40 130 L40 90 L65 90 L65 130 Z M80 130 L80 60 L105 60 L105 130 Z M120 130 L120 40 L145 40 L145 130 Z' fill='%233d7fff'/%3E%3C/svg%3E">
+
+<!-- ===== Google Font (preconnect + display=swap, Safari/Chrome friendly) ===== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Tabler Icons — ใช้ class="ti ti-*" ทั่วทั้งแอป 61 จุด ต้องโหลดเองในโหมด standalone -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
+
+<style>
+/* ===== Base theme tokens (standalone fallback for var(--color-*) used by original CSS) ===== */
+:root{
+  --color-background-primary:#0a1521;
+  --color-background-secondary:#0e1d30;
+  --color-border-tertiary:rgba(255,255,255,.08);
+  --color-border-secondary:rgba(255,255,255,.14);
+  --color-text-primary:#e8f0fc;
+  --color-text-secondary:#9ab8e0;
+  --font-sans:'IBM Plex Sans Thai',sans-serif;
+}
+html,body{
+  margin:0;padding:0;
+  background:var(--color-background-primary);
+  color:var(--color-text-primary);
+  font-family:'IBM Plex Sans Thai',sans-serif;
+}
+body{
+  -webkit-text-size-adjust:100%;
+  -webkit-font-smoothing:antialiased;
+  overscroll-behavior-y:none;
+  width:100%;
+  min-height:100vh;
+  min-height:100dvh;
+}
+#app-root{
+  padding-left:max(12px, env(safe-area-inset-left));
+  padding-right:max(12px, env(safe-area-inset-right));
+  padding-top:max(8px, env(safe-area-inset-top));
+  padding-bottom:max(16px, env(safe-area-inset-bottom));
+}
+*{ -webkit-tap-highlight-color: transparent; }
+
+/* ===== iOS/Safari: prevent zoom-on-focus by keeping inputs/selects >=16px ===== */
+input, select, textarea, .nfi, .insel, .fi select{
+  font-size:16px !important;
+}
+
+/* ===== Apple-recommended touch target sizing (min 44x44pt) on mobile ===== */
+@media (max-width:768px){
+  .ab,.bp,.bs,.bd,.tab,.pill{
+    min-height:44px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .nfi,.fi select,.insel{
+    min-height:44px;
+    padding-top:10px;
+    padding-bottom:10px;
+  }
+  .tt th,.tt td{ padding:9px 8px; }
+  body{ font-size:14px; }
+}
+
+/* ===== Smooth scrolling on iOS ===== */
+.tabs, .panel { -webkit-overflow-scrolling: touch; }
+
+/* ===== Standalone-mode tweak (when launched from Home Screen) ===== */
+@media (display-mode: standalone){
+  body{ padding-top:max(20px, env(safe-area-inset-top)); }
+}
+</style>
+</head>
+<body>
+<div id="app-root">
+<h2 style="color:#3d7fff;font-size:18px;font-weight:700;padding:8px 0 4px;letter-spacing:.01em;text-shadow:0 0 18px rgba(61,127,255,.5);font-family:'IBM Plex Sans Thai',sans-serif">Portfolio Dashboard <span style="font-size:11px;color:#3d7fff;opacity:.6;font-weight:400">v15</span></h2>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --f-body:var(--font-sans,'IBM Plex Sans Thai',sans-serif);
+  --f-mono:'IBM Plex Mono',monospace;
+  --blue:#2C5BDB;--blue-light:#EBF0FF;--blue-mid:#6B8EF5;
+  --green:#0D9373;--green-light:#E5F7F2;
+  --red:#D44B2A;--red-light:#FDF0EC;
+  --gold:#B8820A;--gold-light:#FEF7E5;
+  --purple:#6B3EC4;--purple-light:#F2ECFF;
+  --bg:var(--color-background-primary);
+  --bg2:var(--color-background-secondary);
+  --border:var(--color-border-tertiary);
+  --border2:var(--color-border-secondary);
+  --t1:var(--color-text-primary);
+  --t2:var(--color-text-secondary);
+  --radius:10px;--radius-sm:6px;--radius-lg:14px;
+}
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.25rem;overflow-x:auto;flex-shrink:0;gap:2px}
+.tab{padding:8px 11px;font-size:11.5px;cursor:pointer;border:none;background:none;color:var(--t2);border-bottom:2.5px solid transparent;white-space:nowrap;font-family:var(--f-body);display:flex;align-items:center;gap:5px;border-radius:var(--radius-sm) var(--radius-sm) 0 0;transition:background .15s,color .15s}
+.tab:hover{background:var(--bg2);color:var(--t1)}
+.tab.active{color:var(--blue);border-bottom:2.5px solid var(--blue);font-weight:600;background:var(--blue-light)}
+.tab i{font-size:14px}
+.panel{display:none}.panel.active{display:block}
+
+/* metric grid */
+.mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:1rem}
+.m{background:var(--bg2);border-radius:var(--radius);padding:11px 13px;border:0.5px solid var(--border)}
+.m.clk{cursor:pointer;transition:all .15s;border:0.5px solid transparent}
+.m.clk:hover{border-color:var(--blue-mid);background:var(--blue-light);transform:translateY(-1px)}
+.m.active-sel{border:1.5px solid var(--blue);background:var(--blue-light)}
+.ml{font-size:10px;color:var(--t2);margin-bottom:4px;font-weight:500;letter-spacing:.02em}
+.mv{font-size:16px;font-weight:600;color:var(--t1);font-family:var(--f-mono)}
+.mv.sm{font-size:13px}
+.ms{font-size:10px;margin-top:3px}
+.pos{color:var(--green)}.neg{color:var(--red)}
+
+/* fund selector pills */
+.fund-pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:1rem;padding:10px 12px;background:var(--bg2);border-radius:var(--radius);border:0.5px solid var(--border)}
+.pill{padding:4px 10px;font-size:10.5px;border-radius:20px;cursor:pointer;border:1px solid var(--border2);background:var(--bg);color:var(--t2);font-family:var(--f-body);font-weight:500;transition:all .12s;white-space:nowrap}
+.pill:hover{border-color:var(--blue-mid);color:var(--blue)}
+.pill.sel{background:var(--blue);color:#fff;border-color:var(--blue)}
+.pill-label{font-size:10px;color:var(--t2);font-weight:500;margin-right:4px;align-self:center}
+
+/* card */
+.card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:13px 15px;margin-bottom:1rem}
+.ct{font-size:10.5px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.cr{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
+.leg{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px}
+.li{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--t2)}
+.ld{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.fi{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:.8rem;align-items:center}
+.fi select,.insel{font-size:11px;padding:4px 8px;border-radius:var(--radius-sm);border:0.5px solid var(--border2);background:var(--bg);color:var(--t1);font-family:var(--f-body)}
+.tt{width:100%;border-collapse:collapse;font-size:11px}
+.tt th{text-align:left;padding:6px 8px;border-bottom:1px solid var(--border);color:var(--t2);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+.tt td{padding:6px 8px;border-bottom:0.5px solid var(--border);color:var(--t1)}
+.tt tr:hover td{background:var(--bg2)}
+.bdg{display:inline-block;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600}
+.buy{background:var(--green-light);color:var(--green)}.sell{background:var(--red-light);color:var(--red)}
+.scb{background:#E6F1FB;color:#1450A0}.kb{background:#E1F5EE;color:#0F6E56}.tl{background:#EEEDFE;color:#4B38A8}
+.bnew{background:var(--green-light);color:var(--green)}.bold{background:var(--bg2);color:var(--t2)}
+.aib{background:var(--bg2);border-radius:var(--radius-lg);padding:14px;font-size:12px;color:var(--t1);line-height:1.7;border:0.5px solid var(--border)}
+.ab{font-size:11px;padding:6px 10px;cursor:pointer;border-radius:var(--radius-sm);border:0.5px solid var(--border2);background:var(--bg);color:var(--t1);font-family:var(--f-body);transition:background .12s,border-color .12s}
+.ab:hover{background:var(--blue-light);border-color:var(--blue-mid)}
+.nf{display:flex;flex-direction:column;gap:3px}
+.nfl{font-size:10px;color:var(--t2);font-weight:500}
+.nfi{padding:6px 9px;border:0.5px solid var(--border2);border-radius:var(--radius-sm);font-size:12px;background:var(--bg);color:var(--t1);font-family:var(--f-mono);width:100%}
+.nfi.ch{border-color:var(--green);background:var(--green-light)}
+.bp{padding:7px 15px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;cursor:pointer;font-family:var(--f-body);font-weight:600;transition:background .12s}
+.bp:hover{background:#1D47C0}
+.bs{padding:5px 11px;background:var(--bg);color:var(--t1);border:0.5px solid var(--border2);border-radius:var(--radius-sm);font-size:11px;cursor:pointer;font-family:var(--f-body);transition:background .12s}
+.bs:hover{background:var(--bg2)}
+.bd{padding:5px 11px;background:var(--green-light);color:var(--green);border:0.5px solid var(--green);border-radius:var(--radius-sm);font-size:11px;cursor:pointer;font-family:var(--f-body);font-weight:600;transition:background .12s}
+.bd:hover{background:var(--green);color:#fff}
+.hint{font-size:10px;color:var(--t2);margin-top:8px;padding:8px 11px;background:var(--blue-light);border-radius:var(--radius-sm);border-left:3px solid var(--blue);line-height:1.6}
+.toast{position:fixed;bottom:16px;right:16px;background:var(--green);color:#fff;padding:9px 16px;border-radius:var(--radius);font-size:12px;opacity:0;transition:opacity .3s;z-index:999;pointer-events:none;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.15)}
+.toast.show{opacity:1}
+.stabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:1rem;overflow-x:auto;gap:2px}
+.stab{padding:6px 12px;font-size:11px;cursor:pointer;border:none;background:none;color:var(--t2);border-bottom:2px solid transparent;white-space:nowrap;font-family:var(--f-body)}
+.stab.active{color:var(--blue);border-bottom:2px solid var(--blue);font-weight:600}
+.spanel{display:none}.spanel.active{display:block}
+.serow{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:0.5px solid var(--border)}
+.serow:last-child{border-bottom:none}
+.serow-name{font-size:11px;flex:1;color:var(--t1)}
+.serow-val{width:65px;padding:3px 6px;font-size:11px;border:0.5px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg);color:var(--t1);font-family:var(--f-mono)}
+.serow-del{padding:2px 7px;font-size:10px;color:var(--red);background:none;border:0.5px solid var(--red);border-radius:var(--radius-sm);cursor:pointer}
+/* add fund modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal-box{background:var(--bg);border-radius:var(--radius-lg);padding:20px;max-width:400px;width:100%;border:0.5px solid var(--border2);box-shadow:0 10px 40px rgba(0,0,0,.2)}
+.modal-title{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:14px}
+.modal-row{margin-bottom:10px}
+.modal-label{font-size:10px;color:var(--t2);font-weight:500;margin-bottom:3px}
+.modal-input{width:100%;padding:7px 10px;border:0.5px solid var(--border2);border-radius:var(--radius-sm);font-size:12px;background:var(--bg);color:var(--t1);font-family:var(--f-mono)}
+.modal-actions{display:flex;gap:8px;margin-top:14px;justify-content:flex-end}
+/* section title with accent */
+.sec-title{font-size:12px;font-weight:700;color:var(--t1);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sec-title::before{content:'';width:3px;height:14px;background:var(--blue);border-radius:2px;display:block}
+/* tx form */
+.txf{background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:1rem}
+.txf-title{font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.txf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:10px}
+.txf-row{display:flex;flex-direction:column;gap:3px}
+.txf-lbl{font-size:10px;color:var(--t2);font-weight:500}
+.txf-inp{padding:6px 9px;border:0.5px solid var(--border2);border-radius:var(--radius-sm);font-size:12px;background:var(--bg);color:var(--t1);font-family:var(--f-mono);width:100%}
+.txf-inp:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 2px rgba(61,127,255,.15)}
+.txf-inp.err{border-color:var(--red)!important}
+.txf-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tx-del{padding:2px 8px;font-size:10px;color:var(--red);background:none;border:0.5px solid var(--red);border-radius:var(--radius-sm);cursor:pointer;opacity:.7}
+.tx-del:hover{opacity:1;background:var(--red-light)}
+.tx-edit{padding:2px 8px;font-size:10px;color:var(--blue);background:none;border:0.5px solid var(--blue);border-radius:var(--radius-sm);cursor:pointer;opacity:.7}
+.tx-edit:hover{opacity:1;background:rgba(61,127,255,.1)}
+
+/* ═══════════════════════════════════════
+   DARK GLOW THEME OVERRIDE
+═══════════════════════════════════════ */
+:root {
+  --bg:  #090d14;
+  --bg2: #0e1520;
+  --border: rgba(80,140,255,.18);
+  --border2: rgba(80,140,255,.28);
+  --t1: #dce8ff;
+  --t2: #6a88b8;
+
+  --blue: #3d7fff;
+  --blue-light: rgba(61,127,255,.10);
+  --blue-mid: #5a9bff;
+
+  --green: #00d48c;
+  --green-light: rgba(0,212,140,.10);
+  --red: #ff5555;
+  --red-light: rgba(255,85,85,.10);
+  --gold: #f7c948;
+  --gold-light: rgba(247,201,72,.10);
+  --purple: #a67cff;
+  --purple-light: rgba(166,124,255,.10);
+}
+
+/* body background */
+html, body { background: #090d14 !important; }
+
+/* radial ambient glow on the page */
+div[style*="padding:.4rem"] {
+  position: relative;
+}
+div[style*="padding:.4rem"]::before {
+  content: '';
+  position: fixed;
+  top: -30vh; left: 50%;
+  transform: translateX(-50%);
+  width: 80vw; height: 60vh;
+  background: radial-gradient(ellipse at center,
+    rgba(61,127,255,.07) 0%,
+    rgba(0,212,140,.04) 45%,
+    transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* tab bar glow */
+.tabs { border-bottom-color: rgba(61,127,255,.2); }
+.tab.active {
+  background: rgba(61,127,255,.12) !important;
+  color: #5ab4ff !important;
+  border-bottom-color: #3d7fff !important;
+  text-shadow: 0 0 10px rgba(90,180,255,.55);
+}
+.tab:hover { background: rgba(255,255,255,.04) !important; }
+
+/* cards — subtle glow border */
+.card {
+  background: #0e1520 !important;
+  border: 0.5px solid rgba(61,127,255,.2) !important;
+  box-shadow: 0 0 18px rgba(61,127,255,.05), inset 0 0 0 1px rgba(255,255,255,.02);
+}
+
+/* metric cards */
+.m {
+  background: #0e1520 !important;
+  border: 0.5px solid rgba(61,127,255,.18) !important;
+  box-shadow: 0 0 12px rgba(61,127,255,.06);
+}
+.m.clk:hover {
+  border-color: #3d7fff !important;
+  background: rgba(61,127,255,.10) !important;
+  box-shadow: 0 0 18px rgba(61,127,255,.18) !important;
+}
+.m.active-sel {
+  border: 1.5px solid #3d7fff !important;
+  background: rgba(61,127,255,.12) !important;
+  box-shadow: 0 0 24px rgba(61,127,255,.22) !important;
+}
+
+/* metric values — glow on positives/negatives */
+.pos { color: #00d48c !important; text-shadow: 0 0 10px rgba(0,212,140,.45); }
+.neg { color: #ff5555 !important; text-shadow: 0 0 10px rgba(255,85,85,.35); }
+
+/* pills */
+.fund-pills {
+  background: #0e1520 !important;
+  border-color: rgba(61,127,255,.18) !important;
+}
+.pill { background: #111b2a !important; color: #6a88b8 !important; border-color: rgba(61,127,255,.2) !important; }
+.pill:hover { border-color: #3d7fff !important; color: #5ab4ff !important; }
+.pill.sel {
+  background: #3d7fff !important;
+  color: #fff !important;
+  box-shadow: 0 0 12px rgba(61,127,255,.5);
+}
+
+/* primary button */
+.bp {
+  background: #3d7fff !important;
+  box-shadow: 0 0 14px rgba(61,127,255,.4);
+}
+.bp:hover { background: #5a9bff !important; box-shadow: 0 0 20px rgba(61,127,255,.6) !important; }
+
+/* secondary / download buttons */
+.bs {
+  background: #111b2a !important;
+  color: #9ab8e0 !important;
+  border-color: rgba(61,127,255,.25) !important;
+}
+.bs:hover { background: rgba(61,127,255,.12) !important; }
+.bd {
+  background: rgba(0,212,140,.10) !important;
+  color: #00d48c !important;
+  border-color: rgba(0,212,140,.35) !important;
+}
+.bd:hover { background: rgba(0,212,140,.18) !important; box-shadow: 0 0 12px rgba(0,212,140,.25) !important; }
+
+/* AI prompt buttons */
+.ab {
+  background: #111b2a !important;
+  border-color: rgba(61,127,255,.22) !important;
+  color: #9ab8e0 !important;
+}
+.ab:hover {
+  background: rgba(61,127,255,.10) !important;
+  border-color: #3d7fff !important;
+  color: #dce8ff !important;
+}
+
+/* AI response box */
+.aib {
+  background: #0b1420 !important;
+  border-color: rgba(61,127,255,.22) !important;
+  box-shadow: 0 0 18px rgba(61,127,255,.06) !important;
+}
+
+/* inputs / selects */
+input, select, .insel, .nfi, .modal-input, .txf-inp,
+input[type="date"],
+input[type="text"] {
+  background: #0b1420 !important;
+  color: #dce8ff !important;
+  border-color: rgba(61,127,255,.25) !important;
+}
+input:focus, select:focus, .nfi:focus {
+  outline: none;
+  border-color: #3d7fff !important;
+  box-shadow: 0 0 0 2px rgba(61,127,255,.18) !important;
+}
+.nfi.ch { border-color: #00d48c !important; background: rgba(0,212,140,.07) !important; }
+
+/* tables */
+.tt th { color: #4e7aaa !important; border-bottom-color: rgba(61,127,255,.15) !important; }
+.tt td { color: #bdd0ee !important; border-bottom-color: rgba(61,127,255,.08) !important; }
+.tt tr:hover td { background: rgba(61,127,255,.06) !important; }
+
+/* badges */
+.buy  { background: rgba(0,212,140,.12) !important; color: #00d48c !important; }
+.sell { background: rgba(255,85,85,.12) !important; color: #ff5555 !important; }
+.scb  { background: rgba(20,80,160,.18) !important; color: #5ab4ff !important; }
+.kb   { background: rgba(15,110,86,.18) !important; color: #00d48c !important; }
+.tl   { background: rgba(75,56,168,.20) !important; color: #a67cff !important; }
+.bnew { background: rgba(0,212,140,.12) !important; color: #00d48c !important; }
+.bold { background: rgba(255,255,255,.05) !important; color: #6a88b8 !important; }
+
+/* hint box */
+.hint {
+  background: rgba(61,127,255,.08) !important;
+  border-left-color: #3d7fff !important;
+  color: #8aadde !important;
+}
+
+/* tab title glow text */
+.tab { color: #7aa3cc !important; }
+.tab:hover { color: #b0d0f0 !important; }
+.tab.active { color: #5ab4ff !important; }
+
+/* sub-tab visible color */
+.stab { color: #7aa3cc !important; }
+.stab.active { color: #5ab4ff !important; border-bottom-color: #3d7fff !important; }
+
+/* modal */
+.modal-bg { background: rgba(0,0,0,.65) !important; }
+.modal-box {
+  background: #0e1520 !important;
+  border-color: rgba(61,127,255,.28) !important;
+  box-shadow: 0 10px 50px rgba(61,127,255,.15) !important;
+}
+
+/* toast */
+.toast { box-shadow: 0 4px 24px rgba(0,212,140,.25) !important; }
+
+/* section title accent bar */
+.sec-title::before { box-shadow: 0 0 6px rgba(61,127,255,.7); }
+</style>
+
+<div style="padding:.4rem 0">
+<!-- SYNC STATUS BAR -->
+<div id="syncBar" style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:#0e1520;border:0.5px solid rgba(61,127,255,.2);border-radius:8px;margin-bottom:8px;font-size:11px">
+  <span id="syncDot" style="width:8px;height:8px;border-radius:50%;background:#6a88b8;flex-shrink:0;transition:background .3s"></span>
+  <span id="syncMsg" style="color:var(--t2);flex:1">ยังไม่ได้ตั้งค่า Google Sheets</span>
+  <button onclick="openSyncSettings()" style="padding:3px 10px;font-size:10px;border-radius:6px;border:0.5px solid rgba(61,127,255,.35);background:rgba(61,127,255,.1);color:#5ab4ff;cursor:pointer;font-family:var(--f-body)"><i class="ti ti-settings" style="font-size:11px"></i> ตั้งค่า Sync</button>
+  <button id="syncNowBtn" onclick="syncNow()" style="padding:3px 10px;font-size:10px;border-radius:6px;border:0.5px solid rgba(0,212,140,.35);background:rgba(0,212,140,.1);color:#00d48c;cursor:pointer;font-family:var(--f-body);display:none"><i class="ti ti-refresh" style="font-size:11px"></i> Sync ตอนนี้</button>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('overview',this)"><i class="ti ti-layout-dashboard"></i>ภาพรวม</button>
+  <button class="tab" onclick="showTab('nav',this)"><i class="ti ti-trending-up"></i>NAV &amp; ผลตอบแทน</button>
+  <button class="tab" onclick="showTab('alloc',this)"><i class="ti ti-chart-pie"></i>สัดส่วน</button>
+  <button class="tab" onclick="showTab('tx',this)"><i class="ti ti-receipt"></i>ธุรกรรม</button>
+  <button class="tab" onclick="showTab('stocks',this)"><i class="ti ti-building-skyscraper"></i>หุ้นใน ETF</button>
+  <button class="tab" onclick="showTab('entry',this)"><i class="ti ti-edit"></i>บันทึก NAV</button>
+  <button class="tab" onclick="showTab('ai',this)"><i class="ti ti-brain"></i>วิเคราะห์ AI</button>
+</div>
+
+<!-- OVERVIEW -->
+<div id="p-overview" class="panel active">
+  <!-- Fund Selector Mode Tabs -->
+  <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">
+    <button id="ovModeByFund" class="pill sel" style="border-radius:var(--radius-sm);padding:5px 13px;font-size:11px" onclick="setOvMode('fund')"><i class="ti ti-layout-list" style="font-size:12px;vertical-align:-1px"></i> รายกองทุน</button>
+    <button id="ovModeByAMC" class="pill" style="border-radius:var(--radius-sm);padding:5px 13px;font-size:11px" onclick="setOvMode('amc')"><i class="ti ti-building-bank" style="font-size:12px;vertical-align:-1px"></i> แบ่งตาม AMC</button>
+  </div>
+  <!-- Fund Selector Pills (shown in fund mode) -->
+  <div class="fund-pills" id="ovPills" style="display:flex">
+    <span class="pill-label">เลือกกองทุน:</span>
+  </div>
+  <!-- AMC Selector Pills (shown in AMC mode) -->
+  <div class="fund-pills" id="ovAMCPills" style="display:none">
+    <span class="pill-label">เลือก AMC:</span>
+  </div>
+  <!-- Metric Cards -->
+  <div class="mg" id="ovM"></div>
+  <div id="ovFundGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:1rem"></div>
+  <!-- Charts -->
+  <div class="card">
+    <div class="ct" id="cFBTitle">เงินลงทุน (฿ ลงทุน)</div>
+    <div class="leg" id="cFBLeg" style="margin-bottom:6px"></div>
+    <div style="position:relative;height:190px"><canvas id="cFB"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="ct" id="cPVTitle">มูลค่าพอร์ต ณ วันต่างๆ (฿)</div>
+    <div style="position:relative;height:200px"><canvas id="cPV"></canvas></div>
+  </div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div class="ct" style="margin:0" id="cPLTitle">กำไร/ขาดทุน (฿) ณ วันต่างๆ</div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <select class="insel" id="plFundSel" onchange="renderPLChart()" style="font-size:10px;padding:3px 8px">
+          <option value="ALL">ทุกกองทุน</option>
+        </select>
+      </div>
+    </div>
+    <div class="leg" id="lPL"></div>
+    <div style="position:relative;height:210px"><canvas id="cPL"></canvas></div>
+  </div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div class="ct" style="margin:0">ผลตอบแทน % ตั้งแต่ต้น</div>
+    </div>
+    <div class="leg" id="lFR"></div>
+    <div style="position:relative;height:210px"><canvas id="cFR"></canvas></div>
+  </div>
+  <div class="card" id="depositOverviewCard" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div class="ct" style="margin:0">เงินฝากออมทรัพย์</div>
+      <div style="display:flex;gap:6px">
+        <select class="insel" id="dpViewBank" onchange="renderDepositOverview()" style="font-size:10px;padding:3px 8px"><option value="ALL">ทุกบัญชี</option></select>
+      </div>
+    </div>
+    <div class="mg" id="dpMetrics"></div>
+    <div class="leg" id="lDP"></div>
+    <div style="position:relative;height:180px"><canvas id="cDP"></canvas></div>
+    <div style="overflow-x:auto;margin-top:10px"><table class="tt" id="dpTable"><thead><tr><th>วันที่</th><th>ธนาคาร/บัญชี</th><th>จำนวนเงิน</th><th>ดอกเบี้ย</th><th>หมายเหตุ</th><th width="40"></th></tr></thead><tbody id="dpBody"></tbody></table></div>
+  </div>
+  <div class="cr">
+    <div class="card"><div class="ct">สัดส่วน AMC</div><div class="leg" id="lAMC"></div><div style="position:relative;height:155px"><canvas id="cAMC"></canvas></div></div>
+    <div class="card"><div class="ct">สัดส่วน Theme</div><div class="leg" id="lTH"></div><div style="position:relative;height:155px"><canvas id="cTH"></canvas></div></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div id="p-nav" class="panel">
+  <div class="mg" id="navM"></div>
+  <div class="fi">
+    <select id="nFS" onchange="renderNAV()"><option value="ALL">ทุกกองทุน</option></select>
+    <select id="nMode" onchange="renderNAV()"><option value="nav">NAV จริง</option><option value="idx">% เทียบวันแรก</option></select>
+    <select id="nRange" onchange="renderNAV()"><option value="0">ทุกวัน</option><option value="30">30 วัน</option><option value="14">14 วัน</option><option value="7">7 วัน</option></select>
+  </div>
+  <div class="card"><div class="ct">NAV History</div><div class="leg" id="lNAV"></div><div style="position:relative;height:270px"><canvas id="cNAV"></canvas></div></div>
+</div>
+
+<!-- ALLOC -->
+<div id="p-alloc" class="panel">
+  <div class="card"><div class="ct">% พอร์ตแยกกองทุน</div><div style="position:relative;height:280px"><canvas id="cAB"></canvas></div></div>
+  <div class="cr">
+    <div class="card"><div class="ct">Asset Class</div><div class="leg" id="lAS"></div><div style="position:relative;height:165px"><canvas id="cAS"></canvas></div></div>
+    <div class="card"><div class="ct">Top 6 กองทุน</div><div class="leg" id="lAD"></div><div style="position:relative;height:165px"><canvas id="cAD"></canvas></div></div>
+  </div>
+</div>
+
+<!-- TX -->
+<div id="p-tx" class="panel">
+  <!-- Add TX Form -->
+  <div class="txf" id="txFormBox">
+    <div class="txf-title">
+      <span><i class="ti ti-plus"></i> บันทึกรายการซื้อ/ขาย</span>
+      <div style="display:flex;gap:6px">
+        <button class="bd" style="font-size:10px;padding:3px 9px" onclick="showDepositForm()"><i class="ti ti-piggy-bank"></i> เงินฝากออมทรัพย์</button>
+        <button class="bs" style="font-size:10px;padding:3px 9px" onclick="toggleTxForm()"><i class="ti ti-chevron-up" id="txFormChevron"></i> ซ่อน</button>
+      </div>
+    </div>
+    <div id="txFormContent">
+      <div class="txf-grid">
+        <div class="txf-row" style="grid-column:span 2">
+          <div class="txf-lbl" style="display:flex;align-items:center;justify-content:space-between">
+            กองทุน *
+            <button type="button" class="bs" style="font-size:10px;padding:2px 8px" onclick="showAddFundFromTx()"><i class="ti ti-plus"></i> เพิ่มกองทุน</button>
+          </div>
+          <select class="txf-inp" id="txFF" onchange="onTxFundChange()">
+            <option value="">-- เลือกกองทุน --</option>
+          </select>
+        </div>
+        <div class="txf-row">
+          <div class="txf-lbl">AMC</div>
+          <input class="txf-inp" id="txFA" type="text" placeholder="SCB / Kbank / Talis" readonly style="opacity:.7">
+        </div>
+        <div class="txf-row">
+          <div class="txf-lbl">ประเภท *</div>
+          <select class="txf-inp" id="txFT">
+            <option value="Buy">Buy (ซื้อ)</option>
+            <option value="Sell">Sell (ขาย)</option>
+          </select>
+        </div>
+        <div class="txf-row">
+          <div class="txf-lbl">วันที่ *</div>
+          <input class="txf-inp" id="txFD" type="date">
+        </div>
+        <div class="txf-row">
+          <div class="txf-lbl">จำนวนเงิน (฿) *</div>
+          <input class="txf-inp" id="txFAmt" type="number" placeholder="0.00" min="0" step="0.01" oninput="autoCalcUnits()">
+        </div>
+        <div class="txf-row">
+          <div class="txf-lbl">NAV *</div>
+          <input class="txf-inp" id="txFN" type="number" placeholder="0.0000" min="0" step="0.0001" oninput="autoCalcUnits()">
+        </div>
+        <div class="txf-row">
+          <div class="txf-lbl">จำนวนหน่วย</div>
+          <input class="txf-inp" id="txFU" type="number" placeholder="คำนวณอัตโนมัติ" step="0.0001" style="border-color:var(--green);opacity:.85" readonly>
+        </div>
+      </div>
+      <div class="txf-actions">
+        <button class="bp" onclick="saveTxForm()"><i class="ti ti-device-floppy"></i> บันทึก</button>
+        <button class="bs" onclick="clearTxForm()"><i class="ti ti-eraser"></i> ล้าง</button>
+        <button class="bs" id="txCancelEditBtn" style="display:none;color:var(--red);border-color:var(--red)" onclick="cancelTxEdit()"><i class="ti ti-x"></i> ยกเลิกแก้ไข</button>
+        <span id="txFStat" style="font-size:10px;color:var(--t2)"></span>
+      </div>
+      <div class="hint" style="margin-top:10px"><i class="ti ti-info-circle" style="font-size:13px;vertical-align:-2px"></i> หน่วยจะคำนวณอัตโนมัติจาก จำนวนเงิน ÷ NAV (ทศนิยม 4 ตำแหน่ง) — สามารถแก้ไขได้ด้วยตนเอง · ข้อมูลต้นฉบับ (•) สามารถแก้ไขและลบได้เช่นกัน</div>
+    </div>
+  </div>
+  <!-- Filters -->
+  <div class="fi">
+    <select id="tType" onchange="renderTx()"><option value="ALL">ทุกประเภท</option><option>Buy</option><option>Sell</option><option value="Deposit">เงินฝาก</option></select>
+    <select id="tAMC" onchange="renderTx()"><option value="ALL">ทุก AMC</option><option>SCB</option><option>Kbank</option><option>Talis</option></select>
+    <select id="tFund" onchange="renderTx()"><option value="ALL">ทุกกองทุน</option></select>
+    <select id="tDate" onchange="renderTx()"><option value="ALL">ทุกวัน</option></select>
+  </div>
+  <div class="card"><div class="ct">ยอดซื้อ/ขาย รายเดือน</div><div style="position:relative;height:130px"><canvas id="cTM"></canvas></div></div>
+  <div style="overflow-x:auto"><table class="tt"><thead><tr><th>วันที่</th><th>กองทุน</th><th>AMC</th><th>ประเภท</th><th>จำนวนเงิน</th><th>NAV</th><th>หน่วย</th><th style="width:40px"></th></tr></thead><tbody id="txB"></tbody></table></div>
+</div>
+
+<!-- STOCKS -->
+<div id="p-stocks" class="panel">
+  <div class="fi">
+    <select id="sFund" onchange="renderStocks()"><option value="ALL">ทุกกองทุน</option></select>
+    <select id="sTop" onchange="renderStocks()"><option value="5">Top 5</option><option value="10" selected>Top 10</option><option value="20">Top 20</option></select>
+    <button class="bs" id="sEditBtn" onclick="toggleStocksEdit()"><i class="ti ti-pencil"></i> แก้ไขสัดส่วน</button>
+  </div>
+  <div id="sEditPanel" style="display:none;margin-bottom:1rem">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="ct" style="margin:0">แก้ไขสัดส่วนหุ้นใน ETF</div>
+        <div style="display:flex;gap:6px">
+          <button class="bs" onclick="addStockRow()"><i class="ti ti-plus"></i> เพิ่มหุ้น</button>
+          <button class="bp" onclick="saveStocksEdit()"><i class="ti ti-device-floppy"></i> บันทึก</button>
+        </div>
+      </div>
+      <div style="margin-bottom:8px;font-size:11px;color:var(--t2)">กองทุน:
+        <select class="insel" id="sEditFund" onchange="loadStocksEdit()" style="margin-left:4px"></select>
+      </div>
+      <div id="sEditRows"></div>
+    </div>
+  </div>
+  <div class="card"><div class="ct">สัดส่วนหุ้น/บริษัท (%)</div><div id="sW" style="position:relative"><canvas id="cSB"></canvas></div></div>
+</div>
+
+<!-- ENTRY -->
+<div id="p-entry" class="panel">
+  <div class="mg" id="entM"></div>
+  <div class="stabs">
+    <button class="stab active" onclick="showSub('ent-input',this)"><i class="ti ti-edit"></i> บันทึก NAV</button>
+    <button class="stab" onclick="showSub('ent-chart',this)"><i class="ti ti-chart-line"></i> กราฟ NAV</button>
+    <button class="stab" onclick="showSub('ent-hist',this)"><i class="ti ti-history"></i> ประวัติข้อมูล</button>
+    <button class="stab" onclick="showSub('ent-export',this)"><i class="ti ti-file-export"></i> Export</button>
+  </div>
+  <!-- input -->
+  <div id="sp-ent-input" class="spanel active">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="ct" style="margin:0">บันทึก NAV ประจำวัน</div>
+        <button class="bd" onclick="showAddFundModal()"><i class="ti ti-plus"></i> เพิ่มกองทุนใหม่</button>
+      </div>
+      <div style="display:flex;align-items:flex-end;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+        <div class="nf" style="flex:0 0 auto">
+          <div class="nfl">วันที่</div>
+          <input type="date" id="eDate" style="width:148px;padding:6px 9px;border:0.5px solid var(--border2);border-radius:var(--radius-sm);font-size:12px;background:var(--bg);color:var(--t1);font-family:var(--f-mono)">
+        </div>
+        <button class="bs" onclick="copyLast()"><i class="ti ti-copy"></i> คัดลอกวันก่อน</button>
+        <button class="bs" onclick="clearForm()"><i class="ti ti-eraser"></i> ล้าง</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-bottom:10px" id="eForm"></div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <button class="bp" onclick="saveNAV()"><i class="ti ti-device-floppy"></i> บันทึก</button>
+        <span id="eStat" style="font-size:11px;color:var(--t2)"></span>
+      </div>
+    </div>
+  </div>
+  <!-- chart -->
+  <div id="sp-ent-chart" class="spanel">
+    <div class="card">
+      <div class="ct">กราฟ NAV</div>
+      <div class="fi">
+        <select class="insel" id="ecFund" onchange="renderEntryChart()"><option value="ALL">ทุกกองทุน</option></select>
+        <select class="insel" id="ecRange" onchange="renderEntryChart()">
+          <option value="0">ทุกวัน</option><option value="30">30 วัน</option><option value="14">14 วัน</option><option value="7">7 วัน</option>
+        </select>
+      </div>
+      <div class="leg" id="lEC"></div>
+      <div style="position:relative;height:300px"><canvas id="cEC"></canvas></div>
+    </div>
+  </div>
+  <!-- history -->
+  <div id="sp-ent-hist" class="spanel">
+    <div class="card">
+      <div class="ct">ประวัติข้อมูล NAV</div>
+      <div class="fi">
+        <select class="insel" id="hFund" onchange="renderHistory()"><option value="ALL">ทุกกองทุน</option></select>
+        <select class="insel" id="hMonth" onchange="renderHistory()"><option value="ALL">ทุกเดือน</option></select>
+      </div>
+      <div style="overflow-x:auto"><table class="tt"><thead><tr><th>วันที่</th><th>กองทุน</th><th>NAV</th><th>สถานะ</th></tr></thead><tbody id="histB"></tbody></table></div>
+    </div>
+  </div>
+  <!-- export -->
+  <div id="sp-ent-export" class="spanel">
+    <div class="card">
+      <div class="ct">Export ข้อมูล</div>
+      <div style="display:grid;gap:12px">
+        <div>
+          <div style="font-size:11px;font-weight:600;margin-bottom:6px">Export ทั้งหมด</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="bp" onclick="exportExcel()"><i class="ti ti-file-spreadsheet"></i> Export Excel (.xlsx)</button>
+            <button class="bs" onclick="exportCSV()"><i class="ti ti-file-type-csv"></i> Export CSV ทั้งหมด</button>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;margin-bottom:6px">Export เฉพาะกองทุน</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <select class="insel" id="expFund"><option value="ALL">ทุกกองทุน</option></select>
+            <button class="bs" onclick="exportCSVFiltered()"><i class="ti ti-file-type-csv"></i> Export CSV</button>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;margin-bottom:6px">Copy แถวใหม่ → Paste ลง Excel</div>
+          <button class="bs" onclick="copyXL()"><i class="ti ti-clipboard"></i> Copy ข้อมูลใหม่</button>
+        </div>
+      </div>
+      <div class="hint"><i class="ti ti-info-circle" style="font-size:13px;vertical-align:-2px"></i> Export Excel ใช้ SheetJS — ต้องออนไลน์ครั้งแรก หากไม่ได้ให้ใช้ CSV แทน</div>
+    </div>
+    <div class="card"><div class="ct">สรุปข้อมูลที่มี</div><div id="expSum" style="font-size:11px;line-height:1.9"></div></div>
+  </div>
+</div>
+
+<!-- AI -->
+<div id="p-ai" class="panel">
+  <div style="margin-bottom:.8rem;font-size:12px;color:var(--t2)">วิเคราะห์พอร์ตด้วย Claude Sonnet — เลือกหัวข้อหรือถามเองได้เลย</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px">
+    <button class="ab" onclick="askAI('ประเมินความเสี่ยงพอร์ตนี้ทั้งหมด มีการกระจุกตัวที่ไหนบ้าง?')">🔍 ประเมินความเสี่ยงพอร์ต ↗</button>
+    <button class="ab" onclick="askAI('วิเคราะห์การกระจุกตัวของ NVIDIA และ Apple ในพอร์ตนี้ มีผลกระทบอย่างไร?')">📊 Concentration Risk ↗</button>
+    <button class="ab" onclick="askAI('แนะนำ rebalancing สำหรับพอร์ตนี้ ควรปรับสัดส่วนอะไรบ้าง?')">⚖️ Rebalancing แนะนำ ↗</button>
+    <button class="ab" onclick="askAI('เปรียบเทียบ SCB vs Kbank vs Talis ในพอร์ตนี้ ใครให้ผลตอบแทนดีกว่า?')">🏦 เปรียบ 3 AMC ↗</button>
+    <button class="ab" onclick="askAI('S&P500 ในพอร์ตซ้ำ 3 กองทุน เหมาะสมไหม?')">🇺🇸 S&amp;P500 ซ้ำหรือเปล่า? ↗</button>
+    <button class="ab" onclick="askAI('Gold และ Korea ในพอร์ตเหมาะกับตลาดปัจจุบันปี 2026 ไหม?')">🌏 Gold &amp; Korea วิเคราะห์ ↗</button>
+  </div>
+  <div style="display:flex;gap:6px;margin-bottom:8px">
+    <input id="aiIn" type="text" placeholder="ถามเกี่ยวกับพอร์ตของคุณ..." style="flex:1;font-size:12px;padding:7px 10px;border-radius:var(--radius-sm);border:0.5px solid var(--border2);background:var(--bg);color:var(--t1);font-family:var(--f-body)" onkeydown="if(event.key==='Enter')callAI()">
+    <button class="bp" onclick="callAI()">ถาม ↗</button>
+  </div>
+  <div class="aib" id="aiR" style="display:none"></div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════
+     GOOGLE SHEETS SYNC MODAL
+═══════════════════════════════════════ -->
+<div id="syncModal" class="modal-bg" style="display:none;z-index:1100">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-title"><i class="ti ti-brand-google" style="color:#4285F4;margin-right:6px"></i>ตั้งค่า Google Sheets Sync</div>
+
+    <!-- Step tabs -->
+    <div style="display:flex;gap:4px;margin-bottom:14px;background:#0e1520;border-radius:8px;padding:4px">
+      <button id="sStep1Btn" onclick="showSyncStep(1)" style="flex:1;padding:5px 8px;font-size:10px;border-radius:6px;border:none;background:#3d7fff;color:#fff;cursor:pointer;font-family:var(--f-body);font-weight:600">1. สร้าง Sheet</button>
+      <button id="sStep2Btn" onclick="showSyncStep(2)" style="flex:1;padding:5px 8px;font-size:10px;border-radius:6px;border:none;background:transparent;color:var(--t2);cursor:pointer;font-family:var(--f-body)">2. Web App URL</button>
+      <button id="sStep3Btn" onclick="showSyncStep(3)" style="flex:1;padding:5px 8px;font-size:10px;border-radius:6px;border:none;background:transparent;color:var(--t2);cursor:pointer;font-family:var(--f-body)">3. ทดสอบ</button>
+    </div>
+
+    <!-- Step 1: Create Sheet instructions -->
+    <div id="sStep1" style="display:block">
+      <div style="font-size:11.5px;color:var(--t1);line-height:1.8;margin-bottom:10px">
+        <b style="color:#5ab4ff">วิธีสร้าง Google Sheet Backend (ทำครั้งเดียว):</b><br>
+        <br>
+        <span style="color:var(--t2)">1.</span> เปิด <a href="https://sheets.new" target="_blank" style="color:#4285F4">sheets.new</a> เพื่อสร้าง Google Sheet ใหม่<br>
+        <span style="color:var(--t2)">2.</span> ตั้งชื่อ Sheet เป็น <b style="color:#f7c948">Portfolio Dashboard</b><br>
+        <span style="color:var(--t2)">3.</span> ไปที่ <b>Extensions → Apps Script</b><br>
+        <span style="color:var(--t2)">4.</span> ลบโค้ดเดิมออก และวางโค้ดด้านล่างนี้ทั้งหมด:<br>
+      </div>
+      <div style="background:#060c14;border:1px solid rgba(61,127,255,.25);border-radius:8px;padding:10px;margin-bottom:10px;position:relative">
+        <pre id="gsCode" style="font-size:9.5px;color:#9ab8e0;font-family:monospace;white-space:pre-wrap;line-height:1.5;margin:0;max-height:180px;overflow-y:auto"></pre>
+        <button onclick="copyGSCode()" style="position:absolute;top:6px;right:6px;padding:2px 8px;font-size:10px;border-radius:5px;border:0.5px solid rgba(61,127,255,.4);background:rgba(61,127,255,.15);color:#5ab4ff;cursor:pointer">คัดลอก</button>
+      </div>
+      <div style="font-size:11px;color:var(--t2);line-height:1.8">
+        <span style="color:var(--t2)">5.</span> กด <b>Save</b> แล้วกด <b>Deploy → New Deployment</b><br>
+        <span style="color:var(--t2)">6.</span> เลือก Type: <b>Web app</b>, Execute as: <b>Me</b>, Who has access: <b>Anyone</b><br>
+        <span style="color:var(--t2)">7.</span> กด <b>Deploy</b> และ Authorize แล้วคัดลอก Web App URL
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:12px">
+        <button onclick="showSyncStep(2)" class="bp">ถัดไป →</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Enter URL -->
+    <div id="sStep2" style="display:none">
+      <div class="modal-row">
+        <div class="modal-label">Web App URL จาก Apps Script Deployment</div>
+        <input id="gsURL" class="modal-input" type="url" placeholder="https://script.google.com/macros/s/AKf.../exec" value="">
+      </div>
+      <div style="font-size:10.5px;color:var(--t2);line-height:1.6;margin-bottom:10px;padding:8px;background:rgba(247,201,72,.06);border-radius:6px;border-left:3px solid #f7c948">
+        <b style="color:#f7c948">⚠ หมายเหตุ:</b> URL ต้องขึ้นต้นด้วย <code style="color:#9ab8e0">https://script.google.com/macros/s/</code><br>
+        ข้อมูลจะถูกเก็บใน Google Sheet ของคุณ ไม่มีการส่งข้อมูลออกนอก
+      </div>
+      <div class="modal-row">
+        <div class="modal-label">ชื่อ Device (ไว้แยกแยะว่า sync มาจากที่ไหน)</div>
+        <input id="gsDevice" class="modal-input" type="text" placeholder="iPhone / iPad / MacBook">
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+        <button onclick="showSyncStep(1)" class="bs">← ย้อนกลับ</button>
+        <button onclick="saveGSConfig()" class="bp">บันทึกและทดสอบ</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Test result -->
+    <div id="sStep3" style="display:none">
+      <div id="syncTestResult" style="background:#060c14;border:1px solid rgba(61,127,255,.2);border-radius:8px;padding:12px;font-size:11px;color:var(--t2);line-height:1.7;min-height:80px;margin-bottom:10px">
+        กำลังทดสอบการเชื่อมต่อ...
+      </div>
+      <div style="font-size:10.5px;color:var(--t2);margin-bottom:10px">
+        หลังจากเชื่อมต่อสำเร็จ ข้อมูล NAV ใหม่, Transaction ใหม่ และ Deposit จะ sync ข้ามอุปกรณ์โดยอัตโนมัติ
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button onclick="showSyncStep(2)" class="bs">← แก้ไข URL</button>
+        <button onclick="clearGSConfig()" style="padding:5px 11px;background:var(--red-light);color:var(--red);border:0.5px solid var(--red);border-radius:var(--radius-sm);font-size:11px;cursor:pointer;font-family:var(--f-body)">ลบการตั้งค่า</button>
+        <button onclick="document.getElementById('syncModal').style.display='none'" class="bp">เสร็จสิ้น</button>
+      </div>
+    </div>
+
+    <div class="hint" style="margin-top:14px">
+      <i class="ti ti-shield-check" style="font-size:13px;vertical-align:-2px"></i> <b>สำรองข้อมูลอัตโนมัติ:</b> ระบบบันทึกสำรองข้อมูลในเครื่องทุกครั้งที่มีการเพิ่ม/แก้ไขข้อมูล แม้ sync ไม่สำเร็จข้อมูลจะไม่หาย
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+        <button onclick="exportFullBackup()" class="bs"><i class="ti ti-download"></i> ดาวน์โหลดไฟล์สำรอง</button>
+        <button onclick="if(confirm('กู้คืนข้อมูลจากสำรองล่าสุด? ข้อมูลปัจจุบันจะถูกแทนที่'))restoreFromAutoBackup()" class="bs">กู้คืนจากสำรองล่าสุด</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Add Fund Modal -->
+<div class="modal-bg" id="addFundModal" style="display:none" onclick="if(event.target===this)closeAddFundModal()">
+  <div class="modal-box">
+    <div class="modal-title"><i class="ti ti-plus"></i> เพิ่มกองทุนใหม่</div>
+    <div class="modal-row">
+      <div class="modal-label">รหัสกองทุน (Fund Code) *</div>
+      <input class="modal-input" id="mfCode" placeholder="เช่น SCBNEW-E" oninput="this.value=this.value.toUpperCase()">
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">ชื่อกองทุน (Fund Name) *</div>
+      <input class="modal-input" id="mfName" placeholder="เช่น SCB New Fund">
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">AMC *</div>
+      <select class="modal-input" id="mfAMC">
+        <option value="SCB">SCB</option>
+        <option value="Kbank">Kbank</option>
+        <option value="Talis">Talis</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">Theme</div>
+      <select class="modal-input" id="mfTheme">
+        <option>S&P500</option><option>NASDAQ100</option><option>WORLD</option><option>GOLD</option><option>KOREA</option><option>SEMI</option><option>TECH</option><option>OTHER</option>
+      </select>
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">Asset Class</div>
+      <select class="modal-input" id="mfAS">
+        <option value="Equity">Equity</option>
+        <option value="Commodity">Commodity</option>
+        <option value="Bond">Bond</option>
+        <option value="Mixed">Mixed</option>
+      </select>
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">เงินลงทุน (฿)</div>
+      <input class="modal-input" id="mfAlloc" type="number" placeholder="0" min="0">
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">จำนวนหน่วยถือครอง</div>
+      <input class="modal-input" id="mfUnits" type="number" placeholder="0" min="0" step="0.0001">
+    </div>
+    <div class="hint" style="margin-top:8px">หลังเพิ่มกองทุน สามารถบันทึก NAV ในแท็บ "บันทึก NAV" ได้ทันที</div>
+    <div class="modal-actions">
+      <button class="bs" onclick="closeAddFundModal()">ยกเลิก</button>
+      <button class="bp" onclick="confirmAddFund()"><i class="ti ti-check"></i> เพิ่มกองทุน</button>
+    </div>
+  </div>
+</div>
+
+<!-- Duplicate TX Dialog -->
+<div class="modal-bg" id="dupDialog" style="display:none" onclick="if(event.target===this)closeDupDialog()">
+  <div class="modal-box" style="max-width:360px">
+    <div class="modal-title"><i class="ti ti-alert-triangle" style="color:var(--gold)"></i> พบรายการซ้ำ</div>
+    <p style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:14px">
+      มีรายการ <strong id="dupType" style="color:var(--t1)"></strong> ของ <strong id="dupFundName" style="color:var(--t1)"></strong><br>
+      วันที่ <strong id="dupDate" style="color:var(--t1)"></strong> อยู่แล้ว<br>
+      ต้องการดำเนินการอย่างไร?
+    </p>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="bp" onclick="dupChoose('replace')" style="text-align:left;padding:9px 14px">
+        <i class="ti ti-replace" style="margin-right:6px"></i> เพิ่มรายการใหม่ และลบข้อมูลเดิมทิ้ง
+      </button>
+      <button class="bs" onclick="dupChoose('keep')" style="text-align:left;padding:9px 14px">
+        <i class="ti ti-copy-plus" style="margin-right:6px"></i> คงข้อมูลไว้ทั้ง 2 รายการ
+      </button>
+      <button class="bs" onclick="dupChoose('cancel')" style="text-align:left;padding:9px 14px;color:var(--t2)">
+        <i class="ti ti-x" style="margin-right:6px"></i> ยกเลิก
+      </button>
+    </div>
+  </div>
+</div>
+<div class="modal-bg" id="depositModal" style="display:none" onclick="if(event.target===this)closeDepositModal()">
+  <div class="modal-box">
+    <div class="modal-title"><i class="ti ti-piggy-bank" style="color:var(--gold)"></i> บันทึกเงินฝากออมทรัพย์</div>
+    <div class="modal-row">
+      <div class="modal-label">วันที่ *</div>
+      <input class="modal-input" id="dpDate" type="date">
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">ธนาคาร / บัญชี *</div>
+      <select class="modal-input" id="dpBank">
+        <option value="กรุงเทพ">ธนาคารกรุงเทพ</option>
+        <option value="กสิกรไทย">ธนาคารกสิกรไทย</option>
+        <option value="ไทยพาณิชย์">ธนาคารไทยพาณิชย์</option>
+        <option value="กรุงไทย">ธนาคารกรุงไทย</option>
+        <option value="ทหารไทยธนชาต">ธนาคารทหารไทยธนชาต</option>
+        <option value="อื่นๆ">อื่นๆ</option>
+      </select>
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">ชื่อบัญชี (ไม่บังคับ)</div>
+      <input class="modal-input" id="dpAccName" type="text" placeholder="เช่น ออมทรัพย์หลัก">
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">จำนวนเงิน (฿) *</div>
+      <input class="modal-input" id="dpAmount" type="number" placeholder="0.00" min="0" step="0.01">
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">ดอกเบี้ย (฿) (ถ้ามี)</div>
+      <input class="modal-input" id="dpInterest" type="number" placeholder="0.00" min="0" step="0.01">
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">หมายเหตุ</div>
+      <input class="modal-input" id="dpNote" type="text" placeholder="เช่น ฝากเพิ่ม, รับดอกเบี้ย">
+    </div>
+    <div class="modal-actions">
+      <button class="bs" onclick="closeDepositModal()">ยกเลิก</button>
+      <button class="bp" onclick="confirmDeposit()"><i class="ti ti-check"></i> บันทึกเงินฝาก</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="editDepositModal" style="display:none" onclick="if(event.target===this)closeEditDepositModal()">
+  <div class="modal-box">
+    <div class="modal-title"><i class="ti ti-edit" style="color:var(--gold)"></i> แก้ไขรายการเงินฝาก</div>
+    <input type="hidden" id="edpIdx">
+    <div class="modal-row">
+      <div class="modal-label">วันที่ *</div>
+      <input class="modal-input" id="edpDate" type="date">
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">ธนาคาร / บัญชี *</div>
+      <select class="modal-input" id="edpBank">
+        <option value="กรุงเทพ">ธนาคารกรุงเทพ</option>
+        <option value="กสิกรไทย">ธนาคารกสิกรไทย</option>
+        <option value="ไทยพาณิชย์">ธนาคารไทยพาณิชย์</option>
+        <option value="กรุงไทย">ธนาคารกรุงไทย</option>
+        <option value="ทหารไทยธนชาต">ธนาคารทหารไทยธนชาต</option>
+        <option value="อื่นๆ">อื่นๆ</option>
+      </select>
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">ชื่อบัญชี (ไม่บังคับ)</div>
+      <input class="modal-input" id="edpAccName" type="text" placeholder="เช่น ออมทรัพย์หลัก">
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">ประเภทรายการ</div>
+      <select class="modal-input" id="edpTxType">
+        <option value="deposit">ฝากเงิน (+)</option>
+        <option value="withdraw">ถอนเงิน (−)</option>
+        <option value="interest">รับดอกเบี้ย</option>
+      </select>
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">จำนวนเงิน (฿) *</div>
+      <input class="modal-input" id="edpAmount" type="number" placeholder="0.00" min="0" step="0.01">
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">ดอกเบี้ย (฿) (ถ้ามี)</div>
+      <input class="modal-input" id="edpInterest" type="number" placeholder="0.00" min="0" step="0.01">
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">หมายเหตุ</div>
+      <input class="modal-input" id="edpNote" type="text" placeholder="เช่น ฝากเพิ่ม, ถอนบางส่วน">
+    </div>
+    <div class="modal-actions">
+      <button class="bs" onclick="closeEditDepositModal()">ยกเลิก</button>
+      <button class="bp" onclick="confirmEditDeposit()"><i class="ti ti-check"></i> บันทึกการแก้ไข</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+
+// ═══════════════════════════════════════
+// ===== AUTO-BACKUP LAYER (ข้อ 10) =====
+// บันทึกสำรองข้อมูลอัตโนมัติทุกครั้งที่มีการเขียน localStorage
+// เพื่อให้ข้อมูลไม่หายแม้ sync กับ Google Sheets จะไม่สำเร็จ
+// ═══════════════════════════════════════
+(function(){
+  const BACKUP_KEY = 'portfolio_autobackup_v1';
+  const BACKUP_HISTORY_KEY = 'portfolio_backup_history_v1';
+  const MAX_HISTORY = 5; // เก็บสำรองย้อนหลังสูงสุด 5 ครั้ง
+  const DATA_KEYS = [
+    'stocks_v1','custom_funds_v1','tx_custom_v1','tx_base_del_v1',
+    'tx_base_edit_v1','deposits_v1'
+  ];
+
+  function snapshotAll(){
+    const snap = {};
+    DATA_KEYS.forEach(k=>{
+      try{ snap[k] = localStorage.getItem(k); }catch(e){}
+    });
+    return snap;
+  }
+
+  function writeBackup(){
+    try{
+      const snap = snapshotAll();
+      const payload = { ts: Date.now(), date: new Date().toISOString(), data: snap };
+      localStorage.setItem(BACKUP_KEY, JSON.stringify(payload));
+
+      // เก็บประวัติย้อนหลังเพื่อกู้คืนได้หลายเวอร์ชัน
+      let hist = [];
+      try{ hist = JSON.parse(localStorage.getItem(BACKUP_HISTORY_KEY)||'[]'); }catch(e){ hist=[]; }
+      hist.unshift(payload);
+      if(hist.length > MAX_HISTORY) hist = hist.slice(0, MAX_HISTORY);
+      localStorage.setItem(BACKUP_HISTORY_KEY, JSON.stringify(hist));
+    }catch(e){
+      // ถ้า storage เต็ม ลองลบประวัติเก่าก่อน
+      try{ localStorage.removeItem(BACKUP_HISTORY_KEY); }catch(e2){}
+    }
+  }
+
+  // Hook ทับ localStorage.setItem แบบโปร่งใส — ทุกครั้งที่แอปเขียนข้อมูลสำคัญ
+  // จะ trigger backup โดยอัตโนมัติ (debounce กันเขียนถี่เกินไป)
+  let debounceTimer = null;
+  const origSetItem = localStorage.setItem.bind(localStorage);
+  localStorage.setItem = function(key, value){
+    origSetItem(key, value);
+    if (DATA_KEYS.includes(key)){
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(writeBackup, 400);
+    }
+  };
+
+  // กู้คืนข้อมูลจาก backup ล่าสุด (ใช้กรณีข้อมูลหลักเสียหาย/ว่างผิดปกติ)
+  window.restoreFromAutoBackup = function(){
+    try{
+      const raw = localStorage.getItem(BACKUP_KEY);
+      if(!raw){ alert('ไม่พบข้อมูลสำรอง'); return; }
+      const payload = JSON.parse(raw);
+      Object.entries(payload.data).forEach(([k,v])=>{
+        if(v!=null) origSetItem(k, v);
+      });
+      alert('กู้คืนข้อมูลจากสำรองเมื่อ ' + new Date(payload.ts).toLocaleString('th-TH') + ' สำเร็จ — กำลังโหลดหน้าใหม่');
+      location.reload();
+    }catch(e){
+      alert('กู้คืนข้อมูลไม่สำเร็จ: ' + e.message);
+    }
+  };
+
+  // ดาวน์โหลดไฟล์สำรองข้อมูลทั้งหมดเป็น JSON (ผู้ใช้สามารถเก็บไว้เองได้)
+  window.exportFullBackup = function(){
+    try{
+      const snap = snapshotAll();
+      const payload = { exportedAt: new Date().toISOString(), data: snap };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'portfolio_backup_' + new Date().toISOString().slice(0,10) + '.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      if(typeof toast === 'function') toast('ดาวน์โหลดไฟล์สำรองแล้ว','#0D9373');
+    }catch(e){
+      alert('สร้างไฟล์สำรองไม่สำเร็จ: ' + e.message);
+    }
+  };
+
+  // สำรองข้อมูลทันทีตอนโหลดหน้า เผื่อกรณีปิดแอประหว่างใช้งานครั้งก่อน
+  window.addEventListener('load', ()=> setTimeout(writeBackup, 1000));
+})();
+
+// ===== CHART.JS DARK THEME DEFAULTS =====
+Chart.defaults.color = '#6a88b8';
+Chart.defaults.borderColor = 'rgba(61,127,255,.1)';
+Chart.defaults.plugins.tooltip.backgroundColor = '#0e1d30';
+Chart.defaults.plugins.tooltip.titleColor = '#dce8ff';
+Chart.defaults.plugins.tooltip.bodyColor = '#9ab8e0';
+Chart.defaults.plugins.tooltip.borderColor = 'rgba(61,127,255,.3)';
+Chart.defaults.plugins.tooltip.borderWidth = 1;
+
+
+// ===== FORMAT HELPERS =====
+function fmtMoney(v){return v!=null?v.toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2}):'-';}
+function fmtNAV(v){return v!=null?v.toFixed(4):'-';}
+function fmtUnits(v){return v!=null?v.toFixed(4):'-';}
+function fmtPct(v,dp=2){return v!=null?v.toFixed(dp)+'%':'-';}
+
+// ===== DATA =====
+let FUNDS=['SCBS&P500E','SCBNDQE','SCBWORLDE','SCBGOLDE','SCBKEQTGE','SCBSEMIE','K-CHANGE','K-US-500X','K-GTECH','K-WORLDX','TLUS500-UH-X','TLUSNDQ-UH-X','TLWORLD-X'];
+let FN={'SCBS&P500E':'SCB S&P500','SCBNDQE':'SCB NASDAQ','SCBWORLDE':'SCB World','SCBGOLDE':'SCB Gold','SCBKEQTGE':'SCB Korea','SCBSEMIE':'SCB Semi','K-CHANGE':'K-Change','K-US-500X':'K-US500X','K-GTECH':'K-Gtech','K-WORLDX':'K-WorldX','TLUS500-UH-X':'TL US500','TLUSNDQ-UH-X':'TL NASDAQ','TLWORLD-X':'TL World'};
+let AMC={'SCBS&P500E':'SCB','SCBNDQE':'SCB','SCBWORLDE':'SCB','SCBGOLDE':'SCB','SCBKEQTGE':'SCB','SCBSEMIE':'SCB','K-CHANGE':'Kbank','K-US-500X':'Kbank','K-GTECH':'Kbank','K-WORLDX':'Kbank','TLUS500-UH-X':'Talis','TLUSNDQ-UH-X':'Talis','TLWORLD-X':'Talis'};
+let TH={'SCBS&P500E':'S&P500','SCBNDQE':'NASDAQ100','SCBWORLDE':'WORLD','SCBGOLDE':'GOLD','SCBKEQTGE':'KOREA','SCBSEMIE':'SEMI','K-CHANGE':'TECH','K-US-500X':'S&P500','K-GTECH':'TECH','K-WORLDX':'WORLD','TLUS500-UH-X':'S&P500','TLUSNDQ-UH-X':'NASDAQ100','TLWORLD-X':'WORLD'};
+let AS={'SCBS&P500E':'Equity','SCBNDQE':'Equity','SCBWORLDE':'Equity','SCBGOLDE':'Commodity','SCBKEQTGE':'Equity','SCBSEMIE':'Equity','K-CHANGE':'Equity','K-US-500X':'Equity','K-GTECH':'Equity','K-WORLDX':'Equity','TLUS500-UH-X':'Equity','TLUSNDQ-UH-X':'Equity','TLWORLD-X':'Equity'};
+let ALLOC={'SCBS&P500E':305600,'SCBNDQE':102400,'SCBWORLDE':51100,'SCBGOLDE':50800,'SCBKEQTGE':10300,'SCBSEMIE':10300,'K-CHANGE':19000,'K-US-500X':14000,'K-GTECH':14000,'K-WORLDX':9000,'TLUS500-UH-X':19000,'TLUSNDQ-UH-X':8500,'TLWORLD-X':5500};
+let APCT={'SCBS&P500E':49.33,'SCBNDQE':16.53,'SCBWORLDE':8.25,'SCBGOLDE':8.20,'SCBKEQTGE':1.66,'SCBSEMIE':1.66,'K-CHANGE':3.07,'K-US-500X':2.26,'K-GTECH':2.26,'K-WORLDX':1.45,'TLUS500-UH-X':3.07,'TLUSNDQ-UH-X':1.37,'TLWORLD-X':0.89};
+let UNITS={'SCBS&P500E':7865.94,'SCBNDQE':7117.87,'SCBWORLDE':3925.29,'SCBGOLDE':1876.77,'SCBKEQTGE':331.71,'SCBSEMIE':250.02,'K-CHANGE':1021.28,'K-US-500X':996.77,'K-GTECH':722.31,'K-WORLDX':556.98,'TLUS500-UH-X':1456.12,'TLUSNDQ-UH-X':679.61,'TLWORLD-X':501.76};
+const PAL=['#2C5BDB','#D44B2A','#0D9373','#7B61C4','#B8820A','#185FA5','#993C1D','#0F6E56','#534AB7','#3B6D11','#639922','#D4537E','#888780','#E24B4A','#2A8B7A','#C06800'];
+const THC={'S&P500':'#2C5BDB','NASDAQ100':'#D44B2A','WORLD':'#0D9373','GOLD':'#B8820A','KOREA':'#7B61C4','SEMI':'#185FA5','TECH':'#E24B4A','OTHER':'#888780'};
+
+const BASE_NAV=[{"d":"2026-03-23","K-CHANGE":18.1208,"K-GTECH":18.8379,"K-US-500X":13.6874,"K-WORLDX":15.5833,"SCBGOLDE":23.5584,"SCBNDQE":14.022,"SCBS&P500E":38.1176,"SCBWORLDE":12.7201},{"d":"2026-03-24","K-CHANGE":17.7884,"K-GTECH":18.2924,"K-US-500X":13.8457,"K-WORLDX":15.8578,"SCBGOLDE":24.1561,"SCBNDQE":14.1999,"SCBS&P500E":38.5653,"SCBWORLDE":12.9101},{"d":"2026-03-25","K-CHANGE":18.01,"K-GTECH":18.4958,"K-US-500X":13.7917,"K-WORLDX":15.7576,"SCBGOLDE":25.0266,"SCBNDQE":14.094,"SCBS&P500E":38.3983,"SCBWORLDE":12.8527},{"d":"2026-03-26","K-CHANGE":18.202,"K-GTECH":18.5186,"K-US-500X":13.8689,"K-WORLDX":15.913,"SCBGOLDE":24.4223,"SCBNDQE":14.1864,"SCBS&P500E":38.619,"SCBWORLDE":12.9525},{"d":"2026-03-27","K-CHANGE":18.2089,"K-GTECH":18.6489,"K-US-500X":13.6284,"K-WORLDX":15.583,"SCBGOLDE":24.4684,"SCBNDQE":13.8548,"SCBS&P500E":37.9309,"SCBWORLDE":12.7264},{"d":"2026-03-30","K-CHANGE":17.9919,"K-GTECH":17.9108,"K-US-500X":13.3968,"K-WORLDX":15.373,"SCBGOLDE":25.0746,"SCBNDQE":13.5928,"SCBS&P500E":37.2973,"SCBWORLDE":12.5346},{"d":"2026-03-31","K-CHANGE":17.6238,"K-GTECH":17.5393,"K-US-500X":13.3466,"K-WORLDX":15.323,"SCBGOLDE":25.2351,"SCBNDQE":13.4796,"SCBS&P500E":37.1544,"SCBWORLDE":12.496},{"d":"2026-04-01","K-CHANGE":17.6047,"K-GTECH":17.0338,"K-US-500X":13.7286,"K-WORLDX":15.7994,"SCBGOLDE":25.875,"SCBNDQE":13.9235,"SCBS&P500E":38.1917,"SCBWORLDE":12.8548},{"d":"2026-04-02","K-CHANGE":18.1209,"K-GTECH":17.9436,"K-US-500X":13.8114,"K-WORLDX":15.9242,"SCBGOLDE":25.376,"SCBNDQE":14.077,"SCBS&P500E":38.4344,"SCBWORLDE":12.9674},{"d":"2026-04-03","K-CHANGE":18.0009,"K-GTECH":18.2467,"K-US-500X":13.8368,"K-WORLDX":15.9068,"SCBGOLDE":25.3764,"SCBNDQE":14.1029,"SCBS&P500E":38.5063,"SCBWORLDE":12.963},{"d":"2026-04-07","K-CHANGE":18.0009,"K-GTECH":18.2467,"K-US-500X":13.8368,"K-WORLDX":15.9068,"SCBGOLDE":25.5914,"SCBNDQE":14.1018,"SCBS&P500E":38.5034,"SCBWORLDE":12.962},{"d":"2026-04-08","K-CHANGE":18.1378,"K-GTECH":18.2998,"K-US-500X":13.892,"K-WORLDX":15.9751,"SCBGOLDE":25.7982,"SCBNDQE":14.1794,"SCBS&P500E":38.6663,"SCBWORLDE":13.0076},{"d":"2026-04-09","K-CHANGE":18.4821,"K-GTECH":18.5221,"K-US-500X":14.2049,"K-WORLDX":16.4341,"SCBGOLDE":25.4809,"SCBNDQE":14.5724,"SCBS&P500E":39.5687,"SCBWORLDE":13.3595},{"d":"2026-04-10","K-CHANGE":18.4266,"K-GTECH":19.2723,"K-US-500X":14.2909,"K-WORLDX":16.4892,"SCBGOLDE":25.5879,"SCBNDQE":14.67,"SCBS&P500E":39.7992,"SCBWORLDE":13.4081},{"d":"2026-04-15","K-CHANGE":18.4266,"K-GTECH":19.2723,"K-US-500X":14.2909,"K-WORLDX":16.4892,"SCBGOLDE":25.5879,"SCBNDQE":14.6882,"SCBS&P500E":39.7735,"SCBWORLDE":13.4088},{"d":"2026-04-17","K-CHANGE":18.9469,"K-GTECH":19.686,"K-US-500X":14.7139,"K-WORLDX":16.8883,"SCBGOLDE":25.8915,"SCBNDQE":15.3559,"SCBS&P500E":40.9939,"SCBWORLDE":13.7511},{"d":"2026-04-20","K-CHANGE":18.8998,"K-GTECH":20.8483,"K-US-500X":14.8921,"K-WORLDX":17.1142,"SCBGOLDE":25.8479,"SCBNDQE":15.5456,"SCBS&P500E":41.4816,"SCBWORLDE":13.9203},{"d":"2026-04-21","K-CHANGE":19.1192,"K-GTECH":21.1819,"K-US-500X":14.8645,"K-WORLDX":17.0558,"SCBGOLDE":25.7883,"SCBNDQE":15.4924,"SCBS&P500E":41.3943,"SCBWORLDE":13.8984},{"d":"2026-04-22","K-CHANGE":19.3369,"K-GTECH":21.379,"K-US-500X":14.7646,"K-WORLDX":16.8718,"SCBGOLDE":25.7011,"SCBNDQE":15.4387,"SCBS&P500E":41.1244,"SCBWORLDE":13.7418},{"d":"2026-04-23","K-CHANGE":19.1438,"K-GTECH":21.5136,"K-US-500X":14.9215,"K-WORLDX":17.0375,"SCBGOLDE":25.5951,"SCBNDQE":15.6929,"SCBS&P500E":41.5576,"SCBWORLDE":13.8586},{"d":"2026-04-24","K-CHANGE":19.2053,"K-GTECH":21.9112,"K-US-500X":14.8742,"K-WORLDX":16.9457,"SCBGOLDE":25.5726,"SCBNDQE":15.6169,"SCBS&P500E":41.4057,"SCBWORLDE":13.7816},{"d":"2026-04-27","K-CHANGE":19.1143,"K-GTECH":21.819,"K-US-500X":14.9912,"K-WORLDX":17.0888,"SCBGOLDE":25.4939,"SCBNDQE":15.9148,"SCBS&P500E":41.7287,"SCBWORLDE":13.8867},{"d":"2026-04-28","K-CHANGE":19.2607,"K-GTECH":22.0957,"K-US-500X":15.0062,"K-WORLDX":17.0793,"SCBGOLDE":25.2667,"SCBNDQE":15.9153,"SCBS&P500E":41.7824,"SCBWORLDE":13.8941},{"d":"2026-04-29","K-CHANGE":19.1445,"K-GTECH":22.0088,"K-US-500X":14.9392,"K-WORLDX":16.9872,"SCBGOLDE":25.1091,"SCBNDQE":15.7609,"SCBS&P500E":41.5829,"SCBWORLDE":13.8236},{"d":"2026-04-30","K-CHANGE":18.9814,"K-GTECH":21.5801,"K-US-500X":14.9478,"K-WORLDX":16.9446,"SCBGOLDE":25.3256,"SCBNDQE":15.8612,"SCBS&P500E":41.5982,"SCBWORLDE":13.7873},{"d":"2026-05-06","K-CHANGE":19.1413,"K-GTECH":22.656,"K-US-500X":15.2003,"K-WORLDX":17.3109,"SCBGOLDE":25.4235,"SCBNDQE":16.3483,"SCBS&P500E":42.3343,"SCBWORLDE":14.0117},{"d":"2026-05-07","K-CHANGE":19.3741,"K-GTECH":23.2551,"K-US-500X":15.3879,"K-WORLDX":17.6193,"SCBGOLDE":25.5227,"SCBNDQE":16.6568,"SCBS&P500E":42.8884,"SCBWORLDE":14.254},{"d":"2026-05-08","K-CHANGE":19.6743,"K-GTECH":23.4611,"K-US-500X":15.3291,"K-WORLDX":17.4452,"SCBGOLDE":25.4947,"SCBNDQE":16.6346,"SCBS&P500E":42.736,"SCBWORLDE":14.1449},{"d":"2026-05-11","K-CHANGE":19.4021,"K-GTECH":23.0339,"K-US-500X":15.4576,"K-WORLDX":17.613,"SCBGOLDE":25.4209,"SCBNDQE":17.0166,"SCBS&P500E":43.0823,"SCBWORLDE":14.2515},{"d":"2026-05-12","K-CHANGE":19.261,"K-GTECH":23.5646,"K-US-500X":15.5021,"K-WORLDX":17.6382,"SCBGOLDE":25.5446,"SCBNDQE":17.073,"SCBS&P500E":43.1891,"SCBWORLDE":14.2668,"TLUS500-UH-X":13.0224,"TLUSNDQ-UH-X":12.4449,"TLWORLD-X":10.9009},{"d":"2026-05-13","K-CHANGE":19.1642,"K-GTECH":23.8191,"K-US-500X":15.4754,"K-WORLDX":17.5354,"SCBGOLDE":25.5639,"SCBNDQE":17.0962,"SCBS&P500E":43.3576,"SCBWORLDE":14.3195,"TLUS500-UH-X":13.0812,"TLUSNDQ-UH-X":12.5609,"TLWORLD-X":10.9618},{"d":"2026-05-14","K-CHANGE":19.2105,"K-GTECH":23.4424,"K-US-500X":15.5608,"K-WORLDX":17.6746,"SCBGOLDE":25.4796,"SCBNDQE":17.0962,"SCBS&P500E":43.3576,"SCBWORLDE":14.3195,"TLUS500-UH-X":13.1632,"TLUSNDQ-UH-X":12.6359,"TLWORLD-X":10.9888},{"d":"2026-05-15","K-CHANGE":19.2031,"K-GTECH":23.4424,"K-US-500X":15.6783,"K-WORLDX":17.756,"SCBGOLDE":24.9291,"SCBNDQE":17.2175,"SCBS&P500E":43.6844,"SCBWORLDE":14.3942,"TLUS500-UH-X":13.1632,"TLUSNDQ-UH-X":12.6359,"TLWORLD-X":10.9888},{"d":"2026-05-18","K-CHANGE":19.2059,"K-GTECH":23.7584,"K-US-500X":15.5019,"K-WORLDX":17.4814,"SCBGOLDE":24.8635,"SCBNDQE":16.9685,"SCBS&P500E":43.1759,"SCBWORLDE":14.1965,"TLUS500-UH-X":13.1257,"TLUSNDQ-UH-X":12.5627,"TLWORLD-X":10.914},{"d":"2026-05-19","K-CHANGE":19.0717,"K-GTECH":23.6808,"K-US-500X":15.4862,"K-WORLDX":17.5078,"SCBGOLDE":24.8699,"SCBNDQE":16.8968,"SCBS&P500E":43.1412,"SCBWORLDE":14.2169,"TLUS500-UH-X":13.0904,"TLUSNDQ-UH-X":12.4838,"TLWORLD-X":10.9059},{"d":"2026-05-20","K-CHANGE":19.0713,"K-GTECH":23.3228,"K-US-500X":15.3877,"K-WORLDX":17.3696,"SCBGOLDE":24.6508,"SCBNDQE":16.7883,"SCBS&P500E":42.8605,"SCBWORLDE":14.1255,"TLUS500-UH-X":13.0324,"TLUSNDQ-UH-X":12.4317,"TLWORLD-X":10.8505},{"d":"2026-05-21","K-CHANGE":18.9851,"K-GTECH":23.145,"K-US-500X":15.55,"K-WORLDX":17.5979,"SCBGOLDE":24.8036,"SCBNDQE":17.0756,"SCBS&P500E":43.3149,"SCBWORLDE":14.3072,"TLUS500-UH-X":13.1924,"TLUSNDQ-UH-X":12.6636,"TLWORLD-X":11.0141},{"d":"2026-05-22","K-CHANGE":19.248,"K-GTECH":23.837,"K-US-500X":15.5748,"K-WORLDX":17.66,"SCBGOLDE":24.8278,"SCBNDQE":17.104,"SCBS&P500E":43.3833,"SCBWORLDE":14.346,"TLUS500-UH-X":13.185,"TLUSNDQ-UH-X":12.6578,"TLWORLD-X":11.0284},{"d":"2026-05-25","K-CHANGE":19.476,"K-GTECH":24.1611,"K-US-500X":15.6387,"K-WORLDX":17.6977,"SCBGOLDE":24.8105,"SCBNDQE":17.1779,"SCBS&P500E":43.5641,"SCBWORLDE":14.3803,"TLUS500-UH-X":13.256,"TLUSNDQ-UH-X":12.7293,"TLWORLD-X":11.0698},{"d":"2026-05-26","K-CHANGE":19.476,"K-GTECH":24.1611,"K-US-500X":15.6387,"K-WORLDX":17.6977,"SCBGOLDE":24.8199,"SCBNDQE":17.1707,"SCBS&P500E":43.5452,"SCBWORLDE":14.3738,"TLUS500-UH-X":13.3378,"TLUSNDQ-UH-X":12.9506,"TLWORLD-X":11.1937},{"d":"2026-05-27","K-CHANGE":19.5,"K-GTECH":24.4374,"K-US-500X":15.7344,"K-WORLDX":17.9015,"SCBGOLDE":24.7479,"SCBNDQE":17.4761,"SCBS&P500E":43.8306,"SCBWORLDE":14.479,"TLUS500-UH-X":13.3378,"TLUSNDQ-UH-X":12.9506,"TLWORLD-X":11.1937},{"d":"2026-05-28","K-CHANGE":19.6293,"K-GTECH":24.8967,"K-US-500X":15.7305,"K-WORLDX":17.871,"SCBGOLDE":24.0979,"SCBNDQE":17.4535,"SCBS&P500E":43.8282,"SCBWORLDE":14.4703,"TLUS500-UH-X":13.3013,"TLUSNDQ-UH-X":12.8993,"TLWORLD-X":11.1456},{"d":"2026-05-29","K-CHANGE":19.5812,"K-GTECH":24.6314,"K-US-500X":15.8185,"K-WORLDX":17.946,"SCBGOLDE":24.7022,"SCBNDQE":17.5978,"SCBS&P500E":44.0609,"SCBWORLDE":14.5327,"TLUS500-UH-X":13.4212,"TLUSNDQ-UH-X":13.0546,"TLWORLD-X":11.2371},{"d":"2026-06-02","K-CHANGE":19.9188,"K-GTECH":24.8068,"K-US-500X":15.8495,"K-WORLDX":17.9706,"SCBGOLDE":24.7633,"SCBKEQTGE":29.8334,"SCBNDQE":17.6556,"SCBS&P500E":44.1545,"SCBSEMIE":39.5419,"SCBWORLDE":14.5375,"TLUS500-UH-X":13.416,"TLUSNDQ-UH-X":13.0643,"TLWORLD-X":11.2228},{"d":"2026-06-04","K-CHANGE":20.4427,"K-GTECH":25.0218,"K-US-500X":15.9052,"K-WORLDX":18.1244,"SCBGOLDE":24.5182,"SCBKEQTGE":31.0937,"SCBNDQE":17.8374,"SCBS&P500E":44.3139,"SCBSEMIE":41.1821,"SCBWORLDE":14.6224,"TLUS500-UH-X":13.4558,"TLUSNDQ-UH-X":13.1917,"TLWORLD-X":11.2971},{"d":"2026-06-05","K-CHANGE":20.1281,"K-GTECH":26.5285,"K-US-500X":15.8619,"K-WORLDX":18.0319,"SCBGOLDE":24.5182,"SCBKEQTGE":29.5563,"SCBNDQE":17.7056,"SCBS&P500E":44.1807,"SCBSEMIE":40.9552,"SCBWORLDE":14.5841,"TLUS500-UH-X":13.4651,"TLUSNDQ-UH-X":13.142,"TLWORLD-X":11.2791},{"d":"2026-06-08","K-CHANGE":20.1218,"K-GTECH":26.2729,"K-US-500X":15.4411,"K-WORLDX":17.4884,"SCBGOLDE":23.7258,"SCBKEQTGE":25.3742,"SCBNDQE":16.8561,"SCBS&P500E":43.0211,"SCBSEMIE":38.6606,"SCBWORLDE":14.2078,"TLUS500-UH-X":13.0939,"TLUSNDQ-UH-X":12.4966,"TLWORLD-X":10.9176},{"d":"2026-06-09","K-CHANGE":19.7267,"K-GTECH":24.5471,"K-US-500X":15.4825,"K-WORLDX":17.5559,"SCBGOLDE":23.8554,"SCBKEQTGE":26.8559,"SCBNDQE":17.1148,"SCBS&P500E":43.1211,"SCBSEMIE":39.4685,"SCBWORLDE":14.2551,"TLUS500-UH-X":13.2185,"TLUSNDQ-UH-X":12.7798,"TLWORLD-X":11.0523},{"d":"2026-06-10","K-CHANGE":19.7724,"K-GTECH":24.9222,"K-US-500X":15.4483,"K-WORLDX":17.5161,"SCBGOLDE":23.0008,"SCBKEQTGE":26.6181,"SCBNDQE":16.9221,"SCBS&P500E":42.9985,"SCBSEMIE":38.0288,"SCBWORLDE":14.2049,"TLUS500-UH-X":13.174,"TLUSNDQ-UH-X":12.6266,"TLWORLD-X":11.0306},{"d":"2026-06-11","K-CHANGE":19.6107,"K-GTECH":24.6435,"K-US-500X":15.1996,"K-WORLDX":17.243,"SCBGOLDE":22.6233,"SCBKEQTGE":25.8036,"SCBNDQE":16.5912,"SCBS&P500E":42.3131,"SCBSEMIE":37.9998,"SCBWORLDE":13.9943,"TLUS500-UH-X":12.98,"TLUSNDQ-UH-X":12.3991,"TLWORLD-X":10.8754},{"d":"2026-06-12","K-CHANGE":19.5067,"K-GTECH":23.8905,"K-US-500X":15.4605,"K-WORLDX":17.6584,"SCBGOLDE":23.1775,"SCBKEQTGE":28.7849,"SCBNDQE":17.1214,"SCBS&P500E":43.0079,"SCBSEMIE":38.9341,"SCBWORLDE":14.2862,"TLUS500-UH-X":13.216,"TLUSNDQ-UH-X":12.8112,"TLWORLD-X":11.156},{"d":"2026-06-15","K-CHANGE":19.8916,"K-GTECH":24.7755,"K-US-500X":15.529,"K-WORLDX":17.7117,"SCBGOLDE":23.7349,"SCBKEQTGE":28.5142,"SCBNDQE":17.2252,"SCBS&P500E":43.2323,"SCBSEMIE":41.3169,"SCBWORLDE":14.3362,"TLUS500-UH-X":13.1875,"TLUSNDQ-UH-X":12.799,"TLWORLD-X":11.1199},{"d":"2026-06-16","K-CHANGE":20.2366,"K-GTECH":25.0252,"K-US-500X":15.7827,"K-WORLDX":17.9754,"SCBGOLDE":23.7643,"SCBKEQTGE":30.4916,"SCBNDQE":17.7479,"SCBS&P500E":43.9899,"SCBSEMIE":42.8078,"SCBWORLDE":14.5171,"TLUS500-UH-X":13.3669,"TLUSNDQ-UH-X":13.1444,"TLWORLD-X":11.247},{"d":"2026-06-17","K-CHANGE":20.3689,"K-GTECH":25.9609,"K-US-500X":15.69,"K-WORLDX":17.8924,"SCBGOLDE":23.6931,"SCBKEQTGE":29.6931,"SCBNDQE":17.4224,"SCBS&P500E":43.732,"SCBSEMIE":41.6859,"SCBWORLDE":14.4787,"TLUS500-UH-X":13.2699,"TLUSNDQ-UH-X":12.8808,"TLWORLD-X":11.1777},{"d":"2026-06-18","K-CHANGE":20.2943,"K-GTECH":25.5448,"K-US-500X":15.4979,"K-WORLDX":17.722,"SCBGOLDE":23.5206,"SCBKEQTGE":29.5777,"SCBNDQE":17.2535,"SCBS&P500E":43.1892,"SCBSEMIE":42.2162,"SCBWORLDE":14.3298,"TLUS500-UH-X":13.1284,"TLUSNDQ-UH-X":12.7761,"TLWORLD-X":11.086},{"d":"2026-06-19","K-CHANGE":20.432,"K-GTECH":25.4983,"K-US-500X":15.6651,"K-WORLDX":17.9586,"SCBGOLDE":23.0405,"SCBKEQTGE":31.6825,"SCBNDQE":17.6668,"SCBS&P500E":43.637,"SCBSEMIE":43.8022,"SCBWORLDE":14.4579,"TLUS500-UH-X":13.3377,"TLUSNDQ-UH-X":13.1512,"TLWORLD-X":11.2724},{"d":"2026-06-22","K-CHANGE":20.432,"K-GTECH":25.4983,"K-US-500X":15.6651,"K-WORLDX":17.9586,"SCBGOLDE":23.2579,"SCBKEQTGE":31.6995,"SCBNDQE":17.6763,"SCBS&P500E":43.6521,"SCBSEMIE":44.0684,"SCBWORLDE":14.4598,"TLUS500-UH-X":13.3608,"TLUSNDQ-UH-X":13.2065,"TLWORLD-X":11.3241},{"d":"2026-06-23","K-CHANGE":20.7778,"K-GTECH":26.4586,"K-US-500X":15.6209,"K-WORLDX":17.9487,"SCBGOLDE":22.858,"SCBKEQTGE":31.6898,"SCBNDQE":17.6602,"SCBS&P500E":43.4985,"SCBSEMIE":44.4061,"SCBWORLDE":14.4188,"TLUS500-UH-X":13.3608,"TLUSNDQ-UH-X":13.2065,"TLWORLD-X":11.3241},{"d":"2026-06-24","K-CHANGE":20.2685,"K-GTECH":26.554,"K-US-500X":15.409,"K-WORLDX":17.5813,"SCBGOLDE":22.8954,"SCBKEQTGE":28.4668,"SCBNDQE":17.003,"SCBS&P500E":42.8697,"SCBSEMIE":41.6797,"SCBWORLDE":14.1826,"TLUS500-UH-X":13.3461,"TLUSNDQ-UH-X":12.8946,"TLWORLD-X":11.2419},{"d":"2026-06-25","K-CHANGE":20.2685,"K-GTECH":26.554,"K-US-500X":15.409,"K-WORLDX":17.5813,"SCBGOLDE":22.8954,"SCBKEQTGE":28.4668,"SCBNDQE":17.003,"SCBS&P500E":42.8697,"SCBSEMIE":41.6797,"SCBWORLDE":14.1826,"TLUS500-UH-X":13.3461,"TLUSNDQ-UH-X":12.8946,"TLWORLD-X":11.2419}];
+
+let STOCKS_DATA={'SCBS&P500E':[{c:'NVIDIA',p:7.8},{c:'Apple',p:6.8},{c:'Microsoft',p:5.1},{c:'Amazon',p:4.0},{c:'Google A',p:3.3},{c:'Google C',p:2.7},{c:'Broadcom',p:2.9},{c:'Meta',p:1.9},{c:'Tesla',p:1.7},{c:'Micron',p:1.8}],'SCBS&P500OLD':[{c:'NVIDIA',p:7.8},{c:'Apple',p:6.8},{c:'Microsoft',p:5.1},{c:'Amazon',p:4.0},{c:'Google A',p:3.3},{c:'Google C',p:2.7},{c:'Broadcom',p:2.9},{c:'Meta',p:1.9},{c:'Tesla',p:1.7},{c:'Micron',p:1.8}],'SCBCEH':[{c:'Tencent',p:10.5},{c:'Alibaba',p:9.2},{c:'Meituan',p:7.8},{c:'JD.com',p:5.1},{c:'NetEase',p:4.3},{c:'Baidu',p:3.8},{c:'Xiaomi',p:3.5},{c:'CNOOC',p:2.9},{c:'BYD',p:2.7},{c:'Li Auto',p:2.1}],'SCBSET1':[{c:'PTT',p:8.2},{c:'ADVANC',p:7.1},{c:'CPALL',p:6.8},{c:'SCB',p:5.9},{c:'GULF',p:5.1},{c:'BBL',p:4.7},{c:'BH',p:4.2},{c:'SCC',p:3.8},{c:'KBANK',p:3.5},{c:'AOT',p:3.1}],'SCBSET2':[{c:'PTT',p:8.2},{c:'ADVANC',p:7.1},{c:'CPALL',p:6.8},{c:'SCB',p:5.9},{c:'GULF',p:5.1},{c:'BBL',p:4.7},{c:'BH',p:4.2},{c:'SCC',p:3.8},{c:'KBANK',p:3.5},{c:'AOT',p:3.1}],'SCBSFF':[{c:'PTT',p:8.2},{c:'ADVANC',p:7.1},{c:'CPALL',p:6.8},{c:'SCB',p:5.9},{c:'GULF',p:5.1},{c:'BBL',p:4.7},{c:'BH',p:4.2},{c:'SCC',p:3.8},{c:'KBANK',p:3.5},{c:'AOT',p:3.1}],'SCBNDQE':[{c:'NVIDIA',p:9.0},{c:'Apple',p:7.0},{c:'Google A',p:6.0},{c:'Amazon',p:5.0},{c:'Microsoft',p:5.0},{c:'Micron',p:4.0},{c:'Meta',p:3.5},{c:'Broadcom',p:3.5},{c:'Tesla',p:3.5}],'SCBWORLDE':[{c:'NVIDIA',p:5.42},{c:'Apple',p:5.09},{c:'Microsoft',p:3.53},{c:'Amazon',p:2.91},{c:'Google A',p:2.46},{c:'Broadcom',p:2.23},{c:'Meta',p:1.54},{c:'Tesla',p:1.36},{c:'Micron',p:1.22}],'SCBGOLDE':[{c:'Gold',p:100}],'SCBKEQTGE':[{c:'SK hynix',p:25.97},{c:'Samsung Elec',p:23.69},{c:'SK square',p:4.02},{c:'Samsung E-M',p:3.43},{c:'Hyundai',p:1.97},{c:'KB Finance',p:1.50}],'SCBSEMIE':[{c:'AMD',p:10.33},{c:'Broadcom',p:9.57},{c:'Micron',p:9.39},{c:'TSMC',p:8.75},{c:'NVIDIA',p:8.4},{c:'ASML',p:8.13},{c:'Lam Research',p:5.62},{c:'Applied Mat.',p:5.53},{c:'Texas Inst.',p:4.52}],'K-CHANGE':[{c:'TSMC',p:8.6},{c:'ASML',p:5.8},{c:'Arm Holding',p:5.8},{c:'Microsoft',p:4.4},{c:'Remitly',p:4.0},{c:'Deere & Co',p:3.7},{c:'Illumina',p:3.3},{c:'NY Times',p:3.1},{c:'KLA Tencor',p:3.0},{c:'Ecolab',p:3.0}],'K-US-500X':[{c:'NVIDIA',p:7.88},{c:'Apple',p:7.04},{c:'Microsoft',p:5.14},{c:'Amazon',p:4.06},{c:'Google A',p:3.4},{c:'Broadcom',p:3.25},{c:'Google C',p:2.7},{c:'Meta',p:2.13},{c:'Tesla',p:1.88},{c:'Micron',p:1.68}],'K-GTECH':[{c:'Bloom Energy',p:10.08},{c:'Lam Research',p:7.22},{c:'Marvell',p:5.12},{c:'NVIDIA',p:5.6},{c:'Broadcom',p:5.3},{c:'Microsoft',p:4.5},{c:'Google A',p:4.5},{c:'WD',p:4.6},{c:'Applied Mat.',p:3.68},{c:'Apple',p:2.95}],'K-WORLDX':[{c:'NVIDIA',p:4.75},{c:'Apple',p:4.46},{c:'Microsoft',p:3.1},{c:'Amazon',p:2.55},{c:'Google A',p:2.16},{c:'Broadcom',p:1.96},{c:'TSMC',p:1.8},{c:'Meta',p:1.35},{c:'Tesla',p:1.2}],'TLUS500-UH-X':[{c:'NVIDIA',p:7.88},{c:'Apple',p:7.04},{c:'Microsoft',p:5.14},{c:'Amazon',p:4.06},{c:'Google A',p:3.4},{c:'Broadcom',p:3.25},{c:'Google C',p:2.7},{c:'Meta',p:2.13},{c:'Tesla',p:1.88},{c:'Micron',p:1.68}],'TLUSNDQ-UH-X':[{c:'NVIDIA',p:8.12},{c:'Apple',p:6.93},{c:'Micron',p:5.58},{c:'Microsoft',p:4.47},{c:'Amazon',p:4.16},{c:'AMD',p:3.83},{c:'Google A',p:3.4},{c:'Tesla',p:3.17},{c:'Broadcom',p:3.09}],'TLWORLD-X':[{c:'NVIDIA',p:4.2},{c:'Apple',p:3.82},{c:'Microsoft',p:2.84},{c:'Amazon',p:2.21},{c:'Google A',p:1.9},{c:'Broadcom',p:1.76},{c:'TSMC',p:1.53},{c:'Meta',p:1.17},{c:'Tesla',p:1.05}]};
+(function(){try{const s=localStorage.getItem('stocks_v1');if(s)STOCKS_DATA=JSON.parse(s);}catch(e){}})();
+function saveSD(){try{localStorage.setItem('stocks_v1',JSON.stringify(STOCKS_DATA));}catch(e){toast('Storage เต็ม','#D44B2A');}}
+
+// Load custom funds from localStorage
+(function(){
+  try{
+    const cf=localStorage.getItem('custom_funds_v1');
+    if(cf){
+      const parsed=JSON.parse(cf);
+      const builtinCount=FUNDS.length;
+      parsed.forEach(f=>{
+        if(!FUNDS.includes(f.code)){
+          FUNDS.push(f.code);
+          FN[f.code]=f.name;
+          AMC[f.code]=f.amc;
+          TH[f.code]=f.theme||'OTHER';
+          AS[f.code]=f.asClass||'Equity';
+          ALLOC[f.code]=f.alloc||0;
+          APCT[f.code]=0;
+          UNITS[f.code]=f.units||0;
+        }
+      });
+      // Sort the custom-fund tail so known legacy funds appear in a fixed order:
+      // CEH, S&P500 (old), SET1, SET2, SFF — any other custom funds keep their original order after them
+      const tailPriority=code=>{
+        const n=(FN[code]||code).toUpperCase().replace(/[^A-Z0-9]/g,'');
+        if(n.includes('CEH'))return 0;
+        if(n.includes('SP500')&&n.includes('OLD'))return 1;
+        if(n.includes('SET1'))return 2;
+        if(n.includes('SET2'))return 3;
+        if(n.includes('SFF'))return 4;
+        return 99;
+      };
+      const builtin=FUNDS.slice(0,builtinCount);
+      const tail=FUNDS.slice(builtinCount).map((code,i)=>({code,i,p:tailPriority(code)}))
+        .sort((a,b)=>a.p-b.p||a.i-b.i).map(x=>x.code);
+      FUNDS.length=0;FUNDS.push(...builtin,...tail);
+      // Recompute APCT
+      const total=FUNDS.reduce((s,f)=>s+(ALLOC[f]||0),0);
+      if(total>0)FUNDS.forEach(f=>{APCT[f]=parseFloat(((ALLOC[f]||0)/total*100).toFixed(2));});
+    }
+  }catch(e){}
+})();
+
+const TX=[{date:'2026-03-18',fund:'SCBS&P500E',type:'Buy',amount:300000,nav:38.7914,units:7733.67,amc:'SCB'},{date:'2026-03-18',fund:'SCBNDQE',type:'Buy',amount:100000,nav:14.3377,units:6974.62,amc:'SCB'},{date:'2026-03-18',fund:'SCBWORLDE',type:'Buy',amount:50000,nav:12.9943,units:3847.84,amc:'SCB'},{date:'2026-03-18',fund:'SCBGOLDE',type:'Buy',amount:50000,nav:27.1038,units:1844.76,amc:'SCB'},{date:'2026-03-20',fund:'K-CHANGE',type:'Buy',amount:17500,nav:18.5097,units:945.45,amc:'Kbank'},{date:'2026-03-20',fund:'K-US-500X',type:'Buy',amount:12500,nav:13.908,units:898.76,amc:'Kbank'},{date:'2026-03-23',fund:'K-GTECH',type:'Buy',amount:12500,nav:19.1206,units:653.75,amc:'Kbank'},{date:'2026-03-20',fund:'K-WORLDX',type:'Buy',amount:7500,nav:15.9267,units:470.91,amc:'Kbank'},{date:'2026-04-16',fund:'SCBS&P500E',type:'Buy',amount:1800,nav:41.0124,units:43.89,amc:'SCB'},{date:'2026-04-16',fund:'SCBNDQE',type:'Buy',amount:600,nav:15.3629,units:39.06,amc:'SCB'},{date:'2026-04-16',fund:'SCBWORLDE',type:'Buy',amount:300,nav:13.7581,units:21.81,amc:'SCB'},{date:'2026-04-16',fund:'SCBGOLDE',type:'Buy',amount:300,nav:25.8924,units:11.59,amc:'SCB'},{date:'2026-04-17',fund:'K-CHANGE',type:'Buy',amount:500,nav:19.2312,units:26.0,amc:'Kbank'},{date:'2026-04-17',fund:'K-US-500X',type:'Buy',amount:500,nav:14.7287,units:33.95,amc:'Kbank'},{date:'2026-04-20',fund:'K-GTECH',type:'Buy',amount:500,nav:21.1611,units:23.63,amc:'Kbank'},{date:'2026-04-17',fund:'K-WORLDX',type:'Buy',amount:500,nav:16.9053,units:29.58,amc:'Kbank'},{date:'2026-05-12',fund:'TLUS500-UH-X',type:'Buy',amount:18000,nav:13.0355,units:1380.84,amc:'Talis'},{date:'2026-05-12',fund:'TLUSNDQ-UH-X',type:'Buy',amount:7500,nav:12.4574,units:602.05,amc:'Talis'},{date:'2026-05-12',fund:'TLWORLD-X',type:'Buy',amount:4500,nav:10.9119,units:412.39,amc:'Talis'},{date:'2026-05-15',fund:'SCBS&P500E',type:'Buy',amount:1800,nav:43.1954,units:41.67,amc:'SCB'},{date:'2026-05-15',fund:'SCBNDQE',type:'Buy',amount:600,nav:16.9762,units:35.34,amc:'SCB'},{date:'2026-05-15',fund:'SCBWORLDE',type:'Buy',amount:300,nav:14.2037,units:21.12,amc:'SCB'},{date:'2026-05-15',fund:'SCBGOLDE',type:'Buy',amount:300,nav:24.9666,units:12.02,amc:'SCB'},{date:'2026-05-18',fund:'K-CHANGE',type:'Buy',amount:500,nav:19.4941,units:25.65,amc:'Kbank'},{date:'2026-05-18',fund:'K-US-500X',type:'Buy',amount:500,nav:15.5175,units:32.22,amc:'Kbank'},{date:'2026-05-19',fund:'K-GTECH',type:'Buy',amount:500,nav:19.4941,units:25.65,amc:'Kbank'},{date:'2026-05-18',fund:'K-WORLDX',type:'Buy',amount:500,nav:17.499,units:28.57,amc:'Kbank'},{date:'2026-06-02',fund:'SCBKEQTGE',type:'Buy',amount:10000,nav:31.0938,units:321.61,amc:'SCB'},{date:'2026-06-02',fund:'SCBSEMIE',type:'Buy',amount:10000,nav:41.1822,units:242.82,amc:'SCB'},{date:'2026-06-16',fund:'SCBS&P500E',type:'Buy',amount:2000,nav:43.7518,units:45.71,amc:'SCB'},{date:'2026-06-16',fund:'SCBNDQE',type:'Buy',amount:1200,nav:17.4303,units:68.85,amc:'SCB'},{date:'2026-06-16',fund:'SCBWORLDE',type:'Buy',amount:500,nav:14.486,units:34.52,amc:'SCB'},{date:'2026-06-16',fund:'SCBGOLDE',type:'Buy',amount:200,nav:23.8,units:8.40,amc:'SCB'},{date:'2026-06-16',fund:'SCBKEQTGE',type:'Buy',amount:300,nav:29.6932,units:10.10,amc:'SCB'},{date:'2026-06-16',fund:'SCBSEMIE',type:'Buy',amount:300,nav:41.686,units:7.20,amc:'SCB'},{date:'2026-06-16',fund:'K-CHANGE',type:'Buy',amount:500,nav:20.6745,units:24.18,amc:'Kbank'},{date:'2026-06-16',fund:'K-US-500X',type:'Buy',amount:500,nav:15.7058,units:31.84,amc:'Kbank'},{date:'2026-06-16',fund:'K-GTECH',type:'Buy',amount:500,nav:25.9281,units:19.28,amc:'Kbank'},{date:'2026-06-16',fund:'K-WORLDX',type:'Buy',amount:500,nav:17.9104,units:27.92,amc:'Kbank'},{date:'2026-06-16',fund:'TLUS500-UH-X',type:'Buy',amount:1000,nav:13.2833,units:75.28,amc:'Talis'},{date:'2026-06-16',fund:'TLUSNDQ-UH-X',type:'Buy',amount:1000,nav:12.8938,units:77.56,amc:'Talis'},{date:'2026-06-16',fund:'TLWORLD-X',type:'Buy',amount:1000,nav:11.189,units:89.37,amc:'Talis'}];
+
+// ===== STATE =====
+let selFund='ALL'; // shared fund selector state
+let ovMode='fund'; // 'fund' or 'amc'
+let selAMC='ALL'; // for amc mode
+const SK='nav_v4';
+function getNew(){try{return JSON.parse(localStorage.getItem(SK)||'[]');}catch(e){return[];}}
+function setNew(a){try{localStorage.setItem(SK,JSON.stringify(a));}catch(e){toast('Storage เต็ม','#D44B2A');}}
+function getAllNAV(){
+  const rows=BASE_NAV.map(r=>({...r}));
+  getNew().forEach(nr=>{const i=rows.findIndex(r=>r.d===nr.d);if(i>=0)Object.assign(rows[i],nr);else rows.push({...nr});});
+  return rows.sort((a,b)=>a.d.localeCompare(b.d));
+}
+function totalAlloc(){return FUNDS.reduce((s,f)=>s+(ALLOC[f]||0),0);}
+function portVal(row){return FUNDS.reduce((s,f)=>{const u=UNITS[f]||0,n=row[f];return s+(n!=null?n*u:0);},0);}
+function fundVal(f,row){const u=UNITS[f]||0,n=row[f];return n!=null?n*u:0;}
+function fundValSingle(f,row){return fundVal(f,row);}
+
+let CC={};
+function dc(id){if(CC[id]){CC[id].destroy();delete CC[id];}}
+function leg(id,labels,colors){const el=document.getElementById(id);if(el)el.innerHTML=labels.map((l,i)=>`<span class="li"><span class="ld" style="background:${colors[i%colors.length]}"></span>${l}</span>`).join('');}
+function toast(msg,bg='#0D9373'){const t=document.getElementById('toast');t.textContent=msg;t.style.background=bg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function isel(id,val){const el=document.getElementById(id);return el?el.value:val;}
+
+function showTab(t,btn){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');document.getElementById('p-'+t).classList.add('active');
+  ({nav:renderNAV,alloc:renderAlloc,tx:renderTx,stocks:renderStocks,entry:renderEntry})[t]?.();
+}
+function showSub(id,btn){
+  document.querySelectorAll('.stab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.spanel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');document.getElementById('sp-'+id).classList.add('active');
+  if(id==='ent-chart')renderEntryChart();
+  if(id==='ent-hist'){buildHistFilters();renderHistory();}
+  if(id==='ent-export')renderExpSum();
+}
+
+// ===== OV MODE SWITCHER =====
+function setOvMode(mode){
+  ovMode=mode;
+  const byFundBtn=document.getElementById('ovModeByFund');
+  const byAMCBtn=document.getElementById('ovModeByAMC');
+  const pillsDiv=document.getElementById('ovPills');
+  const amcPillsDiv=document.getElementById('ovAMCPills');
+  if(mode==='fund'){
+    byFundBtn.classList.add('sel');byAMCBtn.classList.remove('sel');
+    pillsDiv.style.display='flex';amcPillsDiv.style.display='none';
+  } else {
+    byAMCBtn.classList.add('sel');byFundBtn.classList.remove('sel');
+    pillsDiv.style.display='none';amcPillsDiv.style.display='flex';
+  }
+  buildFundPills();buildAMCPills();renderOverview();
+}
+
+// ===== FUND PILLS (shared selector) =====
+function buildFundPills(){
+  const container=document.getElementById('ovPills');
+  let html='<span class="pill-label">เลือกกองทุน:</span>';
+  html+=`<button class="pill ${selFund==='ALL'?'sel':''}" onclick="setFundSel('ALL')">ทุกกองทุน</button>`;
+  FUNDS.forEach(f=>{
+    html+=`<button class="pill ${selFund===f?'sel':''}" onclick="setFundSel('${f.replace(/'/g,"\\'")}')"><span style="font-family:var(--f-mono);font-size:10px">${FN[f]||f}</span></button>`;
+  });
+  container.innerHTML=html;
+}
+function buildAMCPills(){
+  const container=document.getElementById('ovAMCPills');
+  const amcs=['ALL','SCB','Kbank','Talis'];
+  let html='<span class="pill-label">เลือก AMC:</span>';
+  amcs.forEach(a=>{
+    html+=`<button class="pill ${selAMC===a?'sel':''}" onclick="setAMCSel('${a}')">${a==='ALL'?'ทุก AMC':a}</button>`;
+  });
+  container.innerHTML=html;
+}
+function setAMCSel(a){selAMC=a;buildAMCPills();renderOverview();}
+
+function setFundSel(f){
+  selFund=f;
+  buildFundPills();
+  buildAMCPills();
+  renderOverview();
+}
+
+// ===== OVERVIEW =====
+function renderOverview(){
+  buildFundPills();buildAMCPills();
+  renderDepositOverview();
+  const all=getAllNAV();
+  const lastRow=all[all.length-1]; // used for date display only
+  const prevRow=all[all.length-2];
+  const isAMCMode=ovMode==='amc';
+  const isAll=selFund==='ALL';
+
+  // Build per-fund "latest NAV" map: for each fund, find the most recent row that has data
+  const latestNAV={};
+  const prevNAV={};
+  FUNDS.forEach(f=>{
+    for(let i=all.length-1;i>=0;i--){
+      if(all[i][f]!=null){
+        if(latestNAV[f]==null){latestNAV[f]=all[i][f];latestNAV[f+'_d']=all[i].d;}
+        else if(prevNAV[f]==null){prevNAV[f]=all[i][f];break;}
+      }
+    }
+  });
+  // Use latestNAV as "last" proxy for all fund computations
+  const last={...lastRow};
+  FUNDS.forEach(f=>{if(latestNAV[f]!=null)last[f]=latestNAV[f];});
+  const prev={...prevRow};
+  FUNDS.forEach(f=>{if(prevNAV[f]!=null)prev[f]=prevNAV[f];});
+
+  // Determine funds to show
+  let showF;
+  if(isAMCMode){
+    showF=selAMC==='ALL'?FUNDS:FUNDS.filter(f=>AMC[f]===selAMC);
+  } else {
+    showF=isAll?FUNDS:[selFund];
+  }
+
+  // Compute aggregated values using per-fund latest NAV
+  let totalInv=0,totalCurVal=0;
+  showF.forEach(f=>{totalInv+=(ALLOC[f]||0);});
+  showF.forEach(f=>{const u=UNITS[f]||0,n=latestNAV[f];totalCurVal+=(n!=null?n*u:0);});
+
+  // For NAV card - only makes sense for single fund in fund mode
+  const singleFund=!isAMCMode&&!isAll;
+  const nav=singleFund&&latestNAV[selFund]!=null?latestNAV[selFund]:null;
+  const navP=singleFund&&prevNAV[selFund]!=null?prevNAV[selFund]:null;
+  const navR=nav&&navP?((nav-navP)/navP*100).toFixed(2):null;
+
+  // For return% card
+  let retPct=null;
+  if(singleFund){
+    const fFirst=all.find(r=>r[selFund]!=null);
+    const fLast=latestNAV[selFund];
+    if(fFirst&&fLast!=null)retPct=((fLast-fFirst[selFund])/fFirst[selFund]*100).toFixed(2);
+  } else {
+    const firstAll=all[0];
+    const initVal=showF.reduce((s,f)=>{const u=UNITS[f]||0,n=firstAll[f];return s+(n!=null?n*u:0);},0);
+    const curVal=showF.reduce((s,f)=>{const u=UNITS[f]||0,n=latestNAV[f];return s+(n!=null?n*u:0);},0);
+    if(initVal>0)retPct=((curVal-initVal)/initVal*100).toFixed(2);
+  }
+
+  const totalA=totalAlloc();
+  const pctOfPort=totalA>0?(totalInv/totalA*100).toFixed(1):'-';
+  const labelPrefix=isAMCMode?(selAMC==='ALL'?'ทุก AMC':selAMC):(!isAll?FN[selFund]:'รวม');
+
+  // Compute profit/loss in baht
+  const plBaht = totalCurVal > 0 ? totalCurVal - totalInv : null;
+  const plSign = plBaht != null ? (plBaht >= 0 ? '+' : '') : '';
+
+  // Compute average cost per unit from TX (for single fund mode)
+  let avgCostPerUnit = null;
+  if (singleFund) {
+    const fundTx = TX.filter(t => t.fund === selFund && t.type === 'Buy');
+    const sellTx = TX.filter(t => t.fund === selFund && t.type === 'Sell');
+    const totalBuyAmt = fundTx.reduce((s, t) => s + t.amount, 0);
+    const totalBuyUnits = fundTx.reduce((s, t) => s + t.units, 0);
+    const totalSellUnits = sellTx.reduce((s, t) => s + t.units, 0);
+    const netUnits = totalBuyUnits - totalSellUnits;
+    if (netUnits > 0 && totalBuyAmt > 0) avgCostPerUnit = totalBuyAmt / netUnits;
+  }
+
+  document.getElementById('ovM').innerHTML=`
+    <div class="m"><div class="ml">เงินลงทุน ${labelPrefix}</div>
+      <div class="mv">฿${fmtMoney(totalInv)}</div>
+      <div class="ms" style="color:var(--t2)">${showF.length} กองทุน${totalA>0?' · '+pctOfPort+'% ของพอร์ต':''}</div></div>
+    <div class="m"><div class="ml">มูลค่าปัจจุบัน ${labelPrefix}</div>
+      <div class="mv">฿${totalCurVal>0?fmtMoney(totalCurVal):'-'}</div>
+      <div class="ms ${totalCurVal-totalInv>=0?'pos':'neg'}">${totalInv>0?((totalCurVal-totalInv)/totalInv*100>=0?'+':'')+((totalCurVal-totalInv)/totalInv*100).toFixed(2)+'%':'-'} กำไร/ขาดทุน</div></div>
+    <div class="m"><div class="ml">ผลตอบแทน (กำไร/ขาดทุน) ${labelPrefix}</div>
+      <div class="mv ${plBaht!=null?(plBaht>=0?'pos':'neg'):''}" style="font-size:15px">${plBaht!=null?plSign+'฿'+Math.round(plBaht).toLocaleString():'-'}</div>
+      <div class="ms ${plBaht!=null?(plBaht>=0?'pos':'neg'):''}">${totalInv>0&&plBaht!=null?plSign+(plBaht/totalInv*100).toFixed(2)+'%':'-'} ผลตอบแทนรวม (ROI)</div></div>
+    ${singleFund?`<div class="m"><div class="ml">ราคา NAV ต่อหน่วย (${latestNAV[selFund+'_d']||lastRow.d})</div>
+      <div class="mv sm" style="font-size:17px">${nav?nav.toFixed(4):'-'}</div>
+      ${avgCostPerUnit!=null?`<div class="ms" style="color:var(--t2)">ต้นทุนเฉลี่ย ${fmtNAV(avgCostPerUnit)}</div>`:''}
+      ${navR!=null?`<div class="ms ${navR>=0?'pos':'neg'}">${navR>=0?'+':''}${navR}% vs เมื่อวาน</div>`:''}</div>`:''}
+    <div class="m"><div class="ml">ผลตอบแทน ${labelPrefix}</div>
+      <div class="mv ${retPct>=0?'pos':'neg'}">${retPct!=null?(retPct>=0?'+':'')+retPct+'%':'-'}</div>
+      <div class="ms" style="color:var(--t2)">ตั้งแต่เริ่มลงทุน</div></div>
+    <div class="m"><div class="ml">วันที่มีข้อมูล NAV</div><div class="mv">${all.length} วัน</div><div class="ms pos">+${getNew().length} ใหม่</div></div>`;
+
+  // ── Per-fund grid (show in ALL-fund or AMC mode, hide in single-fund) ──
+  const fundGrid=document.getElementById('ovFundGrid');
+  if(!singleFund&&showF.length>1){
+    fundGrid.style.display='grid';
+    fundGrid.innerHTML=showF.map(f=>{
+      const fNav=latestNAV[f];
+      const fNavDate=latestNAV[f+'_d']||'';
+      const fUnits=UNITS[f]||0;
+      const fCurVal=fNav!=null?fNav*fUnits:null;
+      const fInv=ALLOC[f]||0;
+      const fPl=fCurVal!=null?fCurVal-fInv:null;
+      const fPlPct=fInv>0&&fPl!=null?(fPl/fInv*100):null;
+      // compute total units from TX
+      const fBuyTx=TX.filter(t=>t.fund===f&&t.type==='Buy');
+      const fSellTx=TX.filter(t=>t.fund===f&&t.type==='Sell');
+      const fCusTx=getCustomTx().filter(t=>t.fund===f);
+      const fCusBuy=fCusTx.filter(t=>t.type==='Buy');
+      const fCusSell=fCusTx.filter(t=>t.type==='Sell');
+      const totalUnits=(fBuyTx.reduce((s,t)=>s+t.units,0)+fCusBuy.reduce((s,t)=>s+t.units,0))
+                      -(fSellTx.reduce((s,t)=>s+t.units,0)+fCusSell.reduce((s,t)=>s+t.units,0));
+      const displayUnits=totalUnits>0?totalUnits:fUnits;
+      return`<div class="m clk" onclick="setFundSel('${f.replace(/'/g,"\\'")}')">
+        <div class="ml" style="font-size:9.5px">${FN[f]||f} <span class="bdg ${AMC[f]==='SCB'?'scb':AMC[f]==='Kbank'?'kb':AMC[f]==='Talis'?'tl':''}" style="font-size:9px;padding:1px 5px">${AMC[f]||''}</span></div>
+        <div class="mv" style="font-size:13px">${fCurVal!=null?'฿'+fmtMoney(fCurVal):'-'}</div>
+        <div class="ms" style="color:var(--t2);font-size:9px">${displayUnits>0?fmtUnits(displayUnits)+' หน่วย':''} ${fNavDate?'· '+fNavDate:''}</div>
+        <div class="ms ${fPlPct!=null?(fPlPct>=0?'pos':'neg'):''}" style="font-size:9.5px">${fPlPct!=null?(fPlPct>=0?'+':'')+fPlPct.toFixed(2)+'%':'-'}</div>
+      </div>`;
+    }).join('');
+  } else {
+    fundGrid.style.display='none';
+    fundGrid.innerHTML='';
+  }
+  if(isAMCMode){
+    // Stacked bar: x=AMC, each fund is a segment
+    const amcList=selAMC==='ALL'?['SCB','Kbank','Talis']:[selAMC];
+    document.getElementById('cFBTitle').textContent='เงินลงทุน (฿) แยกตาม AMC — ซ้อนรายกองทุน';
+    // Build one dataset per fund in showF
+    const datasets=showF.map(f=>({
+      label:FN[f]||f,
+      data:amcList.map(a=>AMC[f]===a?(ALLOC[f]||0):0),
+      backgroundColor:PAL[FUNDS.indexOf(f)%PAL.length],
+      borderRadius:3,
+      borderSkipped:false,
+    }));
+    const legEl=document.getElementById('cFBLeg');
+    if(legEl)legEl.innerHTML=showF.map(f=>`<span class="li"><span class="ld" style="background:${PAL[FUNDS.indexOf(f)%PAL.length]}"></span>${FN[f]||f}</span>`).join('');
+    dc('cFB');CC['cFB']=new Chart(document.getElementById('cFB'),{
+      type:'bar',
+      data:{labels:amcList,datasets},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},
+          tooltip:{mode:'index',intersect:false,callbacks:{label:c=>c.raw>0?`${c.dataset.label}: ฿${c.raw.toLocaleString()}`:null,footer:items=>{const sum=items.reduce((s,i)=>s+i.raw,0);return sum>0?'รวม: ฿'+sum.toLocaleString():'';}}}},
+        scales:{x:{stacked:true,ticks:{font:{size:10}}},y:{stacked:true,ticks:{callback:v=>'฿'+(v/1000).toFixed(0)+'K',font:{size:9}}}}}});
+  } else {
+    document.getElementById('cFBTitle').textContent=isAll?'เงินลงทุน (฿ ลงทุน) — ทุกกองทุน':'เงินลงทุน — '+FN[selFund];
+    const legEl=document.getElementById('cFBLeg');if(legEl)legEl.innerHTML='';
+    dc('cFB');CC['cFB']=new Chart(document.getElementById('cFB'),{type:'bar',data:{labels:showF.map(f=>FN[f]),datasets:[{data:showF.map(f=>ALLOC[f]),backgroundColor:showF.map(f=>PAL[FUNDS.indexOf(f)%PAL.length]),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'฿'+c.raw.toLocaleString()}}},scales:{y:{ticks:{callback:v=>'฿'+(v/1000).toFixed(0)+'K',font:{size:9}}},x:{ticks:{font:{size:9},maxRotation:45}}}}});
+  }
+
+  // Chart 2: Portfolio value over time (filtered)
+  const valid=all.filter(r=>showF.some(f=>r[f]!=null));
+  document.getElementById('cPVTitle').textContent=isAMCMode?(selAMC==='ALL'?'มูลค่าพอร์ตรวม ณ วันต่างๆ (฿)':'มูลค่า '+selAMC+' ณ วันต่างๆ (฿)'):(isAll?'มูลค่าพอร์ตรวม ณ วันต่างๆ (฿)':'มูลค่า '+FN[selFund]+' ณ วันต่างๆ (฿)');
+  const pvData=valid.map(r=>showF.reduce((s,f)=>{const u=UNITS[f]||0,n=r[f];return s+(n!=null?n*u:0);},0));
+  const pvColor=isAMCMode?'#7B61C4':(!isAll?PAL[FUNDS.indexOf(selFund)%PAL.length]:'#2C5BDB');
+  dc('cPV');CC['cPV']=new Chart(document.getElementById('cPV'),{type:'line',data:{labels:valid.map(r=>r.d.slice(5)),datasets:[{label:labelPrefix,data:pvData,borderColor:pvColor,backgroundColor:pvColor.replace(')',',0.07)').replace('rgb','rgba'),fill:true,borderWidth:2,pointRadius:0,spanGaps:true}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'฿'+Math.round(c.raw).toLocaleString()}}},scales:{x:{ticks:{maxTicksLimit:12,font:{size:9}}},y:{ticks:{callback:v=>'฿'+(v/1000).toFixed(0)+'K',font:{size:9}}}}}});
+
+  // Chart 3: Return %
+  renderFundReturn();
+
+  // Chart 4: P/L in Baht
+  renderPLChart();
+
+  // Pie charts
+  const amcT={};FUNDS.forEach(f=>{const a=AMC[f]||'Other';amcT[a]=(amcT[a]||0)+(ALLOC[f]||0);});
+  const aL=Object.keys(amcT),aV=Object.values(amcT),aC=['#2C5BDB','#0D9373','#7B61C4','#B8820A','#888780'];
+  leg('lAMC',aL.map((l,i)=>`${l} ${((aV[i]/totalAlloc())*100).toFixed(0)}%`),aC);
+  dc('cAMC');CC['cAMC']=new Chart(document.getElementById('cAMC'),{type:'doughnut',data:{labels:aL,datasets:[{data:aV,backgroundColor:aC.slice(0,aL.length),borderWidth:2,borderColor:['var(--bg)']}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:false}}}});
+  const thT={};FUNDS.forEach(f=>{const t=TH[f];thT[t]=(thT[t]||0)+(ALLOC[f]||0);});
+  const tL=Object.keys(thT),tV=Object.values(thT),tC=tL.map(t=>THC[t]||'#888');
+  leg('lTH',tL.map((l,i)=>`${l} ${((tV[i]/totalAlloc())*100).toFixed(0)}%`),tC);
+  dc('cTH');CC['cTH']=new Chart(document.getElementById('cTH'),{type:'doughnut',data:{labels:tL,datasets:[{data:tV,backgroundColor:tC,borderWidth:2,borderColor:['var(--bg)']}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:false}}}});
+}
+
+function renderFundReturn(){
+  const all=getAllNAV();
+  const isAll=selFund==='ALL';
+  const show=isAll?FUNDS.filter(f=>all.some(r=>r[f]!=null)):[selFund];
+  const ds=show.map(f=>{
+    const f0=all.find(r=>r[f]!=null)?.[f];
+    return{label:FN[f],data:all.map(r=>{const v=r[f];return v==null?null:parseFloat(((v-f0)/f0*100).toFixed(2));}),borderColor:PAL[FUNDS.indexOf(f)%PAL.length],backgroundColor:'transparent',borderWidth:1.5,pointRadius:0,spanGaps:true};
+  });
+  leg('lFR',show.map(f=>FN[f]),show.map(f=>PAL[FUNDS.indexOf(f)%PAL.length]));
+  dc('cFR');CC['cFR']=new Chart(document.getElementById('cFR'),{type:'line',data:{labels:all.map(r=>r.d.slice(5)),datasets:ds},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+(c.raw>=0?'+':'')+c.raw+'%'}}},scales:{x:{ticks:{maxTicksLimit:12,font:{size:9}}},y:{ticks:{callback:v=>(v>=0?'+':'')+v+'%',font:{size:9}}}}}});
+}
+
+function renderPLChart(){
+  const all=getAllNAV();
+  const plSel=isel('plFundSel','ALL');
+  const isAll=plSel==='ALL';
+  // Build the list of funds with NAV data
+  const show=isAll?FUNDS.filter(f=>all.some(r=>r[f]!=null)):[plSel];
+  if(isAll){
+    // Single line: total portfolio P/L
+    const valid=all.filter(r=>show.some(f=>r[f]!=null));
+    const plData=valid.map(r=>{
+      return parseFloat(show.reduce((s,f)=>{
+        const u=UNITS[f]||0,n=r[f];
+        const cost=ALLOC[f]||0;
+        return s+(n!=null?(n*u-cost):0);
+      },0).toFixed(2));
+    });
+    const color='#3d7fff';
+    leg('lPL',['กำไร/ขาดทุนรวม (฿)'],[color]);
+    document.getElementById('cPLTitle').textContent='กำไร/ขาดทุน (฿) ณ วันต่างๆ — ทุกกองทุน';
+    dc('cPL');CC['cPL']=new Chart(document.getElementById('cPL'),{
+      type:'line',
+      data:{labels:valid.map(r=>r.d.slice(5)),datasets:[{
+        label:'กำไร/ขาดทุนรวม',
+        data:plData,
+        borderColor:color,
+        backgroundColor:'rgba(61,127,255,0.07)',
+        fill:true,borderWidth:2,pointRadius:0,spanGaps:true
+      }]},
+      options:{responsive:true,maintainAspectRatio:false,
+        interaction:{mode:'index',intersect:false},
+        plugins:{legend:{display:false},
+          tooltip:{callbacks:{label:c=>'฿'+fmtMoney(c.raw)}}},
+        scales:{
+          x:{ticks:{maxTicksLimit:12,font:{size:9}}},
+          y:{ticks:{callback:v=>(v>=0?'':'')+'฿'+(Math.abs(v)/1000).toFixed(1)+'K',font:{size:9}},
+            grid:{color:ctx=>{const v=ctx.tick.value;return v===0?'rgba(255,255,255,0.25)':'rgba(61,127,255,0.07)';}}}
+        }
+      }
+    });
+  } else {
+    // Single fund P/L line
+    const f=plSel;
+    const cost=ALLOC[f]||0;
+    const u=UNITS[f]||0;
+    const rows=all.filter(r=>r[f]!=null);
+    const plData=rows.map(r=>parseFloat((r[f]*u-cost).toFixed(2)));
+    const color=PAL[FUNDS.indexOf(f)%PAL.length];
+    leg('lPL',[FN[f]||f],[color]);
+    document.getElementById('cPLTitle').textContent='กำไร/ขาดทุน (฿) — '+(FN[f]||f);
+    dc('cPL');CC['cPL']=new Chart(document.getElementById('cPL'),{
+      type:'line',
+      data:{labels:rows.map(r=>r.d.slice(5)),datasets:[{
+        label:FN[f]||f,
+        data:plData,
+        borderColor:color,
+        backgroundColor:'rgba(61,127,255,0.06)',
+        fill:true,borderWidth:2,pointRadius:0,spanGaps:true
+      }]},
+      options:{responsive:true,maintainAspectRatio:false,
+        interaction:{mode:'index',intersect:false},
+        plugins:{legend:{display:false},
+          tooltip:{callbacks:{label:c=>'฿'+fmtMoney(c.raw)}}},
+        scales:{
+          x:{ticks:{maxTicksLimit:12,font:{size:9}}},
+          y:{ticks:{callback:v=>'฿'+(Math.abs(v)/1000).toFixed(2)+'K',font:{size:9}},
+            grid:{color:ctx=>{const v=ctx.tick.value;return v===0?'rgba(255,255,255,0.25)':'rgba(61,127,255,0.07)';}}}
+        }
+      }
+    });
+  }
+}
+
+// ===== NAV =====
+function renderNAV(){
+  const fv=isel('nFS','ALL'),mode=isel('nMode','nav'),range=parseInt(isel('nRange','0'));
+  let data=getAllNAV();if(range>0)data=data.slice(-range);
+  const show=fv==='ALL'?FUNDS.filter(f=>data.some(r=>r[f]!=null)):[fv];
+  const ds=show.map(f=>{const f0=data.find(r=>r[f]!=null)?.[f];return{label:FN[f],data:data.map(r=>{const v=r[f];return v==null?null:mode==='idx'?parseFloat(((v-f0)/f0*100).toFixed(2)):v;}),borderColor:PAL[FUNDS.indexOf(f)%PAL.length],backgroundColor:'transparent',borderWidth:1.5,pointRadius:0,spanGaps:true};});
+  leg('lNAV',show.map(f=>FN[f]),show.map(f=>PAL[FUNDS.indexOf(f)%PAL.length]));
+  dc('cNAV');CC['cNAV']=new Chart(document.getElementById('cNAV'),{type:'line',data:{labels:data.map(r=>r.d.slice(5)),datasets:ds},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false}},scales:{x:{ticks:{maxTicksLimit:12,font:{size:9}}},y:{ticks:{callback:v=>mode==='idx'?v+'%':v.toFixed(2),font:{size:9}}}}}});
+  if(fv!=='ALL'){const rows=data.filter(r=>r[fv]!=null);if(rows.length>=2){const f0=rows[0][fv],fl=rows[rows.length-1][fv],ret=((fl-f0)/f0*100).toFixed(2);document.getElementById('navM').innerHTML=`<div class="m"><div class="ml">NAV เริ่มต้น (${rows[0].d})</div><div class="mv">${f0.toFixed(4)}</div></div><div class="m"><div class="ml">NAV ล่าสุด (${rows[rows.length-1].d})</div><div class="mv">${fl.toFixed(4)}</div></div><div class="m"><div class="ml">ผลตอบแทนรวม</div><div class="mv ${ret>=0?'pos':'neg'}">${ret>=0?'+':''}${ret}%</div></div>`;}}
+  else document.getElementById('navM').innerHTML='';
+}
+
+// ===== ALLOC =====
+function renderAlloc(){
+  const ta=totalAlloc();
+  const s=[...FUNDS].sort((a,b)=>(ALLOC[b]||0)-(ALLOC[a]||0));
+  const pct=s.map(f=>ta>0?parseFloat(((ALLOC[f]||0)/ta*100).toFixed(2)):0);
+  dc('cAB');CC['cAB']=new Chart(document.getElementById('cAB'),{type:'bar',data:{labels:s.map(f=>FN[f]),datasets:[{data:pct,backgroundColor:s.map((_,i)=>PAL[i%PAL.length]),borderRadius:4}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{callback:v=>v+'%',font:{size:9}}},y:{ticks:{font:{size:10}}}}}});
+  const eq=FUNDS.filter(f=>AS[f]==='Equity').reduce((s,f)=>s+(ALLOC[f]||0),0),co=ta-eq;
+  leg('lAS',[`Equity ${((eq/ta)*100).toFixed(1)}%`,`Other ${((co/ta)*100).toFixed(1)}%`],['#2C5BDB','#B8820A']);
+  dc('cAS');CC['cAS']=new Chart(document.getElementById('cAS'),{type:'doughnut',data:{labels:['Equity','Other'],datasets:[{data:[eq,co],backgroundColor:['#2C5BDB','#B8820A'],borderWidth:2,borderColor:['var(--bg)']}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false}}}});
+  const t6=FUNDS.slice().sort((a,b)=>(ALLOC[b]||0)-(ALLOC[a]||0)).slice(0,6);
+  leg('lAD',t6.map(f=>`${FN[f]} ${ta>0?((ALLOC[f]||0)/ta*100).toFixed(1):0}%`),PAL);
+  dc('cAD');CC['cAD']=new Chart(document.getElementById('cAD'),{type:'doughnut',data:{labels:t6.map(f=>FN[f]),datasets:[{data:t6.map(f=>ALLOC[f]||0),backgroundColor:PAL,borderWidth:2,borderColor:['var(--bg)']}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false}}}});
+}
+
+// ===== TX =====
+const TX_SK='tx_custom_v1';
+function getCustomTx(){try{return JSON.parse(localStorage.getItem(TX_SK)||'[]');}catch(e){return[];}}
+function setCustomTx(a){try{localStorage.setItem(TX_SK,JSON.stringify(a));}catch(e){toast('Storage เต็ม','#D44B2A');}}
+
+let txFormOpen=true;
+function toggleTxForm(){
+  txFormOpen=!txFormOpen;
+  document.getElementById('txFormContent').style.display=txFormOpen?'block':'none';
+  document.getElementById('txFormChevron').className=txFormOpen?'ti ti-chevron-up':'ti ti-chevron-down';
+  document.querySelector('#txFormBox button.bs').innerHTML=(txFormOpen?'<i class="ti ti-chevron-up" id="txFormChevron"></i> ซ่อน':'<i class="ti ti-chevron-down" id="txFormChevron"></i> แสดง');
+}
+function onTxFundChange(){
+  const f=document.getElementById('txFF').value;
+  document.getElementById('txFA').value=f?AMC[f]||'':'';
+  // Try to auto-fill NAV from last known
+  if(f){
+    const all=getAllNAV(),last=all[all.length-1];
+    if(last[f]!=null)document.getElementById('txFN').value=last[f];
+  }
+  autoCalcUnits();
+}
+function autoCalcUnits(){
+  const amt=parseFloat(document.getElementById('txFAmt').value)||0;
+  const nav=parseFloat(document.getElementById('txFN').value)||0;
+  const uEl=document.getElementById('txFU');
+  if(amt>0&&nav>0){uEl.value=(amt/nav).toFixed(4);}
+  else{uEl.value='';}
+}
+function clearTxForm(){
+  ['txFF','txFT'].forEach(id=>document.getElementById(id).selectedIndex=0);
+  ['txFAmt','txFN','txFU'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('txFA').value='';
+  document.getElementById('txFD').value=new Date().toISOString().slice(0,10);
+  document.getElementById('txFStat').textContent='';
+  document.querySelectorAll('.txf-inp').forEach(el=>el.classList.remove('err'));
+}
+// ===== DUPLICATE DIALOG (3 options) =====
+let _dupCallback=null;
+function showDupDialog(fundName, date, type, cb){
+  _dupCallback=cb;
+  document.getElementById('dupFundName').textContent=fundName;
+  document.getElementById('dupDate').textContent=date;
+  document.getElementById('dupType').textContent=type;
+  document.getElementById('dupDialog').style.display='flex';
+}
+function closeDupDialog(){document.getElementById('dupDialog').style.display='none';_dupCallback=null;}
+function dupChoose(choice){
+  const cb=_dupCallback;
+  closeDupDialog();
+  if(cb)cb(choice);
+}
+
+// ===== BASE TX OVERRIDE STORAGE =====
+const TX_BASE_DEL_SK='tx_base_del_v1'; // set of "date|fund|type|amount" to hide
+const TX_BASE_EDIT_SK='tx_base_edit_v1'; // array of edited copies of base tx
+
+function getBaseDel(){try{return JSON.parse(localStorage.getItem(TX_BASE_DEL_SK)||'[]');}catch(e){return[];}}
+function setBaseDel(a){try{localStorage.setItem(TX_BASE_DEL_SK,JSON.stringify(a));}catch(e){toast('Storage เต็ม','#D44B2A');}}
+function getBaseEdit(){try{return JSON.parse(localStorage.getItem(TX_BASE_EDIT_SK)||'[]');}catch(e){return[];}}
+function setBaseEdit(a){try{localStorage.setItem(TX_BASE_EDIT_SK,JSON.stringify(a));}catch(e){toast('Storage เต็ม','#D44B2A');}}
+
+function baseTxKey(t){return t.date+'|'+t.fund+'|'+t.type+'|'+t.amount;}
+
+// Effective base TX (base minus deleted, with edits applied)
+function getEffectiveTX(){
+  const del=new Set(getBaseDel());
+  const edits=getBaseEdit();
+  return TX.filter(t=>!del.has(baseTxKey(t))).map(t=>{
+    const edit=edits.find(e=>e._baseKey===baseTxKey(t));
+    return edit?{...edit}:{...t};
+  });
+}
+
+function getAllTx(){
+  return [...getEffectiveTX(),...getCustomTx()].sort((a,b)=>b.date.localeCompare(a.date));
+}
+
+// Recompute units to 4 decimal places
+function recomputeUnits(){
+  // For each fund, sum units from all effective TX
+  const all=getAllTx();
+  FUNDS.forEach(f=>{
+    const buys=all.filter(t=>t.fund===f&&t.type==='Buy');
+    const sells=all.filter(t=>t.fund===f&&t.type==='Sell');
+    const totalBuy=parseFloat(buys.reduce((s,t)=>s+(t.units||0),0).toFixed(4));
+    const totalSell=parseFloat(sells.reduce((s,t)=>s+(t.units||0),0).toFixed(4));
+    const net=parseFloat((totalBuy-totalSell).toFixed(4));
+    if(buys.length>0||sells.length>0){UNITS[f]=net>0?net:0;}
+  });
+}
+
+// Recompute invested amount (ALLOC) from all TX, then refresh allocation % (APCT)
+function recomputeAlloc(){
+  const all=getAllTx();
+  FUNDS.forEach(f=>{
+    const buys=all.filter(t=>t.fund===f&&t.type==='Buy');
+    const sells=all.filter(t=>t.fund===f&&t.type==='Sell');
+    if(buys.length>0||sells.length>0){
+      const totalBuy=parseFloat(buys.reduce((s,t)=>s+(t.amount||0),0).toFixed(2));
+      const totalSell=parseFloat(sells.reduce((s,t)=>s+(t.amount||0),0).toFixed(2));
+      const net=parseFloat((totalBuy-totalSell).toFixed(2));
+      ALLOC[f]=net>0?net:0;
+    }
+  });
+  const total=FUNDS.reduce((s,f)=>s+(ALLOC[f]||0),0);
+  if(total>0)FUNDS.forEach(f=>{APCT[f]=parseFloat(((ALLOC[f]||0)/total*100).toFixed(2));});
+}
+
+let txEditIdx=-1; // -1=new, >=0=editing customTx index; negative < -1 = base TX index (-(idx+2))
+let txEditIsBase=false;
+let txEditBaseKey='';
+
+function saveTxForm(){
+  const fund=document.getElementById('txFF').value;
+  const date=document.getElementById('txFD').value;
+  const amt=parseFloat(document.getElementById('txFAmt').value);
+  const nav=parseFloat(document.getElementById('txFN').value);
+  const units=parseFloat(document.getElementById('txFU').value);
+  const type=document.getElementById('txFT').value;
+  let err=false;
+  if(!fund){document.getElementById('txFF').classList.add('err');err=true;}else{document.getElementById('txFF').classList.remove('err');}
+  if(!date){document.getElementById('txFD').classList.add('err');err=true;}else{document.getElementById('txFD').classList.remove('err');}
+  if(!amt||isNaN(amt)){document.getElementById('txFAmt').classList.add('err');err=true;}else{document.getElementById('txFAmt').classList.remove('err');}
+  if(!nav||isNaN(nav)){document.getElementById('txFN').classList.add('err');err=true;}else{document.getElementById('txFN').classList.remove('err');}
+  if(err){toast('กรุณากรอกข้อมูลให้ครบ','#D44B2A');return;}
+  const u=(!isNaN(units)&&units>0)?parseFloat(units.toFixed(4)):parseFloat((amt/nav).toFixed(4));
+  const rec={date,fund,type,amount:amt,nav,units:u,amc:AMC[fund]||'',_custom:true};
+
+  if(txEditIsBase){
+    // Saving edit of a base TX record
+    const edits=getBaseEdit();
+    const eIdx=edits.findIndex(e=>e._baseKey===txEditBaseKey);
+    const editRec={...rec,_baseKey:txEditBaseKey,_custom:false};
+    if(eIdx>=0)edits[eIdx]=editRec;else edits.push(editRec);
+    setBaseEdit(edits);
+    toast('แก้ไขข้อมูลต้นฉบับ '+FN[fund]+' ✓');
+    _finishSave();return;
+  }
+
+  const list=getCustomTx();
+  if(txEditIdx>=0){
+    list[txEditIdx]=rec;
+    setCustomTx(list);
+    toast('แก้ไขรายการ '+type+' '+(FN[fund]||fund)+' ฿'+amt.toLocaleString()+' ✓');
+    _finishSave();return;
+  }
+
+  // New record — check duplicates
+  const dupCustomIdx=list.findIndex(c=>c.date===date&&c.fund===fund&&c.type===type);
+  const dupBaseIdx=getEffectiveTX().findIndex(c=>c.date===date&&c.fund===fund&&c.type===type);
+
+  if(dupCustomIdx>=0||dupBaseIdx>=0){
+    showDupDialog(FN[fund]||fund, date, type, function(choice){
+      if(choice==='cancel')return;
+      if(choice==='replace'){
+        // Remove old: if custom dup, remove it; if base dup, mark deleted
+        if(dupCustomIdx>=0){list.splice(dupCustomIdx,1);}
+        if(dupBaseIdx>=0){
+          const baseTx=getEffectiveTX()[dupBaseIdx];
+          const del=getBaseDel();del.push(baseTxKey(baseTx));setBaseDel(del);
+          // also remove any base edit for that key
+          const edits=getBaseEdit().filter(e=>e._baseKey!==baseTxKey(baseTx));setBaseEdit(edits);
+        }
+        list.push(rec);setCustomTx(list);
+        toast('แทนที่และเพิ่มรายการใหม่ '+FN[fund]+' ✓');
+      } else {
+        // keep both
+        list.push(rec);setCustomTx(list);
+        toast('คงข้อมูลเดิมและเพิ่มรายการใหม่ '+FN[fund]+' ✓');
+      }
+      _finishSave();
+    });
+    return; // wait for dialog
+  }
+
+  list.push(rec);
+  setCustomTx(list);
+  toast('บันทึกรายการ '+type+' '+(FN[fund]||fund)+' ฿'+amt.toLocaleString()+' ✓');
+  _finishSave();
+}
+
+function _finishSave(){
+  recomputeUnits();
+  recomputeAlloc();
+  txEditIdx=-1;txEditIsBase=false;txEditBaseKey='';
+  document.getElementById('txFStat').textContent='บันทึกแล้ว ✓ '+new Date().toLocaleTimeString('th-TH');
+  document.querySelector('#txFormBox .txf-title span').innerHTML='<i class="ti ti-plus"></i> บันทึกรายการซื้อ/ขาย';
+  document.querySelector('#txFormBox .bp').innerHTML='<i class="ti ti-device-floppy"></i> บันทึก';
+  document.getElementById('txCancelEditBtn').style.display='none';
+  buildTxDateDrop();renderTx();renderOverview();
+  ['txFAmt','txFN','txFU'].forEach(id=>document.getElementById(id).value='');
+}
+
+function editTxRecord(idx, isBase){
+  txEditIsBase=!!isBase;
+  let rec;
+  if(isBase){
+    rec=getEffectiveTX()[idx];
+    if(!rec)return;
+    // Find original base record to get the immutable key
+    const origRec=TX.find(t=>t.date===rec.date&&t.fund===rec.fund&&t.type===rec.type&&Math.abs(t.amount-(rec._origAmount||rec.amount))<0.01);
+    txEditBaseKey=origRec?baseTxKey(origRec):baseTxKey(rec);
+    txEditIdx=-1;
+  } else {
+    const list=getCustomTx();rec=list[idx];
+    if(!rec)return;
+    txEditIdx=idx;
+  }
+  document.getElementById('txFF').value=rec.fund;
+  onTxFundChange();
+  document.getElementById('txFT').value=rec.type;
+  document.getElementById('txFD').value=rec.date;
+  document.getElementById('txFAmt').value=rec.amount;
+  document.getElementById('txFN').value=rec.nav;
+  document.getElementById('txFU').value=typeof rec.units==='number'?rec.units.toFixed(4):rec.units;
+  if(!txFormOpen){toggleTxForm();}
+  document.querySelector('#txFormBox .txf-title span').innerHTML='<i class="ti ti-pencil"></i> แก้ไขรายการ'+(isBase?' (ข้อมูลต้นฉบับ)':'');
+  document.querySelector('#txFormBox .bp').innerHTML='<i class="ti ti-device-floppy"></i> บันทึกการแก้ไข';
+  document.getElementById('txFStat').textContent='';
+  document.getElementById('txCancelEditBtn').style.display='inline-flex';
+  document.getElementById('txFormBox').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function cancelTxEdit(){
+  txEditIdx=-1;txEditIsBase=false;txEditBaseKey='';
+  clearTxForm();
+  document.querySelector('#txFormBox .txf-title span').innerHTML='<i class="ti ti-plus"></i> บันทึกรายการซื้อ/ขาย';
+  document.querySelector('#txFormBox .bp').innerHTML='<i class="ti ti-device-floppy"></i> บันทึก';
+  document.getElementById('txCancelEditBtn').style.display='none';
+}
+
+function deleteTxRecord(idx, isBase){
+  if(!confirm('ลบรายการนี้?'))return;
+  if(isBase){
+    const effectiveTX=getEffectiveTX();
+    const rec=effectiveTX[idx];
+    if(!rec)return;
+    // find original key from base TX
+    const origRec=TX.find(t=>t.date===rec.date&&t.fund===rec.fund&&t.type===rec.type&&Math.abs(t.amount-rec.amount)<0.01);
+    const key=origRec?baseTxKey(origRec):baseTxKey(rec);
+    const del=getBaseDel();del.push(key);setBaseDel(del);
+    // also remove any edit for this key
+    const edits=getBaseEdit().filter(e=>e._baseKey!==key);setBaseEdit(edits);
+  } else {
+    const list=getCustomTx();
+    const rec=list[idx];
+    list.splice(idx,1);setCustomTx(list);
+    if(rec&&rec.type==='Deposit'){
+      const deps=getDeposits();
+      const di=deps.findIndex(d=>d.date===rec.date&&d.amount===rec.amount);
+      if(di>=0){deps.splice(di,1);setDeposits(deps);}
+      renderDepositOverview();updateDepositBankFilter();
+    }
+  }
+  if(!isBase&&txEditIdx===idx)cancelTxEdit();
+  recomputeUnits();
+  recomputeAlloc();
+  buildTxDateDrop();renderTx();renderOverview();
+  toast('ลบรายการแล้ว','#D44B2A');
+}
+
+function buildTxDateDrop(){
+  const dd=document.getElementById('tDate');
+  const all=getAllTx();
+  const dates=[...new Set(all.map(t=>t.date))].sort().reverse();
+  dd.innerHTML='<option value="ALL">ทุกวัน</option>'+dates.map(d=>`<option value="${d}">${d}</option>`).join('');
+}
+function renderTx(){
+  const a=isel('tAMC','ALL'),f=isel('tFund','ALL'),tp=isel('tType','ALL'),dt=isel('tDate','ALL');
+  const customTx=getCustomTx();
+  const effectiveTX=getEffectiveTX();
+  const all=getAllTx();
+  const data=all.filter(t=>(a==='ALL'||t.amc===a)&&(f==='ALL'||t.fund===f)&&(tp==='ALL'||t.type===tp)&&(dt==='ALL'||t.date===dt));
+  // Monthly chart: filter by AMC/Fund only (not date/type) so monthly view is always complete
+  // Only count Buy/Sell (exclude Deposit) to show net fund trading per month
+  const txTypeForChart=(tp==='ALL'||tp==='Buy'||tp==='Sell')?tp:'ALL';
+  const dataForChart=all.filter(t=>t.type!=='Deposit'&&(a==='ALL'||t.amc===a)&&(f==='ALL'||t.fund===f)&&(txTypeForChart==='ALL'||t.type===txTypeForChart));
+  const mo={};dataForChart.forEach(t=>{const m=t.date.slice(0,7);mo[m]=(mo[m]||0)+(t.type==='Buy'?t.amount:-t.amount);});
+  const mL=Object.keys(mo).sort();
+  dc('cTM');CC['cTM']=new Chart(document.getElementById('cTM'),{type:'bar',data:{labels:mL,datasets:[{data:mL.map(m=>mo[m]),backgroundColor:mL.map(m=>mo[m]>=0?'#2C5BDB':'#D44B2A'),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'฿'+c.raw.toLocaleString()}}},scales:{y:{ticks:{callback:v=>'฿'+(v/1000).toFixed(0)+'K',font:{size:9}}},x:{ticks:{font:{size:9}}}}}});
+  document.getElementById('txB').innerHTML=data.map(t=>{
+    const isCustom=!!t._custom;
+    // Find index in appropriate array
+    let editBtn='', delBtn='';
+    if(isCustom){
+      const customIdx=customTx.findIndex(c=>c.date===t.date&&c.fund===t.fund&&c.type===t.type&&c.amount===t.amount);
+      if(t.type==='Deposit'){
+        const deps=getDeposits();
+        const depIdx=deps.findIndex(d=>d.date===t.date&&d.amount===t.amount&&d.fund===t.fund);
+        if(depIdx>=0){
+          editBtn=`<button class="tx-del" style="color:var(--blue);border-color:var(--blue)" onclick="showEditDepositModal(${depIdx})" title="แก้ไข"><i class="ti ti-pencil"></i></button>`;
+        }
+      } else if(customIdx>=0){
+        editBtn=`<button class="tx-del" style="color:var(--blue);border-color:var(--blue)" onclick="editTxRecord(${customIdx},false)" title="แก้ไข"><i class="ti ti-pencil"></i></button>`;
+      }
+      if(customIdx>=0){
+        delBtn=`<button class="tx-del" onclick="deleteTxRecord(${customIdx},false)"><i class="ti ti-trash"></i></button>`;
+      }
+    } else {
+      // base TX
+      const baseIdx=effectiveTX.findIndex(c=>c.date===t.date&&c.fund===t.fund&&c.type===t.type&&Math.abs((c.amount||0)-(t.amount||0))<0.01);
+      if(baseIdx>=0){
+        editBtn=`<button class="tx-del" style="color:var(--blue);border-color:var(--blue)" onclick="editTxRecord(${baseIdx},true)" title="แก้ไขข้อมูลต้นฉบับ"><i class="ti ti-pencil"></i></button>`;
+        delBtn=`<button class="tx-del" onclick="deleteTxRecord(${baseIdx},true)" title="ลบข้อมูลต้นฉบับ"><i class="ti ti-trash"></i></button>`;
+      } else {
+        delBtn='<span style="color:var(--t2);font-size:10px">—</span>';
+      }
+    }
+    const isEdited=!isCustom&&getBaseEdit().some(e=>e._baseKey&&e.date===t.date&&e.fund===t.fund&&e.type===t.type);
+    const editedBadge=isEdited?'<span class="bdg" style="background:rgba(247,201,72,.15);color:#f7c948;font-size:9px;padding:1px 5px;margin-left:3px">แก้ไขแล้ว</span>':'';
+    const srcBadge=!isCustom?'<span class="bdg bold" style="font-size:9px;padding:1px 5px;margin-left:3px" title="ข้อมูลต้นฉบับ">•</span>':'';
+    return`<tr><td>${t.date}</td><td style="font-weight:500">${t.type==='Deposit'?'<i class="ti ti-piggy-bank" style="color:var(--gold)"></i> '+t.fund:(FN[t.fund]||t.fund)}${srcBadge}${editedBadge}</td><td><span class="bdg ${t.amc==='SCB'?'scb':t.amc==='Kbank'?'kb':t.amc==='Talis'?'tl':''}" style="${t.type==='Deposit'?'background:var(--gold-light);color:var(--gold)':''}">${t.amc||'—'}</span></td><td><span class="bdg ${t.type==='Buy'?'buy':t.type==='Sell'?'sell':''}" style="${t.type==='Deposit'?'background:var(--gold-light);color:var(--gold)':''}">${t.type==='Deposit'?'ฝากเงิน':t.type}</span></td><td>฿${fmtMoney(t.amount)}</td><td style="font-family:var(--f-mono)">${t.type==='Deposit'?'—':fmtNAV(t.nav)}</td><td style="font-family:var(--f-mono)">${t.type==='Deposit'?'—':fmtUnits(t.units)}</td><td style="display:flex;gap:4px;align-items:center">${editBtn}${delBtn}</td></tr>`;
+  }).join('');
+}
+
+// ===== STOCKS =====
+let sEO=false;
+function toggleStocksEdit(){
+  sEO=!sEO;
+  document.getElementById('sEditPanel').style.display=sEO?'block':'none';
+  document.getElementById('sEditBtn').innerHTML=sEO?'<i class="ti ti-x"></i> ปิดแก้ไข':'<i class="ti ti-pencil"></i> แก้ไขสัดส่วน';
+  if(sEO)loadStocksEdit();
+}
+function loadStocksEdit(){
+  const fund=isel('sEditFund',FUNDS[0]);
+  const rows=STOCKS_DATA[fund]||[];
+  document.getElementById('sEditRows').innerHTML=rows.map((r,i)=>`<div class="serow"><span class="serow-name">${r.c}</span><input class="serow-val" type="number" step="0.01" value="${r.p}" id="sev_${i}">%<button class="serow-del" onclick="delStock(${i})">ลบ</button></div>`).join('');
+}
+function delStock(i){const f=isel('sEditFund',FUNDS[0]);STOCKS_DATA[f].splice(i,1);saveSD();loadStocksEdit();renderStocks();toast('ลบหุ้นแล้ว');}
+function addStockRow(){
+  const f=isel('sEditFund',FUNDS[0]);
+  const name=prompt('ชื่อหุ้น/บริษัท:');if(!name)return;
+  const pct=parseFloat(prompt('สัดส่วน (%):'));if(isNaN(pct))return;
+  if(!STOCKS_DATA[f])STOCKS_DATA[f]=[];
+  STOCKS_DATA[f].push({c:name,p:pct});saveSD();loadStocksEdit();renderStocks();toast('เพิ่ม '+name);
+}
+function saveStocksEdit(){
+  const f=isel('sEditFund',FUNDS[0]);
+  (STOCKS_DATA[f]||[]).forEach((r,i)=>{const el=document.getElementById('sev_'+i);if(el)r.p=parseFloat(el.value)||0;});
+  saveSD();renderStocks();toast('บันทึกสัดส่วนหุ้นแล้ว ✓');
+}
+function renderStocks(){
+  const sf=isel('sFund','ALL'),top=parseInt(isel('sTop','10'));
+  let items=[];
+  const ta=totalAlloc();
+  if(sf==='ALL'){const agg={};Object.entries(STOCKS_DATA).forEach(([fn,ss])=>{const w=ta>0?((ALLOC[fn]||0)/ta):0;ss.forEach(s=>{agg[s.c]=(agg[s.c]||0)+s.p*w;});});items=Object.entries(agg).map(([c,p])=>({c,p:parseFloat(p.toFixed(2))})).sort((a,b)=>b.p-a.p).slice(0,top);}
+  else{items=(STOCKS_DATA[sf]||[]).slice(0,top);}
+  document.getElementById('sW').style.height=Math.max(200,items.length*36+60)+'px';
+  dc('cSB');CC['cSB']=new Chart(document.getElementById('cSB'),{type:'bar',data:{labels:items.map(i=>i.c),datasets:[{data:items.map(i=>i.p),backgroundColor:items.map((_,i)=>PAL[i%PAL.length]),borderRadius:4}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw.toFixed(2)+'%'}}},scales:{x:{ticks:{callback:v=>v+'%',font:{size:9}}},y:{ticks:{font:{size:10}}}}}});
+}
+
+// ===== ENTRY =====
+function rebuildEntryForm(){
+  document.getElementById('eForm').innerHTML=FUNDS.map(f=>`<div class="nf"><div class="nfl">${FN[f]} <span style="color:var(--t2);font-size:9px">(${AMC[f]})</span></div><input class="nfi" type="number" id="nf_${f.replace(/[^a-zA-Z0-9]/g,'_')}" placeholder="NAV..." step="0.0001" min="0" oninput="this.classList.toggle('ch',this.value!=='')"></div>`).join('');
+}
+function getNFEl(f){return document.getElementById('nf_'+f.replace(/[^a-zA-Z0-9]/g,'_'));}
+function renderEntry(){
+  const all=getAllNAV(),last=all[all.length-1],nr=getNew();
+  document.getElementById('entM').innerHTML=`
+    <div class="m"><div class="ml">วันล่าสุดในข้อมูล</div><div class="mv sm">${last.d}</div></div>
+    <div class="m"><div class="ml">วันที่มีข้อมูล</div><div class="mv">${all.length} วัน</div></div>
+    <div class="m"><div class="ml">กองทุนในระบบ</div><div class="mv">${FUNDS.length} กอง</div></div>
+    <div class="m"><div class="ml">บันทึกใหม่</div><div class="mv pos">${nr.length} วัน</div></div>`;
+  rebuildEntryForm();
+}
+function copyLast(){const all=getAllNAV(),last=all[all.length-1];FUNDS.forEach(f=>{const el=getNFEl(f);if(el&&last[f]!=null){el.value=last[f];el.classList.add('ch');}});toast('คัดลอก NAV จาก '+last.d);}
+function clearForm(){FUNDS.forEach(f=>{const el=getNFEl(f);if(el){el.value='';el.classList.remove('ch');}});}
+function saveNAV(){
+  const date=document.getElementById('eDate').value;if(!date){toast('กรุณาเลือกวันที่','#D44B2A');return;}
+  const entry={d:date};let cnt=0;
+  FUNDS.forEach(f=>{const el=getNFEl(f);if(el&&el.value!==''){entry[f]=parseFloat(el.value);cnt++;}});
+  if(!cnt){toast('กรุณากรอก NAV อย่างน้อย 1 กองทุน','#D44B2A');return;}
+  const rows=getNew(),i=rows.findIndex(r=>r.d===date);
+  if(i>=0)Object.assign(rows[i],entry);else rows.push(entry);
+  setNew(rows);toast('บันทึก '+date+' ('+cnt+' กองทุน) ✓');
+  document.getElementById('eStat').textContent='บันทึกแล้ว '+new Date().toLocaleTimeString('th-TH');
+  renderEntry();renderOverview();
+}
+// sub: chart
+function renderEntryChart(){
+  const all=getAllNAV();
+  const fv=isel('ecFund','ALL');
+  const range=parseInt(isel('ecRange','0'));
+  let data=all;if(range>0)data=data.slice(-range);
+  const show=fv==='ALL'?FUNDS.filter(f=>data.some(r=>r[f]!=null)):[fv];
+  const ds=show.map(f=>({label:FN[f],data:data.map(r=>r[f]??null),borderColor:PAL[FUNDS.indexOf(f)%PAL.length],backgroundColor:'transparent',borderWidth:1.5,pointRadius:0,spanGaps:true}));
+  leg('lEC',show.map(f=>FN[f]),show.map(f=>PAL[FUNDS.indexOf(f)%PAL.length]));
+  dc('cEC');CC['cEC']=new Chart(document.getElementById('cEC'),{type:'line',data:{labels:data.map(r=>r.d.slice(5)),datasets:ds},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false}},scales:{x:{ticks:{maxTicksLimit:12,font:{size:9}}},y:{ticks:{font:{size:9}}}}}});
+}
+// sub: history
+function buildHistFilters(){
+  const all=getAllNAV();
+  const months=[...new Set(all.map(r=>r.d.slice(0,7)))].sort().reverse();
+  document.getElementById('hMonth').innerHTML='<option value="ALL">ทุกเดือน</option>'+months.map(m=>`<option value="${m}">${m}</option>`).join('');
+  document.getElementById('hFund').innerHTML='<option value="ALL">ทุกกองทุน</option>'+FUNDS.map(f=>`<option value="${f}">${FN[f]||f}</option>`).join('');
+}
+function renderHistory(){
+  const all=getAllNAV(),fv=isel('hFund','ALL'),mv=isel('hMonth','ALL');
+  const nd=new Set(getNew().map(r=>r.d));
+  const rows=[];
+  all.forEach(row=>{
+    if(mv!=='ALL'&&!row.d.startsWith(mv))return;
+    (fv==='ALL'?FUNDS:[fv]).forEach(f=>{if(row[f]!=null)rows.push({d:row.d,f,v:row[f],isNew:nd.has(row.d)});});
+  });
+  document.getElementById('histB').innerHTML=rows.slice().reverse().map(r=>`<tr><td>${r.d}</td><td>${FN[r.f]||r.f}</td><td style="font-family:var(--f-mono)">${r.v.toFixed(4)}</td><td>${r.isNew?'<span class="bdg bnew">ใหม่</span>':'<span class="bdg bold">เดิม</span>'}</td></tr>`).join('')||'<tr><td colspan="4" style="text-align:center;padding:10px;color:var(--t2)">ไม่พบข้อมูล</td></tr>';
+}
+// sub: export
+function renderExpSum(){
+  const all=getAllNAV(),nr=getNew();
+  document.getElementById('expSum').innerHTML=`<div>รวมทั้งหมด: <strong>${all.length} วัน</strong> (${all[0].d} ถึง ${all[all.length-1].d})</div><div>ข้อมูลใหม่ที่บันทึก: <strong>${nr.length} วัน</strong></div>`+FUNDS.map(f=>{const c=all.filter(r=>r[f]!=null).length;return`<div style="color:var(--t2)">${FN[f]||f}: ${c} วัน</div>`;}).join('');
+}
+function exportCSV(){
+  const all=getAllNAV(),lines=['\ufeffวันที่,Fund,NAV'];
+  all.forEach(row=>FUNDS.forEach(f=>{if(row[f]!=null)lines.push(`${row.d},${f},${row[f]}`)}));
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/csv'}));a.download='nav_history_full.csv';a.click();toast('Download CSV ('+lines.length+' แถว) ✓');
+}
+function exportCSVFiltered(){
+  const all=getAllNAV(),fv=isel('expFund','ALL'),funds=fv==='ALL'?FUNDS:[fv];
+  const lines=['\ufeffวันที่,Fund,NAV'];
+  all.forEach(row=>funds.forEach(f=>{if(row[f]!=null)lines.push(`${row.d},${f},${row[f]}`)}));
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/csv'}));a.download=`nav_${fv==='ALL'?'all':fv}.csv`;a.click();toast('Download CSV ✓');
+}
+function exportExcel(){
+  try{
+    const all=getAllNAV();
+    const ws1=[['วันที่',...FUNDS.map(f=>FN[f]||f)]];
+    all.forEach(row=>ws1.push([row.d,...FUNDS.map(f=>row[f]??'')]));
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws1),'NAV History');
+    const ws2=[['กองทุน','AMC','จำนวนวัน','NAV ล่าสุด','NAV เริ่มต้น','ผลตอบแทน%']];
+    const last=all[all.length-1];
+    FUNDS.forEach(f=>{const rows=all.filter(r=>r[f]!=null);if(!rows.length)return;const f0=rows[0][f],fl=rows[rows.length-1][f];ws2.push([FN[f]||f,AMC[f]||'-',rows.length,fl,f0,parseFloat(((fl-f0)/f0*100).toFixed(2))]);});
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(ws2),'Summary');
+    XLSX.writeFile(wb,'portfolio_nav.xlsx');toast('Export Excel ✓');
+  }catch(e){toast('Export Excel ไม่สำเร็จ — ใช้ CSV แทน','#D44B2A');}
+}
+function copyXL(){
+  const nr=getNew(),nd=new Set(nr.map(r=>r.d)),lines=[];
+  getAllNAV().filter(r=>nd.has(r.d)).forEach(row=>FUNDS.forEach(f=>{if(row[f]!=null)lines.push(`${row.d}\t${f}\t${row[f]}`)}));
+  navigator.clipboard.writeText(lines.join('\n')).then(()=>toast('Copy '+lines.length+' แถวใหม่ → Paste ลง Excel'));
+}
+
+// ===== ADD FUND MODAL =====
+function showAddFundModal(){document.getElementById('addFundModal').style.display='flex';}
+function closeAddFundModal(){document.getElementById('addFundModal').style.display='none';}
+function confirmAddFund(){
+  const code=document.getElementById('mfCode').value.trim();
+  const name=document.getElementById('mfName').value.trim();
+  const amc=document.getElementById('mfAMC').value;
+  const theme=document.getElementById('mfTheme').value;
+  const asClass=document.getElementById('mfAS').value;
+  const alloc=parseFloat(document.getElementById('mfAlloc').value)||0;
+  const units=parseFloat(document.getElementById('mfUnits').value)||0;
+  if(!code||!name){toast('กรุณากรอก รหัส และ ชื่อกองทุน','#D44B2A');return;}
+  if(FUNDS.includes(code)){toast('รหัสกองทุนนี้มีอยู่แล้ว','#D44B2A');return;}
+  // Add to runtime
+  FUNDS.push(code);
+  FN[code]=name;AMC[code]=amc;TH[code]=theme;AS[code]=asClass;
+  ALLOC[code]=alloc;UNITS[code]=units;
+  // Recompute APCT
+  const ta=totalAlloc();
+  if(ta>0)FUNDS.forEach(f=>{APCT[f]=parseFloat(((ALLOC[f]||0)/ta*100).toFixed(2));});
+  // Persist custom funds
+  try{
+    const cf=JSON.parse(localStorage.getItem('custom_funds_v1')||'[]');
+    cf.push({code,name,amc,theme,asClass,alloc,units});
+    localStorage.setItem('custom_funds_v1',JSON.stringify(cf));
+  }catch(e){}
+  // Update all dropdowns
+  rebuildAllDropdowns();
+  closeAddFundModal();
+  toast('เพิ่มกองทุน '+name+' ('+code+') ✓');
+  // Clear form
+  ['mfCode','mfName','mfAlloc','mfUnits'].forEach(id=>document.getElementById(id).value='');
+  // Go to entry tab if on entry
+  renderEntry();
+  renderOverview();
+}
+
+function rebuildAllDropdowns(){
+  ['nFS','sFund','tFund','sEditFund','ecFund','hFund','expFund','txFF'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    const cur=el.value;
+    const isFF=id==='txFF';
+    el.innerHTML=(isFF?'<option value="">-- เลือกกองทุน --</option>':'<option value="ALL">ทุกกองทุน</option>')+FUNDS.map(f=>`<option value="${f}">${FN[f]||f}</option>`).join('');
+    if([...el.options].some(o=>o.value===cur))el.value=cur;
+  });
+  buildFundPills();buildAMCPills();
+}
+
+// ===== AI =====
+async function callAI(){const q=document.getElementById('aiIn').value.trim();if(q)await askAI(q);}
+async function askAI(q){
+  const box=document.getElementById('aiR');box.style.display='block';
+  box.innerHTML='<i class="ti ti-loader" style="display:inline-block;animation:spin 1s linear infinite"></i> กำลังวิเคราะห์...';
+  const all=getAllNAV(),last=all[all.length-1],first=all[0];
+  const ta=totalAlloc();
+  const spRet=last['SCBS&P500E']&&first['SCBS&P500E']?((last['SCBS&P500E']-first['SCBS&P500E'])/first['SCBS&P500E']*100).toFixed(2):'-';
+  const ctx=`พอร์ตกองทุนรวม ${FUNDS.length} กองทุน รวม ฿${ta.toLocaleString()} | NAV: ${all.length} วัน (${first.d} ถึง ${last.d})\nAMC: SCB ~82%, Kbank ~9.5%, Talis ~9%\nNAV ล่าสุด: SCBS&P500E=${last['SCBS&P500E']}, SCBNDQE=${last['SCBNDQE']}, SCBGOLDE=${last['SCBGOLDE']}\nผลตอบแทน S&P500 ตั้งแต่ต้น: ${spRet}%\nEquity ~91.8%, Gold ~8.2%`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:'คุณเป็นผู้เชี่ยวชาญกองทุนรวมไทย วิเคราะห์กระชับ ชัดเจน ตอบภาษาไทย ไม่เกิน 4 ประเด็นหลัก',messages:[{role:'user',content:`ข้อมูลพอร์ต:\n${ctx}\n\nคำถาม: ${q}`}]})});
+    const d=await res.json();box.innerHTML=(d.content?.map(c=>c.text||'').join('')||'วิเคราะห์ไม่ได้').replace(/\n/g,'<br>');
+  }catch(e){box.innerHTML='เกิดข้อผิดพลาด: '+e.message;}
+}
+
+
+// ===== DEPOSITS =====
+const DEP_SK='deposits_v1';
+function getDeposits(){try{return JSON.parse(localStorage.getItem(DEP_SK)||'[]');}catch(e){return[];}}
+function setDeposits(a){try{localStorage.setItem(DEP_SK,JSON.stringify(a));}catch(e){toast('Storage เต็ม','#D44B2A');}}
+
+function showDepositForm(){
+  document.getElementById('dpDate').value=new Date().toISOString().slice(0,10);
+  document.getElementById('dpAmount').value='';
+  document.getElementById('dpInterest').value='';
+  document.getElementById('dpNote').value='';
+  document.getElementById('dpAccName').value='';
+  document.getElementById('depositModal').style.display='flex';
+}
+function closeDepositModal(){document.getElementById('depositModal').style.display='none';}
+function confirmDeposit(){
+  const date=document.getElementById('dpDate').value;
+  const bank=document.getElementById('dpBank').value;
+  const accName=document.getElementById('dpAccName').value.trim();
+  const amount=parseFloat(document.getElementById('dpAmount').value);
+  const interest=parseFloat(document.getElementById('dpInterest').value)||0;
+  const note=document.getElementById('dpNote').value.trim();
+  if(!date||!bank||isNaN(amount)||amount<=0){toast('กรุณากรอกข้อมูลให้ครบ','#D44B2A');return;}
+  const label=accName?bank+' ('+accName+')':bank;
+  const rec={date,fund:label,bank,accName,amount,interest,note,type:'Deposit',amc:'',_custom:true};
+  const deps=getDeposits();deps.push(rec);setDeposits(deps);
+  // Also add to TX list
+  const cTx=getCustomTx();cTx.push({...rec});setCustomTx(cTx);
+  closeDepositModal();
+  buildTxDateDrop();renderTx();
+  renderDepositOverview();
+  updateDepositBankFilter();
+  toast('บันทึกเงินฝาก ฿'+fmtMoney(amount)+' ('+label+') ✓');
+}
+function deleteDeposit(date,bank,amount){
+  if(!confirm('ลบรายการเงินฝากนี้?'))return;
+  const deps=getDeposits();
+  const idx=deps.findIndex(d=>d.date===date&&d.bank===bank&&d.amount===amount);
+  if(idx>=0){deps.splice(idx,1);setDeposits(deps);}
+  // also remove from custom tx
+  const cTx=getCustomTx();
+  const ti=cTx.findIndex(t=>t.date===date&&t.type==='Deposit'&&t.amount===amount);
+  if(ti>=0){cTx.splice(ti,1);setCustomTx(cTx);}
+  buildTxDateDrop();renderTx();renderDepositOverview();updateDepositBankFilter();
+  toast('ลบรายการเงินฝากแล้ว','#D44B2A');
+}
+
+function showEditDepositModal(idx){
+  const deps=getDeposits();
+  const d=deps[idx];
+  if(!d)return;
+  document.getElementById('edpIdx').value=idx;
+  document.getElementById('edpDate').value=d.date||'';
+  document.getElementById('edpBank').value=d.bank||'กรุงเทพ';
+  document.getElementById('edpAccName').value=d.accName||'';
+  // Detect tx type from note or default to deposit
+  const noteLC=(d.note||'').toLowerCase();
+  let txType='deposit';
+  if(noteLC.includes('ถอน')||noteLC.includes('withdraw'))txType='withdraw';
+  else if(noteLC.includes('ดอกเบี้ย')||noteLC.includes('interest'))txType='interest';
+  document.getElementById('edpTxType').value=txType;
+  document.getElementById('edpAmount').value=d.amount||'';
+  document.getElementById('edpInterest').value=d.interest||'';
+  document.getElementById('edpNote').value=d.note||'';
+  document.getElementById('editDepositModal').style.display='flex';
+}
+
+function closeEditDepositModal(){
+  document.getElementById('editDepositModal').style.display='none';
+}
+
+function confirmEditDeposit(){
+  const idx=parseInt(document.getElementById('edpIdx').value);
+  const deps=getDeposits();
+  if(isNaN(idx)||!deps[idx])return;
+  const date=document.getElementById('edpDate').value;
+  const bank=document.getElementById('edpBank').value;
+  const accName=document.getElementById('edpAccName').value.trim();
+  const txType=document.getElementById('edpTxType').value;
+  const amount=parseFloat(document.getElementById('edpAmount').value)||0;
+  const interest=parseFloat(document.getElementById('edpInterest').value)||0;
+  const note=document.getElementById('edpNote').value.trim();
+  if(!date||!bank||amount<=0){toast('กรุณากรอกวันที่ ธนาคาร และจำนวนเงิน','#D44B2A');return;}
+  // Build display label same as confirmDeposit
+  const bankNames={'กรุงเทพ':'กรุงเทพ','กสิกรไทย':'กสิกรไทย','ไทยพาณิชย์':'ไทยพาณิชย์','กรุงไทย':'กรุงไทย','ทหารไทยธนชาต':'ทหารไทยธนชาต','อื่นๆ':'อื่นๆ'};
+  const label=accName?`${bankNames[bank]||bank} (${accName})`:(bankNames[bank]||bank);
+  // Sign: withdraw is negative, interest goes to interest field
+  let finalAmount=amount;
+  let finalNote=note;
+  if(txType==='withdraw'){finalNote=(note?note+' | ':'')+'ถอนเงิน';finalAmount=amount;}
+  if(txType==='interest'){finalNote=(note?note+' | ':'')+'รับดอกเบี้ย';}
+  const oldRec=deps[idx];
+  const newRec={...oldRec,date,fund:label,bank,accName,amount:finalAmount,interest:txType==='interest'?amount:interest,note:finalNote,type:'Deposit',amc:'',_custom:true};
+  deps[idx]=newRec;
+  setDeposits(deps);
+  // Update matching custom tx entry
+  const cTx=getCustomTx();
+  const ti=cTx.findIndex(t=>t.date===oldRec.date&&t.type==='Deposit'&&t.amount===oldRec.amount);
+  if(ti>=0){cTx[ti]={...cTx[ti],date,fund:label,bank,accName,amount:finalAmount,interest:txType==='interest'?amount:interest,note:finalNote};}
+  setCustomTx(cTx);
+  closeEditDepositModal();
+  buildTxDateDrop();renderTx();renderDepositOverview();updateDepositBankFilter();
+  toast('แก้ไขรายการเงินฝากแล้ว ✓');
+}
+
+function updateDepositBankFilter(){
+  const deps=getDeposits();
+  const banks=[...new Set(deps.map(d=>d.fund))];
+  const sel=document.getElementById('dpViewBank');
+  const cur=sel.value;
+  sel.innerHTML='<option value="ALL">ทุกบัญชี</option>'+banks.map(b=>`<option value="${b}">${b}</option>`).join('');
+  if(banks.includes(cur))sel.value=cur;
+}
+
+function renderDepositOverview(){
+  const deps=getDeposits();
+  const card=document.getElementById('depositOverviewCard');
+  if(!deps.length){card.style.display='none';return;}
+  card.style.display='block';
+  updateDepositBankFilter();
+  const bankFilter=document.getElementById('dpViewBank').value;
+  const filtered=bankFilter==='ALL'?deps:deps.filter(d=>d.fund===bankFilter);
+  // Metrics
+  const totalDep=filtered.reduce((s,d)=>s+d.amount,0);
+  const totalInt=filtered.reduce((s,d)=>s+(d.interest||0),0);
+  const latestDate=filtered.reduce((mx,d)=>d.date>mx?d.date:mx,'');
+  document.getElementById('dpMetrics').innerHTML=`
+    <div class="m"><div class="ml">ยอดเงินฝากรวม</div><div class="mv" style="color:var(--gold)">฿${fmtMoney(totalDep)}</div><div class="ms" style="color:var(--t2)">${filtered.length} รายการ</div></div>
+    <div class="m"><div class="ml">ดอกเบี้ยสะสม</div><div class="mv pos">฿${fmtMoney(totalInt)}</div><div class="ms" style="color:var(--t2)">รวมทั้งหมด</div></div>
+    <div class="m"><div class="ml">มูลค่ารวม (เงินต้น+ดอกเบี้ย)</div><div class="mv" style="color:var(--gold)">฿${fmtMoney(totalDep+totalInt)}</div></div>
+    <div class="m"><div class="ml">รายการล่าสุด</div><div class="mv sm">${latestDate||'-'}</div></div>`;
+  // Build cumulative chart by date
+  const sorted=[...filtered].sort((a,b)=>a.date.localeCompare(b.date));
+  const dateMap={};sorted.forEach(d=>{dateMap[d.date]=(dateMap[d.date]||0)+d.amount;});
+  const dates=Object.keys(dateMap).sort();
+  let cum=0;const cumData=dates.map(d=>{cum+=dateMap[d];return cum;});
+  // Colors per bank
+  const banks=[...new Set(filtered.map(d=>d.fund))];
+  const bankColors=['#B8820A','#7B61C4','#0D9373','#2C5BDB','#D44B2A'];
+  leg('lDP',['ยอดสะสม'+(bankFilter!=='ALL'?' ('+bankFilter+')':'')],['#B8820A']);
+  dc('cDP');CC['cDP']=new Chart(document.getElementById('cDP'),{type:'bar',data:{labels:dates,datasets:[{label:'ยอดฝากสะสม',data:cumData,backgroundColor:'rgba(184,130,10,0.5)',borderColor:'#B8820A',borderWidth:1.5,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'฿'+fmtMoney(c.raw)}}},scales:{x:{ticks:{font:{size:9}}},y:{ticks:{callback:v=>'฿'+(v/1000).toFixed(0)+'K',font:{size:9}}}}}});
+  // Table
+  const sortedDeps=[...filtered].sort((a,b)=>b.date.localeCompare(a.date));
+  document.getElementById('dpBody').innerHTML=sortedDeps.map(d=>{
+    const realIdx=deps.findIndex(x=>x.date===d.date&&x.bank===d.bank&&x.amount===d.amount);
+    return`<tr>
+      <td>${d.date}</td>
+      <td style="font-weight:500"><i class="ti ti-piggy-bank" style="color:var(--gold);margin-right:4px"></i>${d.fund}</td>
+      <td style="font-family:var(--f-mono);color:var(--gold)">฿${fmtMoney(d.amount)}</td>
+      <td style="font-family:var(--f-mono)" class="${(d.interest||0)>0?'pos':''}">฿${(d.interest||0)>0?fmtMoney(d.interest):'-'}</td>
+      <td style="color:var(--t2);font-size:10px">${d.note||'-'}</td>
+      <td style="display:flex;gap:4px">
+        <button class="tx-edit" onclick="showEditDepositModal(${realIdx})" title="แก้ไข"><i class="ti ti-edit"></i></button>
+        <button class="tx-del" onclick="deleteDeposit('${d.date}','${d.bank}',${d.amount})" title="ลบ"><i class="ti ti-trash"></i></button>
+      </td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="6" style="text-align:center;padding:10px;color:var(--t2)">ไม่มีรายการ</td></tr>';
+}
+
+function showAddFundFromTx(){
+  document.getElementById('addFundModal').style.display='flex';
+}
+
+
+
+// ═══════════════════════════════════════
+//  GOOGLE SHEETS SYNC ENGINE (v17 - fixed CORS preflight issue)
+// ═══════════════════════════════════════
+const GS_CFG_KEY = 'gs_config_v1';
+const GS_LAST_SYNC_KEY = 'gs_last_sync_v1';
+
+function getGSConfig(){try{return JSON.parse(localStorage.getItem(GS_CFG_KEY)||'null');}catch(e){return null;}}
+function setGSConfig(cfg){localStorage.setItem(GS_CFG_KEY,JSON.stringify(cfg));}
+function clearGSConfig(){localStorage.removeItem(GS_CFG_KEY);localStorage.removeItem(GS_LAST_SYNC_KEY);updateSyncBar();toast('ลบการตั้งค่า Sync แล้ว','#D44B2A');}
+
+// The Apps Script code users paste into their Google Sheet
+const APPS_SCRIPT_CODE = `// Portfolio Dashboard - Google Sheets Backend
+// วาง code นี้ใน Apps Script แล้ว Deploy เป็น Web App
+
+const SHEET_NAME = 'PortfolioData';
+
+function doGet(e) {
+  const sheet = getOrCreateSheet();
+  const action = e.parameter.action || 'read';
+  if (action === 'read') {
+    const data = sheet.getDataRange().getValues();
+    const result = {};
+    data.forEach(row => {
+      if (row[0] && row[1]) {
+        try { result[row[0]] = JSON.parse(row[1]); }
+        catch(err) { result[row[0]] = row[1]; }
+      }
+    });
+    return ContentService.createTextOutput(JSON.stringify({ok:true, data:result}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  return ContentService.createTextOutput(JSON.stringify({ok:false,error:'unknown action'}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  try {
+    const payload = JSON.parse(e.postData.contents);
+    const sheet = getOrCreateSheet();
+    const key = payload.key;
+    const value = JSON.stringify(payload.value);
+    const data = sheet.getDataRange().getValues();
+    let found = false;
+    for (let i = 0; i < data.length; i++) {
+      if (data[i][0] === key) {
+        sheet.getRange(i+1, 2).setValue(value);
+        sheet.getRange(i+1, 3).setValue(new Date().toISOString());
+        sheet.getRange(i+1, 4).setValue(payload.device || 'unknown');
+        found = true; break;
+      }
+    }
+    if (!found) {
+      sheet.appendRow([key, value, new Date().toISOString(), payload.device || 'unknown']);
+    }
+    return ContentService.createTextOutput(JSON.stringify({ok:true}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService.createTextOutput(JSON.stringify({ok:false,error:err.message}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function getOrCreateSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAME);
+    sheet.getRange(1,1,1,4).setValues([['key','value','updated','device']]);
+    sheet.getRange(1,1,1,4).setFontWeight('bold');
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
+}`;
+
+// Fill the code element when modal opens
+function openSyncSettings(){
+  document.getElementById('gsCode').textContent = APPS_SCRIPT_CODE;
+  const cfg = getGSConfig();
+  if(cfg){
+    document.getElementById('gsURL').value = cfg.url||'';
+    document.getElementById('gsDevice').value = cfg.device||'';
+    showSyncStep(3);
+    runConnectionTest();
+  } else {
+    showSyncStep(1);
+  }
+  document.getElementById('syncModal').style.display='flex';
+}
+
+function showSyncStep(n){
+  [1,2,3].forEach(i=>{
+    document.getElementById('sStep'+i).style.display = i===n?'block':'none';
+    const btn = document.getElementById('sStep'+i+'Btn');
+    btn.style.background = i===n?'#3d7fff':'transparent';
+    btn.style.color = i===n?'#fff':'var(--t2)';
+  });
+}
+
+function copyGSCode(){
+  navigator.clipboard.writeText(APPS_SCRIPT_CODE).then(()=>toast('คัดลอกโค้ดแล้ว ✓')).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=APPS_SCRIPT_CODE;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('คัดลอกโค้ดแล้ว ✓');
+  });
+}
+
+async function saveGSConfig(){
+  const url = document.getElementById('gsURL').value.trim();
+  const device = document.getElementById('gsDevice').value.trim()||'My Device';
+  if(!url||!url.startsWith('https://script.google.com')){
+    toast('URL ไม่ถูกต้อง','#D44B2A');return;
+  }
+  setGSConfig({url,device});
+  showSyncStep(3);
+  await runConnectionTest();
+  updateSyncBar();
+}
+
+async function gsRequest(method, body=null){
+  const cfg = getGSConfig();
+  if(!cfg) throw new Error('ไม่ได้ตั้งค่า URL');
+  // NOTE: Google Apps Script web apps do NOT handle CORS preflight (OPTIONS)
+  // requests properly. Sending 'Content-Type: application/json' forces the
+  // browser to do a preflight check first, which Apps Script can't answer,
+  // resulting in a generic "Failed to fetch" error before the real request
+  // is even sent. Using 'text/plain' keeps this a CORS "simple request"
+  // (no preflight). Apps Script's doPost still reads e.postData.contents
+  // and JSON.parse()s it fine regardless of the declared content type.
+  const opts = { method, headers: {'Content-Type':'text/plain;charset=utf-8'} };
+  let url = cfg.url;
+  if(method==='GET') url += '?action=read';
+  else opts.body = JSON.stringify({...body, device: cfg.device});
+  const res = await fetch(url, opts);
+  if(!res.ok) throw new Error('HTTP '+res.status);
+  return await res.json();
+}
+
+async function runConnectionTest(){
+  const el = document.getElementById('syncTestResult');
+  el.innerHTML = '<span style="color:#f7c948">⏳ กำลังทดสอบ...</span>';
+  try {
+    const r = await gsRequest('GET');
+    if(r.ok){
+      const keys = Object.keys(r.data||{});
+      el.innerHTML = `<span style="color:#00d48c">✅ เชื่อมต่อสำเร็จ!</span><br><span style="color:var(--t2)">พบข้อมูลใน Sheet: ${keys.length} รายการ (${keys.join(', ')||'ยังว่าง'})</span><br><br><span style="color:var(--t2)">Device ที่ตั้งค่า: <b style="color:var(--t1)">${getGSConfig().device}</b></span>`;
+      setSyncDot('green','เชื่อมต่อ Google Sheets แล้ว');
+      document.getElementById('syncNowBtn').style.display='';
+    } else {
+      throw new Error(r.error||'unknown');
+    }
+  } catch(e){
+    el.innerHTML = `<span style="color:#ff5555">❌ เชื่อมต่อไม่ได้: ${e.message}</span><br><br><span style="color:var(--t2)">ตรวจสอบ:<br>• URL ถูกต้องหรือไม่<br>• Deploy เป็น "Anyone" หรือไม่<br>• Authorize Apps Script แล้วหรือไม่</span>`;
+    setSyncDot('red','ไม่สามารถเชื่อมต่อ Google Sheets');
+  }
+}
+
+function setSyncDot(color, msg){
+  const dot = document.getElementById('syncDot');
+  const msgEl = document.getElementById('syncMsg');
+  const colors = {green:'#00d48c',red:'#ff5555',yellow:'#f7c948',gray:'#6a88b8'};
+  dot.style.background = colors[color]||color;
+  msgEl.textContent = msg;
+}
+
+function updateSyncBar(){
+  const cfg = getGSConfig();
+  const lastSync = localStorage.getItem(GS_LAST_SYNC_KEY);
+  if(!cfg){
+    setSyncDot('gray','ยังไม่ได้ตั้งค่า Google Sheets');
+    document.getElementById('syncNowBtn').style.display='none';
+  } else {
+    const ago = lastSync ? '  (ล่าสุด: '+lastSync+')' : '';
+    setSyncDot('green','เชื่อมต่อ Google Sheets'+ago);
+    document.getElementById('syncNowBtn').style.display='';
+  }
+}
+
+// ── Write helpers ──────────────────────────────────────────────
+async function gsPush(key, value){
+  try {
+    await gsRequest('POST',{key,value});
+  } catch(e){
+    console.warn('GS push failed:',e.message);
+  }
+}
+
+async function gsPull(){
+  try {
+    const r = await gsRequest('GET');
+    if(!r.ok) throw new Error(r.error);
+    return r.data||{};
+  } catch(e){
+    console.warn('GS pull failed:',e.message);
+    return null;
+  }
+}
+
+// ── Full sync: pull from Sheets → merge into localStorage → refresh UI ──
+async function syncNow(){
+  const cfg = getGSConfig();
+  if(!cfg){toast('กรุณาตั้งค่า Google Sheets ก่อน','#D44B2A');return;}
+  setSyncDot('yellow','กำลัง Sync...');
+  const btn = document.getElementById('syncNowBtn');
+  btn.disabled=true; btn.textContent='⏳ Sync...';
+  try {
+    // 1. Push local data up
+    await gsPush('nav_v4', getNew());
+    await gsPush('tx_custom_v1', getCustomTx());
+    await gsPush('tx_base_del_v1', getBaseDel());
+    await gsPush('tx_base_edit_v1', getBaseEdit());
+    await gsPush('deposits_v1', getDeposits());
+    await gsPush('custom_funds_v1', JSON.parse(localStorage.getItem('custom_funds_v1')||'[]'));
+
+    // 2. Pull data from Sheet and merge (Sheet = source of truth)
+    const remote = await gsPull();
+    if(remote){
+      // Merge NAV: union of local + remote, remote wins on same date
+      if(remote.nav_v4){
+        const localNAV = getNew();
+        const merged = mergeNAV(localNAV, remote.nav_v4);
+        setNew(merged);
+      }
+      // Merge custom TX
+      if(remote.tx_custom_v1){
+        const localTx = getCustomTx();
+        const merged = mergeTxList(localTx, remote.tx_custom_v1);
+        setCustomTx(merged);
+      }
+      // Merge deleted base tx keys (union)
+      if(remote.tx_base_del_v1){
+        const localDel = getBaseDel();
+        const allDel = [...new Set([...localDel,...remote.tx_base_del_v1])];
+        setBaseDel(allDel);
+      }
+      // Merge base edits
+      if(remote.tx_base_edit_v1){
+        const localEdit = getBaseEdit();
+        const merged = mergeTxList(localEdit, remote.tx_base_edit_v1,'_baseKey');
+        setBaseEdit(merged);
+      }
+      // Merge deposits
+      if(remote.deposits_v1){
+        const localDep = getDeposits();
+        const merged = mergeTxList(localDep, remote.deposits_v1);
+        setDeposits(merged);
+      }
+      // Custom funds
+      if(remote.custom_funds_v1){
+        const local = JSON.parse(localStorage.getItem('custom_funds_v1')||'[]');
+        const merged = mergeByKey(local, remote.custom_funds_v1, 'code');
+        localStorage.setItem('custom_funds_v1', JSON.stringify(merged));
+      }
+    }
+
+    // 3. Update timestamp
+    const now = new Date().toLocaleString('th-TH',{dateStyle:'short',timeStyle:'short'});
+    localStorage.setItem(GS_LAST_SYNC_KEY, now);
+    setSyncDot('green','Sync สำเร็จ '+now);
+    toast('Sync สำเร็จ ✓');
+
+    // 4. Refresh all UI (unconditional — don't depend on which tab is active,
+    //    otherwise merged data sits in localStorage but never reaches the screen)
+    recomputeUnits();
+    recomputeAlloc();
+    buildTxDateDrop();
+    renderTx();
+    renderOverview();
+    renderDepositOverview();
+    renderNAV();
+    renderAlloc();
+    renderStocks();
+
+  } catch(e){
+    setSyncDot('red','Sync ล้มเหลว: '+e.message);
+    toast('Sync ล้มเหลว: '+e.message,'#D44B2A');
+  } finally {
+    btn.disabled=false; btn.innerHTML='<i class="ti ti-refresh" style="font-size:11px"></i> Sync ตอนนี้';
+  }
+}
+
+// ── Merge helpers ──────────────────────────────────────────────
+function mergeNAV(local, remote){
+  const map={};
+  [...local,...remote].forEach(r=>{
+    if(!map[r.d]) map[r.d]={d:r.d};
+    Object.assign(map[r.d],r);
+  });
+  return Object.values(map).sort((a,b)=>a.d.localeCompare(b.d));
+}
+function mergeTxList(local, remote, keyField=null){
+  // Remote wins on conflict; union of both
+  if(!keyField){
+    // Use date+fund+amount as key
+    const key=t=>t.date+'|'+t.fund+'|'+t.amount+'|'+(t.type||'');
+    const map={};
+    [...local,...remote].forEach(t=>{map[key(t)]=t;});
+    return Object.values(map).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  } else {
+    const map={};
+    [...local,...remote].forEach(t=>{if(t[keyField])map[t[keyField]]=t;});
+    return Object.values(map);
+  }
+}
+function mergeByKey(local, remote, keyField){
+  const map={};
+  [...local,...remote].forEach(t=>{if(t[keyField])map[t[keyField]]=t;});
+  return Object.values(map);
+}
+
+// ── Override save functions to also push to Sheets ──────────────
+const _origSetNew = setNew;
+window.setNew = function(a){
+  _origSetNew(a);
+  if(getGSConfig()) gsPush('nav_v4',a).catch(()=>{});
+};
+const _origSetCustomTx = setCustomTx;
+window.setCustomTx = function(a){
+  _origSetCustomTx(a);
+  if(getGSConfig()) gsPush('tx_custom_v1',a).catch(()=>{});
+};
+const _origSetDeposits = setDeposits;
+window.setDeposits = function(a){
+  _origSetDeposits(a);
+  if(getGSConfig()) gsPush('deposits_v1',a).catch(()=>{});
+};
+const _origSetBaseDel = setBaseDel;
+window.setBaseDel = function(a){
+  _origSetBaseDel(a);
+  if(getGSConfig()) gsPush('tx_base_del_v1',a).catch(()=>{});
+};
+const _origSetBaseEdit = setBaseEdit;
+window.setBaseEdit = function(a){
+  _origSetBaseEdit(a);
+  if(getGSConfig()) gsPush('tx_base_edit_v1',a).catch(()=>{});
+};
+
+// ── Auto sync on load if configured ────────────────────────────
+(async function initSync(){
+  updateSyncBar();
+  const cfg = getGSConfig();
+  if(cfg){
+    // Auto sync after 1s delay (let page render first)
+    setTimeout(()=>syncNow().catch(()=>{}), 1200);
+  }
+})();
+
+// ═══════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════
+const css=document.createElement('style');css.textContent='@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}';document.head.appendChild(css);
+document.getElementById('eDate').value=new Date().toISOString().slice(0,10);
+// Recompute units and invested amount from all TX on load (4 decimal places)
+recomputeUnits();
+recomputeAlloc();
+
+// Build all dropdowns
+FUNDS.forEach(f=>{
+  ['nFS','sFund','tFund','sEditFund','ecFund','hFund','expFund','txFF','plFundSel'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    const o=document.createElement('option');o.value=f;o.textContent=FN[f]||f;el.appendChild(o);
+  });
+});
+document.getElementById('txFD').value=new Date().toISOString().slice(0,10);
+buildTxDateDrop();
+buildFundPills();
+buildAMCPills();
+renderDepositOverview();
+renderOverview();
+</script>
+
+</div>
+</body>
+</html>
