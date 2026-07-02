@@ -90,7 +90,7 @@ input, select, textarea, .nfi, .insel, .fi select{
 </head>
 <body>
 <div id="app-root">
-<h2 style="color:#3d7fff;font-size:18px;font-weight:700;padding:8px 0 4px;letter-spacing:.01em;text-shadow:0 0 18px rgba(61,127,255,.5);font-family:'IBM Plex Sans Thai',sans-serif">Portfolio Dashboard <span style="font-size:11px;color:#3d7fff;opacity:.6;font-weight:400">v15</span></h2>
+<h2 style="color:#3d7fff;font-size:18px;font-weight:700;padding:8px 0 4px;letter-spacing:.01em;text-shadow:0 0 18px rgba(61,127,255,.5);font-family:'IBM Plex Sans Thai',sans-serif">Portfolio Dashboard <span style="font-size:11px;color:#3d7fff;opacity:.6;font-weight:400">v25</span></h2>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -2225,7 +2225,9 @@ function showAddFundFromTx(){
 
 
 // ═══════════════════════════════════════
-//  GOOGLE SHEETS SYNC ENGINE (v17 - fixed CORS preflight issue)
+//  GOOGLE SHEETS SYNC ENGINE (v25 - fixed pull-before-push race that caused
+//  a stale device's auto-sync to silently overwrite/erase another device's
+//  just-synced data on the Sheet before ever reading it; also cache-bust GET)
 // ═══════════════════════════════════════
 const GS_CFG_KEY = 'gs_config_v1';
 const GS_LAST_SYNC_KEY = 'gs_last_sync_v1';
@@ -2353,9 +2355,12 @@ async function gsRequest(method, body=null){
   // is even sent. Using 'text/plain' keeps this a CORS "simple request"
   // (no preflight). Apps Script's doPost still reads e.postData.contents
   // and JSON.parse()s it fine regardless of the declared content type.
-  const opts = { method, headers: {'Content-Type':'text/plain;charset=utf-8'} };
+  const opts = { method, cache: 'no-store', headers: {'Content-Type':'text/plain;charset=utf-8'} };
   let url = cfg.url;
-  if(method==='GET') url += '?action=read';
+  // Cache-bust: iOS Safari in particular can silently reuse a cached response
+  // for a repeated GET to the same URL, making a real Sheet update look like
+  // it never arrived. The timestamp param forces a genuinely fresh request.
+  if(method==='GET') url += '?action=read&_='+Date.now();
   else opts.body = JSON.stringify({...body, device: cfg.device});
   const res = await fetch(url, opts);
   if(!res.ok) throw new Error('HTTP '+res.status);
@@ -2430,47 +2435,41 @@ async function syncNow(){
   const btn = document.getElementById('syncNowBtn');
   btn.disabled=true; btn.textContent='⏳ Sync...';
   try {
-    // 1. Push local data up
-    await gsPush('nav_v4', getNew());
-    await gsPush('tx_custom_v1', getCustomTx());
-    await gsPush('tx_base_del_v1', getBaseDel());
-    await gsPush('tx_base_edit_v1', getBaseEdit());
-    await gsPush('deposits_v1', getDeposits());
-    await gsPush('custom_funds_v1', JSON.parse(localStorage.getItem('custom_funds_v1')||'[]'));
-    await gsPush('stocks_v1', STOCKS_DATA);
-
-    // 2. Pull data from Sheet and merge (Sheet = source of truth)
+    // 1. PULL first — never push raw local data before seeing what's already
+    //    on the Sheet. Pushing before pulling lets a stale device silently
+    //    overwrite changes another device just synced, before this device
+    //    ever gets a chance to read them (data loss race condition).
     const remote = await gsPull();
     if(remote){
       // Merge NAV: union of local + remote, remote wins on same date
       if(remote.nav_v4){
         const localNAV = getNew();
         const merged = mergeNAV(localNAV, remote.nav_v4);
-        setNew(merged);
+        _origSetNew(merged);
       }
       // Merge custom TX
       if(remote.tx_custom_v1){
         const localTx = getCustomTx();
         const merged = mergeTxList(localTx, remote.tx_custom_v1);
-        setCustomTx(merged);
+        _origSetCustomTx(merged);
       }
       // Merge deleted base tx keys (union)
       if(remote.tx_base_del_v1){
         const localDel = getBaseDel();
         const allDel = [...new Set([...localDel,...remote.tx_base_del_v1])];
-        setBaseDel(allDel);
+        _origSetBaseDel(allDel);
       }
       // Merge base edits
       if(remote.tx_base_edit_v1){
         const localEdit = getBaseEdit();
         const merged = mergeTxList(localEdit, remote.tx_base_edit_v1,'_baseKey');
-        setBaseEdit(merged);
+        _origSetBaseEdit(merged);
       }
       // Merge deposits
       if(remote.deposits_v1){
         const localDep = getDeposits();
         const merged = mergeTxList(localDep, remote.deposits_v1);
-        setDeposits(merged);
+        _origSetDeposits(merged);
       }
       // Custom funds
       if(remote.custom_funds_v1){
@@ -2489,6 +2488,16 @@ async function syncNow(){
         saveSD();
       }
     }
+
+    // 2. Push the now-merged (complete) local data back up, so the Sheet
+    //    always ends up a superset of every device's data, never a regression.
+    await gsPush('nav_v4', getNew());
+    await gsPush('tx_custom_v1', getCustomTx());
+    await gsPush('tx_base_del_v1', getBaseDel());
+    await gsPush('tx_base_edit_v1', getBaseEdit());
+    await gsPush('deposits_v1', getDeposits());
+    await gsPush('custom_funds_v1', JSON.parse(localStorage.getItem('custom_funds_v1')||'[]'));
+    await gsPush('stocks_v1', STOCKS_DATA);
 
     // 3. Update timestamp
     const now = new Date().toLocaleString('th-TH',{dateStyle:'short',timeStyle:'short'});
