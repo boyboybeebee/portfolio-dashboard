@@ -2179,6 +2179,9 @@ function showAddFundFromTx(){
 // ═══════════════════════════════════════
 const GS_CFG_KEY = 'gs_config_v1';
 const GS_LAST_SYNC_KEY = 'gs_last_sync_v1';
+// URL ของ Google Apps Script ที่ตั้งค่าไว้แล้ว — ฝังไว้ในไฟล์เพื่อให้ทุกเครื่อง
+// ที่เปิดไฟล์นี้เชื่อมต่อ Sheet เดียวกันได้อัตโนมัติ โดยไม่ต้องพิมพ์ URL เอง
+const DEFAULT_GS_URL = 'https://script.google.com/macros/s/AKfycbw9Tm9kptah2-dST2u6N7Y5L_uQk6GDWYiEADpmymOyHFbJphEY1CXhJ1e-9VN4LWS1/exec';
 
 function getGSConfig(){try{return JSON.parse(localStorage.getItem(GS_CFG_KEY)||'null');}catch(e){return null;}}
 function setGSConfig(cfg){localStorage.setItem(GS_CFG_KEY,JSON.stringify(cfg));}
@@ -2384,6 +2387,7 @@ async function syncNow(){
     await gsPush('tx_base_edit_v1', getBaseEdit());
     await gsPush('deposits_v1', getDeposits());
     await gsPush('custom_funds_v1', JSON.parse(localStorage.getItem('custom_funds_v1')||'[]'));
+    await gsPush('stocks_v1', STOCKS_DATA);
 
     // 2. Pull data from Sheet and merge (Sheet = source of truth)
     const remote = await gsPull();
@@ -2423,6 +2427,11 @@ async function syncNow(){
         const local = JSON.parse(localStorage.getItem('custom_funds_v1')||'[]');
         const merged = mergeByKey(local, remote.custom_funds_v1, 'code');
         localStorage.setItem('custom_funds_v1', JSON.stringify(merged));
+      }
+      // Stock composition per fund (merge per-fund key, remote wins on same fund)
+      if(remote.stocks_v1){
+        STOCKS_DATA = Object.assign({}, STOCKS_DATA, remote.stocks_v1);
+        saveSD();
       }
     }
 
@@ -2510,6 +2519,12 @@ window.setBaseEdit = function(a){
 
 // ── Auto sync on load if configured ────────────────────────────
 (async function initSync(){
+  // ถ้าเครื่องนี้ยังไม่เคยตั้งค่า Sync มาก่อน ให้ใช้ URL ที่ฝังไว้ในไฟล์
+  // เป็นค่าเริ่มต้นอัตโนมัติ (ไม่ต้องเปิด modal มากรอกเอง)
+  if(!getGSConfig() && typeof DEFAULT_GS_URL==='string' && DEFAULT_GS_URL.startsWith('https://script.google.com')){
+    const devName = 'Device-' + Math.random().toString(36).slice(2,6);
+    setGSConfig({url: DEFAULT_GS_URL, device: devName});
+  }
   updateSyncBar();
   const cfg = getGSConfig();
   if(cfg){
