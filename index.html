@@ -5,6 +5,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Portfolio Dashboard</title>
 
+<!-- ===== Cache control: บอกเบราว์เซอร์/พร็อกซีไม่ให้แคช HTML นี้ค้างไว้ =====
+     สาเหตุที่ไอโฟนเห็นข้อมูลเงินฝากไม่ตรงกับคอมหลัก มักไม่ใช่ปัญหา sync
+     (โค้ด syncNow/gsPull ทำ cache-bust ของ "ข้อมูล" อยู่แล้ว) แต่เป็นเพราะ
+     ตัว "หน้าเว็บ HTML เอง" ถูกแคชค้างไว้บนไอโฟน (โดยเฉพาะถ้า Add to Home
+     Screen — โหมด standalone ของ iOS Safari จะไม่เช็คของใหม่ให้อัตโนมัติ)
+     ทำให้ตัวแอปที่รันอยู่บนไอโฟนเป็นโค้ดเวอร์ชันเก่าที่ logic sync ไม่สมบูรณ์ -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<script>
+// ── Auto version-check & force-reload ──────────────────────────
+// ดึงหน้าเว็บฉบับล่าสุดจาก server ตรงๆ (bypass cache ด้วย cache:'no-store'
+// + query กันแคช) แล้วเทียบเลขเวอร์ชัน ถ้าไม่ตรงกับที่กำลังรันอยู่ ให้รีโหลด
+// หน้าใหม่ทันทีแบบ hard-reload — แก้ปัญหาไอโฟน/หน้าจอโฮมค้างเวอร์ชันเก่า
+// โดยไม่ต้องให้ผู้ใช้ไปเคลียร์แคชเอง
+(function(){
+  var APP_VERSION = 'v26';
+  try{
+    var url = location.pathname + (location.pathname.indexOf('?')>-1?'&':'?') + '_v=' + Date.now();
+    fetch(url, {cache:'no-store'}).then(function(r){return r.text();}).then(function(html){
+      var m = html.match(/APP_VERSION\s*=\s*'([^']+)'/);
+      if(m && m[1] && m[1] !== APP_VERSION){
+        var flag = '_reloaded_for_' + m[1];
+        if(!sessionStorage.getItem(flag)){
+          sessionStorage.setItem(flag, '1');
+          location.reload(true);
+        }
+      }
+    }).catch(function(){});
+  }catch(e){}
+})();
+</script>
+
+
 <!-- ===== Apple Web App / PWA ===== -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -90,7 +124,7 @@ input, select, textarea, .nfi, .insel, .fi select{
 </head>
 <body>
 <div id="app-root">
-<h2 style="color:#3d7fff;font-size:18px;font-weight:700;padding:8px 0 4px;letter-spacing:.01em;text-shadow:0 0 18px rgba(61,127,255,.5);font-family:'IBM Plex Sans Thai',sans-serif">Portfolio Dashboard <span style="font-size:11px;color:#3d7fff;opacity:.6;font-weight:400">v25</span></h2>
+<h2 style="color:#3d7fff;font-size:18px;font-weight:700;padding:8px 0 4px;letter-spacing:.01em;text-shadow:0 0 18px rgba(61,127,255,.5);font-family:'IBM Plex Sans Thai',sans-serif">Portfolio Dashboard <span style="font-size:11px;color:#3d7fff;opacity:.6;font-weight:400">v26</span></h2>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
