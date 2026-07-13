@@ -20,8 +20,8 @@
 // + query กันแคช) แล้วเทียบเลขเวอร์ชัน ถ้าไม่ตรงกับที่กำลังรันอยู่ ให้รีโหลด
 // หน้าใหม่ทันทีแบบ hard-reload — แก้ปัญหาไอโฟน/หน้าจอโฮมค้างเวอร์ชันเก่า
 // โดยไม่ต้องให้ผู้ใช้ไปเคลียร์แคชเอง
+var APP_VERSION = 'v33'; // global (single source of truth — also read by applyAppName() later)
 (function(){
-  var APP_VERSION = 'v33';
   try{
     var url = location.pathname + (location.pathname.indexOf('?')>-1?'&':'?') + '_v=' + Date.now();
     fetch(url, {cache:'no-store'}).then(function(r){return r.text();}).then(function(html){
@@ -480,12 +480,14 @@ input:focus, select:focus, .nfi:focus {
       <div class="ct" style="margin:0">สัดส่วนมูลค่าสินทรัพย์ปัจจุบัน (รวมเงินฝาก)</div>
       <div id="apSubDate" style="font-size:10px;color:var(--t2)"></div>
     </div>
-    <div id="apTotalLine" style="font-size:12px;color:var(--t2);margin-bottom:6px"></div>
-    <div style="position:relative;height:230px;perspective:900px">
-      <canvas id="cAPShadow" style="position:absolute;left:0;top:14px;width:100%;height:100%;transform:rotateX(52deg) scale(0.94);filter:blur(1.5px);opacity:.65"></canvas>
-      <canvas id="cAP" style="position:absolute;left:0;top:0;width:100%;height:100%;transform:rotateX(52deg) scale(0.94)"></canvas>
+    <div id="apTotalLine" style="font-size:12px;color:var(--t2);margin-bottom:8px"></div>
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+      <div style="position:relative;height:340px;flex:2 1 300px;min-width:260px;perspective:1100px">
+        <canvas id="cAPShadow" style="position:absolute;left:0;top:18px;width:100%;height:100%;transform:rotateX(52deg) scale(0.94);filter:blur(1.5px);opacity:.65"></canvas>
+        <canvas id="cAP" style="position:absolute;left:0;top:0;width:100%;height:100%;transform:rotateX(52deg) scale(0.94)"></canvas>
+      </div>
+      <div class="leg" id="lAP" style="flex:1 1 190px;flex-direction:column;flex-wrap:nowrap;align-content:flex-start;align-items:stretch;gap:7px;max-height:340px;overflow-y:auto;margin:0;padding-right:2px"></div>
     </div>
-    <div class="leg" id="lAP" style="margin-top:10px;max-height:220px;overflow-y:auto"></div>
   </div>
   <div class="card">
     <div class="ct" id="cFBTitle">เงินลงทุน (฿ ลงทุน)</div>
