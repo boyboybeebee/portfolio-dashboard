@@ -20,7 +20,7 @@
 // + query กันแคช) แล้วเทียบเลขเวอร์ชัน ถ้าไม่ตรงกับที่กำลังรันอยู่ ให้รีโหลด
 // หน้าใหม่ทันทีแบบ hard-reload — แก้ปัญหาไอโฟน/หน้าจอโฮมค้างเวอร์ชันเก่า
 // โดยไม่ต้องให้ผู้ใช้ไปเคลียร์แคชเอง
-var APP_VERSION = 'v55'; // global (single source of truth — also read by applyAppName() later)
+var APP_VERSION = 'v59'; // global (single source of truth — also read by applyAppName() later)
 (function(){
   try{
     var url = location.pathname + (location.pathname.indexOf('?')>-1?'&':'?') + '_v=' + Date.now();
@@ -650,6 +650,7 @@ body[data-theme="light"] h2 span#appTitleText, body[data-theme="light"] h2{ text
   <button class="tab" onclick="showTab('tx',this)"><i class="ti ti-receipt"></i>ธุรกรรม</button>
   <button class="tab" onclick="showTab('stocks',this)"><i class="ti ti-building-skyscraper"></i>หุ้นใน ETF</button>
   <button class="tab" onclick="showTab('entry',this)"><i class="ti ti-edit"></i>บันทึก NAV</button>
+  <button class="tab" onclick="showTab('proj',this)"><i class="ti ti-target-arrow"></i>คาดการณ์อนาคต</button>
   <button class="tab" onclick="showTab('analytics',this)"><i class="ti ti-chart-histogram"></i>วิเคราะห์เชิงลึก</button>
   <button class="tab" onclick="showTab('ai',this)"><i class="ti ti-brain"></i>วิเคราะห์ AI</button>
   <button class="tab" onclick="showTab('defs',this)"><i class="ti ti-book"></i>คำจำกัดความ</button>
@@ -694,20 +695,40 @@ body[data-theme="light"] h2 span#appTitleText, body[data-theme="light"] h2{ text
     <div style="position:relative;height:190px"><canvas id="cFB"></canvas></div>
   </div>
   <div class="card">
-    <div class="ct" id="cPVTitle">มูลค่าพอร์ต ณ วันต่างๆ (฿)</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:6px">
+      <div class="ct" style="margin:0" id="cPVTitle">มูลค่าพอร์ต ณ วันต่างๆ (฿)</div>
+      <select class="insel" id="pvRangeSel" onchange="renderOverview()" style="font-size:10px;padding:3px 8px">
+        <option value="0">ทั้งหมด</option>
+        <option value="7">7 วัน</option>
+        <option value="30">1 เดือน</option>
+        <option value="90">3 เดือน</option>
+        <option value="180">6 เดือน</option>
+        <option value="365">1 ปี</option>
+      </select>
+    </div>
     <div style="position:relative;height:200px"><canvas id="cPV"></canvas></div>
+    <div id="cPVStats" style="font-size:10.5px;margin-top:8px"></div>
   </div>
   <div class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px">
       <div class="ct" style="margin:0" id="cPLTitle">กำไร/ขาดทุน (฿) ณ วันต่างๆ</div>
-      <div style="display:flex;align-items:center;gap:6px">
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
         <select class="insel" id="plFundSel" onchange="renderPLChart()" style="font-size:10px;padding:3px 8px">
           <option value="ALL">ทุกกองทุน</option>
+        </select>
+        <select class="insel" id="plRangeSel" onchange="renderPLChart()" style="font-size:10px;padding:3px 8px">
+          <option value="0">ทั้งหมด</option>
+          <option value="7">7 วัน</option>
+          <option value="30">1 เดือน</option>
+          <option value="90">3 เดือน</option>
+          <option value="180">6 เดือน</option>
+          <option value="365">1 ปี</option>
         </select>
       </div>
     </div>
     <div class="leg" id="lPL"></div>
     <div style="position:relative;height:210px"><canvas id="cPL"></canvas></div>
+    <div id="cPLStats" style="font-size:10.5px;margin-top:8px"></div>
   </div>
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
@@ -752,9 +773,16 @@ body[data-theme="light"] h2 span#appTitleText, body[data-theme="light"] h2{ text
   <div class="fi">
     <select id="nFS" onchange="renderNAV()"><option value="ALL">ทุกกองทุน</option></select>
     <select id="nMode" onchange="renderNAV()"><option value="nav">NAV จริง</option><option value="idx">% เทียบวันแรก</option></select>
-    <select id="nRange" onchange="renderNAV()"><option value="0">ทุกวัน</option><option value="30">30 วัน</option><option value="14">14 วัน</option><option value="7">7 วัน</option></select>
+    <select id="nRange" onchange="renderNAV()">
+      <option value="0">ทั้งหมด</option>
+      <option value="7">7 วัน</option>
+      <option value="30">1 เดือน</option>
+      <option value="90">3 เดือน</option>
+      <option value="180">6 เดือน</option>
+      <option value="365">1 ปี</option>
+    </select>
   </div>
-  <div class="card"><div class="ct">NAV History</div><div class="leg" id="lNAV"></div><div style="position:relative;height:270px"><canvas id="cNAV"></canvas></div></div>
+  <div class="card"><div class="ct">NAV History</div><div class="leg" id="lNAV"></div><div style="position:relative;height:270px"><canvas id="cNAV"></canvas></div><div id="cNAVStats" style="font-size:10.5px;margin-top:8px"></div></div>
 </div>
 
 <!-- ALLOC -->
@@ -956,6 +984,34 @@ body[data-theme="light"] h2 span#appTitleText, body[data-theme="light"] h2{ text
       <div class="hint"><i class="ti ti-info-circle" style="font-size:13px;vertical-align:-2px"></i> Export Excel ใช้ SheetJS — ต้องออนไลน์ครั้งแรก หากไม่ได้ให้ใช้ CSV แทน</div>
     </div>
     <div class="card"><div class="ct">สรุปข้อมูลที่มี</div><div id="expSum" style="font-size:11px;line-height:1.9"></div></div>
+  </div>
+</div>
+
+<!-- PROJECTION (คาดการณ์อนาคต / เป้าหมายผลตอบแทน) -->
+<div id="p-proj" class="panel">
+  <div class="card">
+    <div class="ct">สมมติฐานรวม</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+      <div class="nf" style="width:110px"><div class="nfl">จำนวนปี</div><input type="number" id="projYearsIn" class="nfi" min="1" max="50" onchange="saveProjGlobal()"></div>
+      <div class="nf" style="width:170px"><div class="nfl">เป้าหมายเงินรวม (฿)</div><input type="number" id="projTargetIn" class="nfi" placeholder="เช่น 5000000" onchange="saveProjGlobal()"></div>
+      <button class="bp" onclick="resetProjToHistorical()"><i class="ti ti-refresh"></i> รีเซ็ต % เป็นค่า XIRR จริง</button>
+    </div>
+    <div id="projGoalProgress"></div>
+    <div class="hint" style="margin-top:8px"><i class="ti ti-info-circle" style="font-size:13px;vertical-align:-2px"></i> เงินต้นแต่ละกองทุนเริ่มต้นจากมูลค่าปัจจุบันที่ถืออยู่จริง · % ผลตอบแทนต่อปีเริ่มต้นใช้ XIRR จริงของกองทุนนั้น (ถ้ามีประวัติซื้อขาย) มิฉะนั้นใช้ค่าประมาณตามประเภทสินทรัพย์ — แก้ไขได้ทุกช่องตามที่คุณคาดการณ์เอง · คำนวณแบบทบต้นรายเดือน รวม DCA ที่ลงทุนเพิ่มทุกเดือน (ไม่ทบต้น dividend/ปันผลแยกต่างหาก) · ตั้งค่านี้เก็บเฉพาะเครื่องนี้ ไม่ sync ข้ามอุปกรณ์</div>
+  </div>
+  <div class="card">
+    <div class="ct">ผลตอบแทนคาดหวังรายกองทุน</div>
+    <div style="overflow-x:auto">
+      <table class="tt">
+        <thead><tr><th>กองทุน</th><th>เงินต้น (฿)</th><th>DCA/เดือน (฿)</th><th>% คาดหวัง/ปี</th><th style="text-align:right">มูลค่าคาดการณ์</th></tr></thead>
+        <tbody id="projBody"></tbody>
+        <tfoot><tr style="font-weight:600;border-top:1.5px solid var(--border2)"><td>รวม</td><td id="projTotalPrincipal"></td><td id="projTotalDCA"></td><td></td><td id="projTotalFV" style="text-align:right"></td></tr></tfoot>
+      </table>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct">มูลค่าพอร์ตคาดการณ์ตามปี</div>
+    <div style="position:relative;height:230px"><canvas id="cProj"></canvas></div>
   </div>
 </div>
 
@@ -1854,6 +1910,27 @@ function getFilledNAV(){
   });
   return rows;
 }
+// ตัดข้อมูลย้อนหลังตามจำนวนวันปฏิทิน นับถอยจากวันที่ล่าสุดของชุดข้อมูล (ไม่ใช่วันนี้จริง
+// เพราะ NAV อาจยังไม่อัปเดตของวันปัจจุบัน) — days<=0 หมายถึงแสดงทั้งหมด แถวต้องมี field .d
+// เป็นสตริงวันที่รูปแบบ 'YYYY-MM-DD' ที่เรียงจากเก่าไปใหม่แล้ว (เทียบสตริงตรงๆ ได้)
+function filterByRangeDays(rows,days){
+  if(!days||days<=0||!rows.length)return rows;
+  const lastD=rows[rows.length-1].d;
+  const cutoff=new Date(lastD);
+  cutoff.setDate(cutoff.getDate()-days);
+  const cutoffStr=cutoff.toISOString().slice(0,10);
+  return rows.filter(r=>r.d>=cutoffStr);
+}
+// สร้างข้อความสรุป Max/Min จากคู่ (ค่า, วันที่) — ใช้กับทั้งกราฟมูลค่าพอร์ตและกำไร/ขาดทุน
+function maxMinStatsHTML(pairs,fmt){
+  const valid=pairs.filter(p=>p.v!=null&&!isNaN(p.v));
+  if(!valid.length)return '';
+  let mx=valid[0],mn=valid[0];
+  valid.forEach(p=>{if(p.v>mx.v)mx=p;if(p.v<mn.v)mn=p;});
+  return `<span class="pos">▲ Max ${fmt(mx.v)}</span> <span style="opacity:.6">(${mx.d})</span>`
+    +`<span style="margin:0 8px;opacity:.4">·</span>`
+    +`<span class="neg">▼ Min ${fmt(mn.v)}</span> <span style="opacity:.6">(${mn.d})</span>`;
+}
 function totalAlloc(){return FUNDS.reduce((s,f)=>s+(ALLOC[f]||0),0);}
 function portVal(row){return FUNDS.reduce((s,f)=>{const u=UNITS[f]||0,n=row[f];return s+(n!=null?n*u:0);},0);}
 function fundVal(f,row){const u=UNITS[f]||0,n=row[f];return n!=null?n*u:0;}
@@ -1981,7 +2058,7 @@ function showTab(t,btn){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');document.getElementById('p-'+t).classList.add('active');
   document.querySelectorAll('.ext-tt').forEach(el=>{el.style.opacity=0;el.style.pointerEvents='none';});
-  ({nav:renderNAV,alloc:renderAlloc,tx:renderTx,stocks:renderStocks,entry:renderEntry,analytics:renderAnalyticsReturns,defs:renderDefs})[t]?.();
+  ({nav:renderNAV,alloc:renderAlloc,tx:renderTx,stocks:renderStocks,entry:renderEntry,proj:renderProj,analytics:renderAnalyticsReturns,defs:renderDefs})[t]?.();
 }
 function showSub(id,btn){
   document.querySelectorAll('.stab').forEach(b=>b.classList.remove('active'));
@@ -2327,7 +2404,7 @@ function renderOverview(){
         <div class="ml" style="font-size:9.5px">${FN[f]||f} <span class="bdg ${amcBadgeClass(AMC[f])}" style="font-size:9px;padding:1px 5px">${AMC[f]||''}</span></div>
         <div class="mv" style="font-size:13px">${fCurVal!=null?'฿'+fmtMoney(fCurVal):'-'}</div>
         <div class="ms" style="color:var(--t2);font-size:9px">${displayUnits>0?fmtUnits(displayUnits)+' หน่วย':''} ${fNavDate?'· '+fNavDate:''}</div>
-        <div class="ms ${fPlPct!=null?(fPlPct>=0?'pos':'neg'):''}" style="font-size:9.5px">${fPlPct!=null?(fPlPct>=0?'+':'')+fPlPct.toFixed(2)+'%':'-'}</div>
+        <div class="ms ${fPlPct!=null?(fPlPct>=0?'pos':'neg'):''}" style="font-size:9.5px">${fPl!=null?(fPl>=0?'+':'')+'฿'+fPl.toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0})+' ('+(fPlPct>=0?'+':'')+fPlPct.toFixed(2)+'%)':'-'}</div>
         ${spark}
       </div>`;
     }).join('');
@@ -2365,9 +2442,12 @@ function renderOverview(){
   // Chart 2: Portfolio value over time (filtered, forward-filled so a fund
   // missing NAV on a given day doesn't fake a dip in the combined total)
   const filledAll=getFilledNAV();
-  const valid=filledAll.filter(r=>showF.some(f=>r[f]!=null));
+  const pvRangeDays=parseInt(isel('pvRangeSel','0'));
+  const valid=filterByRangeDays(filledAll.filter(r=>showF.some(f=>r[f]!=null)),pvRangeDays);
   document.getElementById('cPVTitle').textContent=isAMCMode?(selAMC==='ALL'?'มูลค่าพอร์ตรวม ณ วันต่างๆ (฿)':'มูลค่า '+selAMC+' ณ วันต่างๆ (฿)'):(isAll?'มูลค่าพอร์ตรวม ณ วันต่างๆ (฿)':'มูลค่า '+FN[selFund]+' ณ วันต่างๆ (฿)');
   const pvData=valid.map(r=>showF.reduce((s,f)=>{const u=UNITS[f]||0,n=r[f];return s+(n!=null?n*u:0);},0));
+  const cPVStatsEl=document.getElementById('cPVStats');
+  if(cPVStatsEl)cPVStatsEl.innerHTML=maxMinStatsHTML(valid.map((r,i)=>({v:pvData[i],d:r.d})),v=>'฿'+Math.round(v).toLocaleString());
   const pvColor=isAMCMode?'#7B61C4':(!isAll?PAL[FUNDS.indexOf(selFund)%PAL.length]:'#2C5BDB');
   // ต้นทุนรวมของกองที่แสดงอยู่ (คงที่ทุกวัน เพราะกราฟนี้จำลอง "ถ้าถือหน่วยปัจจุบันมาตลอด" เหมือนกับ pvData ที่ใช้ UNITS ปัจจุบันคูณ NAV ย้อนหลัง)
   const pvCost=showF.reduce((s,f)=>s+(ALLOC[f]||0),0);
@@ -2497,14 +2577,16 @@ function renderFundReturn(){
 function renderPLChart(){
   const all=getAllNAV();
   const plSel=isel('plFundSel','ALL');
+  const plRangeDays=parseInt(isel('plRangeSel','0'));
   const isAll=plSel==='ALL';
   // Build the list of funds with NAV data
   const show=isAll?FUNDS.filter(f=>all.some(r=>r[f]!=null)):[plSel];
+  const cPLStatsEl=document.getElementById('cPLStats');
   if(isAll){
     // Single line: total portfolio P/L (forward-filled so a fund missing NAV
     // on a given day doesn't fake a P/L drop for the combined total)
     const filledAll=getFilledNAV();
-    const valid=filledAll.filter(r=>show.some(f=>r[f]!=null));
+    const valid=filterByRangeDays(filledAll.filter(r=>show.some(f=>r[f]!=null)),plRangeDays);
     const plData=valid.map(r=>{
       return parseFloat(show.reduce((s,f)=>{
         const u=UNITS[f]||0,n=r[f];
@@ -2512,6 +2594,7 @@ function renderPLChart(){
         return s+(n!=null?(n*u-cost):0);
       },0).toFixed(2));
     });
+    if(cPLStatsEl)cPLStatsEl.innerHTML=maxMinStatsHTML(valid.map((r,i)=>({v:plData[i],d:r.d})),v=>(v>=0?'+':'')+'฿'+fmtMoney(v));
     const color='#3d7fff';
     leg('lPL',['กำไร/ขาดทุนรวม (฿)'],[color]);
     document.getElementById('cPLTitle').textContent='กำไร/ขาดทุน (฿) ณ วันต่างๆ — ทุกกองทุน';
@@ -2543,8 +2626,9 @@ function renderPLChart(){
     const f=plSel;
     const cost=ALLOC[f]||0;
     const u=UNITS[f]||0;
-    const rows=all.filter(r=>r[f]!=null);
+    const rows=filterByRangeDays(all.filter(r=>r[f]!=null),plRangeDays);
     const plData=rows.map(r=>parseFloat((r[f]*u-cost).toFixed(2)));
+    if(cPLStatsEl)cPLStatsEl.innerHTML=maxMinStatsHTML(rows.map((r,i)=>({v:plData[i],d:r.d})),v=>(v>=0?'+':'')+'฿'+fmtMoney(v));
     const color=PAL[FUNDS.indexOf(f)%PAL.length];
     leg('lPL',[FN[f]||f],[color]);
     document.getElementById('cPLTitle').textContent='กำไร/ขาดทุน (฿) — '+(FN[f]||f);
@@ -2577,7 +2661,9 @@ function renderPLChart(){
 // ===== NAV =====
 function renderNAV(){
   const fv=isel('nFS','ALL'),mode=isel('nMode','nav'),range=parseInt(isel('nRange','0'));
-  let data=getAllNAV();if(range>0)data=data.slice(-range);
+  // ตัดช่วงเวลาแบบเดียวกับกราฟในแท็บภาพรวม: นับถอยหลังตามวันปฏิทินจากวันที่ล่าสุด
+  // ของชุดข้อมูล (ไม่ใช่วันนี้จริง) — ดู filterByRangeDays()
+  let data=filterByRangeDays(getAllNAV(),range);
   const show=fv==='ALL'?FUNDS.filter(f=>data.some(r=>r[f]!=null)):[fv];
   // GOLD-HSH is quoted in บาท/กรัม (~thousands) while every other fund's NAV is in the
   // tens — plotted together on one absolute-value axis the gold line dwarfs all others.
@@ -2602,6 +2688,20 @@ function renderNAV(){
   wireTooltipLineHighlight('cNAV');
   if(fv!=='ALL'){const rows=data.filter(r=>r[fv]!=null);if(rows.length>=2){const f0=rows[0][fv],fl=rows[rows.length-1][fv],ret=((fl-f0)/f0*100).toFixed(2);document.getElementById('navM').innerHTML=`<div class="m"><div class="ml">NAV เริ่มต้น (${rows[0].d})</div><div class="mv">${f0.toFixed(4)}</div></div><div class="m"><div class="ml">NAV ล่าสุด (${rows[rows.length-1].d})</div><div class="mv">${fl.toFixed(4)}</div></div><div class="m"><div class="ml">ผลตอบแทนรวม</div><div class="mv ${ret>=0?'pos':'neg'}">${ret>=0?'+':''}${ret}%</div></div>`;}}
   else document.getElementById('navM').innerHTML='';
+  // Max/Min ของเส้นที่แสดง — เลือกกองทุนเดียว: ใช้ค่าตามโหมด (NAV จริง หรือ % เทียบวันแรก)
+  // เลือก "ทุกกองทุน": หาค่า max/min ของกองทุนที่ผลตอบแทน(idx)/NAV สูงสุด-ต่ำสุด ในแต่ละวันไม่มีความหมายร่วมกัน
+  // (หน่วยงานคนละกองทุน) จึงคำนวณ Max/Min จากเส้นแรกที่แสดง เพื่อให้ยังมีข้อมูลอ้างอิงคร่าวๆ
+  const cNAVStatsEl=document.getElementById('cNAVStats');
+  if(cNAVStatsEl){
+    if(show.length){
+      const statFund=fv!=='ALL'?fv:show[0];
+      const f0=data.find(r=>r[statFund]!=null)?.[statFund];
+      const pairs=data.filter(r=>r[statFund]!=null).map(r=>({v:mode==='idx'&&f0?((r[statFund]-f0)/f0*100):r[statFund],d:r.d}));
+      const fmt=mode==='idx'?(v=>(v>=0?'+':'')+v.toFixed(2)+'%'):(v=>v.toFixed(4));
+      const prefix=fv==='ALL'?`<span style="opacity:.6">${FN[statFund]||statFund}: </span>`:'';
+      cNAVStatsEl.innerHTML=pairs.length?prefix+maxMinStatsHTML(pairs,fmt):'';
+    } else cNAVStatsEl.innerHTML='';
+  }
 }
 
 // ===== ALLOC =====
@@ -4041,6 +4141,109 @@ function renderGoal(){
       }
     }catch(e){}
   }
+}
+
+// ===== PROJECTION (คาดการณ์อนาคต / เป้าหมายผลตอบแทนคาดหวังรายกองทุน) =====
+// Local-device-only setting (not synced to Google Sheets) — same pattern as GOAL above.
+const PROJ_SK='proj_settings_v1';
+function getProjSettings(){try{return JSON.parse(localStorage.getItem(PROJ_SK)||'{}');}catch(e){return{};}}
+function setProjSettings(o){try{localStorage.setItem(PROJ_SK,JSON.stringify(o));}catch(e){toast('Storage เต็ม','#D44B2A');}}
+// ค่าเริ่มต้นเมื่อไม่มีประวัติซื้อขายพอคำนวณ XIRR จริงได้ — ประมาณคร่าวๆ ตามประเภทสินทรัพย์
+function defaultExpectedReturn(f){
+  return {Equity:8,Commodity:5,Bond:3,Mixed:6}[AS[f]||'Equity']||7;
+}
+// มูลค่าในอนาคตของเงินต้นก้อนเดียว + DCA รายเดือน ทบต้นแบบรายเดือนตลอด `years` ปี
+// ที่อัตราผลตอบแทนคาดหวังต่อปี retPct (%) — DCA ลงทุนปลายเดือน (ordinary annuity)
+function futureValue(principal,dcaMonthly,retPct,years){
+  const months=Math.max(0,Math.round(years*12));
+  const mRate=Math.pow(1+(retPct||0)/100,1/12)-1;
+  const fvPrincipal=(principal||0)*Math.pow(1+mRate,months);
+  const fvDCA=Math.abs(mRate)<1e-9?(dcaMonthly||0)*months:(dcaMonthly||0)*((Math.pow(1+mRate,months)-1)/mRate);
+  return fvPrincipal+fvDCA;
+}
+function projLatestNAV(){
+  const all=getAllNAV();const latestNAV={};
+  FUNDS.forEach(f=>{for(let i=all.length-1;i>=0;i--){if(all[i][f]!=null){latestNAV[f]=all[i][f];break;}}});
+  return latestNAV;
+}
+// ค่าที่ใช้จริงของแต่ละกองทุน: ใช้ค่าที่ผู้ใช้แก้เองถ้ามี ไม่งั้น fallback เป็นค่าเริ่มต้นที่คำนวณจากพอร์ตจริง
+function projFundParams(f,S,latestNAV){
+  const sf=(S.funds&&S.funds[f])||{};
+  const principal=sf.principal!=null?sf.principal:Math.round(fundVal(f,latestNAV));
+  const dca=sf.dca!=null?sf.dca:0;
+  let retPct=sf.retPct;
+  if(retPct==null){const x=fundXIRR(f,latestNAV);retPct=x!=null&&isFinite(x)?Math.round(x*1000)/10:defaultExpectedReturn(f);}
+  return{principal,dca,retPct};
+}
+function renderProj(){
+  const elYears=document.getElementById('projYearsIn');
+  if(!elYears)return; // panel not in DOM yet
+  const latestNAV=projLatestNAV();
+  const S=getProjSettings();
+  const years=S.years!=null?S.years:10;
+  elYears.value=years;
+  document.getElementById('projTargetIn').value=S.targetTotal||'';
+
+  let sumPrincipal=0,sumDCA=0,sumFV=0,bodyHtml='';
+  FUNDS.forEach(f=>{
+    const {principal,dca,retPct}=projFundParams(f,S,latestNAV);
+    const fv=futureValue(principal,dca,retPct,years);
+    sumPrincipal+=principal;sumDCA+=dca;sumFV+=fv;
+    bodyHtml+=`<tr>
+      <td>${FN[f]||f}</td>
+      <td><input type="number" class="nfi" style="width:100px" data-proj="principal" data-fund="${f}" value="${Math.round(principal)}" onchange="saveProjInput(this)"></td>
+      <td><input type="number" class="nfi" style="width:80px" data-proj="dca" data-fund="${f}" value="${dca}" onchange="saveProjInput(this)"></td>
+      <td><input type="number" class="nfi" style="width:64px" step="0.1" data-proj="retPct" data-fund="${f}" value="${retPct}" onchange="saveProjInput(this)"></td>
+      <td style="text-align:right;font-family:var(--f-mono)">฿${Math.round(fv).toLocaleString()}</td>
+    </tr>`;
+  });
+  document.getElementById('projBody').innerHTML=bodyHtml;
+  document.getElementById('projTotalPrincipal').innerHTML='฿'+Math.round(sumPrincipal).toLocaleString();
+  document.getElementById('projTotalDCA').innerHTML='฿'+Math.round(sumDCA).toLocaleString()+'/ด.';
+  document.getElementById('projTotalFV').innerHTML='฿'+Math.round(sumFV).toLocaleString();
+
+  const targetTotal=S.targetTotal;
+  const goalEl=document.getElementById('projGoalProgress');
+  if(targetTotal>0){
+    const pct=Math.min(100,sumFV/targetTotal*100);
+    goalEl.innerHTML=`<div style="margin-top:10px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span>คาดการณ์มูลค่าพอร์ต ณ ปีที่ ${years}</span><span>฿${Math.round(sumFV).toLocaleString()} / ฿${Math.round(targetTotal).toLocaleString()} (${pct.toFixed(1)}%)</span></div><div style="height:8px;border-radius:4px;background:var(--border2);overflow:hidden"><div style="height:100%;width:${pct}%;background:${pct>=100?'var(--green)':'var(--blue)'}"></div></div></div>`;
+  } else goalEl.innerHTML='';
+
+  // กราฟเส้นมูลค่าพอร์ตรวมคาดการณ์ทีละปี (0..years) เทียบกับเป้าหมาย (ถ้าตั้งไว้)
+  const chartLabels=[],chartVals=[];
+  for(let y=0;y<=years;y++){
+    let tot=0;
+    FUNDS.forEach(f=>{const {principal,dca,retPct}=projFundParams(f,S,latestNAV);tot+=futureValue(principal,dca,retPct,y);});
+    chartLabels.push('ปีที่ '+y);chartVals.push(tot);
+  }
+  const datasets=[{label:'มูลค่าพอร์ตคาดการณ์',data:chartVals,borderColor:'#2C5BDB',backgroundColor:hexToRgba('#2C5BDB',0.08),fill:true,borderWidth:2,pointRadius:2}];
+  if(targetTotal>0)datasets.push({label:'เป้าหมาย',data:chartLabels.map(()=>targetTotal),borderColor:'#D44B2A',borderDash:[6,4],pointRadius:0,borderWidth:1.5});
+  dc('cProj');CC['cProj']=new Chart(document.getElementById('cProj'),{type:'line',data:{labels:chartLabels,datasets},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:true,labels:{font:{size:10}}},tooltip:{callbacks:{label:c=>c.dataset.label+': ฿'+Math.round(c.raw).toLocaleString()}}},scales:{y:{ticks:{callback:v=>'฿'+(v/1000).toFixed(0)+'K',font:{size:9}}},x:{ticks:{font:{size:9},maxRotation:45}}}}});
+}
+function saveProjInput(el){
+  const S=getProjSettings();if(!S.funds)S.funds={};
+  const fund=el.dataset.fund,key=el.dataset.proj;
+  if(!S.funds[fund])S.funds[fund]={};
+  const v=parseFloat(el.value);
+  S.funds[fund][key]=isNaN(v)?null:v;
+  setProjSettings(S);
+  renderProj();
+}
+function saveProjGlobal(){
+  const S=getProjSettings();
+  const y=parseFloat(document.getElementById('projYearsIn').value);
+  S.years=isNaN(y)||y<=0?10:y;
+  const t=parseFloat(document.getElementById('projTargetIn').value);
+  S.targetTotal=isNaN(t)?null:t;
+  setProjSettings(S);
+  renderProj();
+}
+function resetProjToHistorical(){
+  const S=getProjSettings();
+  S.funds={};
+  setProjSettings(S);
+  renderProj();
+  toast('รีเซ็ตเป็นค่า XIRR จริง/ค่าเริ่มต้นแล้ว');
 }
 
 // ===== ADD FUND MODAL =====
