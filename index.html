@@ -20,7 +20,7 @@
 // + query กันแคช) แล้วเทียบเลขเวอร์ชัน ถ้าไม่ตรงกับที่กำลังรันอยู่ ให้รีโหลด
 // หน้าใหม่ทันทีแบบ hard-reload — แก้ปัญหาไอโฟน/หน้าจอโฮมค้างเวอร์ชันเก่า
 // โดยไม่ต้องให้ผู้ใช้ไปเคลียร์แคชเอง
-var APP_VERSION = 'v60'; // global (single source of truth — also read by applyAppName() later)
+var APP_VERSION = 'v71'; // global (single source of truth — also read by applyAppName() later)
 (function(){
   try{
     var url = location.pathname + (location.pathname.indexOf('?')>-1?'&':'?') + '_v=' + Date.now();
@@ -124,7 +124,7 @@ input, select, textarea, .nfi, .insel, .fi select{
 </head>
 <body>
 <div id="app-root">
-<h2 style="color:#3d7fff;font-size:18px;font-weight:700;padding:8px 0 4px;letter-spacing:.01em;text-shadow:0 0 18px rgba(61,127,255,.5);font-family:'IBM Plex Sans Thai',sans-serif"><span id="appTitleText">Portfolio Dashboard</span> <span id="appVersionText" style="font-size:11px;color:#3d7fff;opacity:.6;font-weight:400">v29</span> <button onclick="showRenameModal()" title="เปลี่ยนชื่อ Dashboard" style="background:none;border:none;color:#3d7fff;opacity:.55;cursor:pointer;font-size:13px;vertical-align:1px;padding:2px 4px"><i class="ti ti-pencil"></i></button><button onclick="showThemeModal()" title="เปลี่ยนธีมสี" style="background:none;border:none;color:#3d7fff;opacity:.55;cursor:pointer;font-size:13px;vertical-align:1px;padding:2px 4px"><i class="ti ti-palette"></i></button></h2>
+<h2 style="color:#3d7fff;font-size:18px;font-weight:700;padding:8px 0 4px;letter-spacing:.01em;text-shadow:0 0 18px rgba(61,127,255,.5);font-family:'IBM Plex Sans Thai',sans-serif"><span id="appTitleText">Portfolio Dashboard</span> <span id="appVersionText" style="font-size:11px;color:#3d7fff;opacity:.6;font-weight:400">v67</span> <button onclick="showRenameModal()" title="เปลี่ยนชื่อ Dashboard" style="background:none;border:none;color:#3d7fff;opacity:.55;cursor:pointer;font-size:13px;vertical-align:1px;padding:2px 4px"><i class="ti ti-pencil"></i></button><button onclick="showThemeModal()" title="เปลี่ยนธีมสี" style="background:none;border:none;color:#3d7fff;opacity:.55;cursor:pointer;font-size:13px;vertical-align:1px;padding:2px 4px"><i class="ti ti-palette"></i></button></h2>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -186,7 +186,7 @@ input, select, textarea, .nfi, .insel, .fi select{
 .tt tr:hover td{background:var(--bg2)}
 .bdg{display:inline-block;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600}
 .buy{background:var(--green-light);color:var(--green)}.sell{background:var(--red-light);color:var(--red)}
-.scb{background:#E6F1FB;color:#1450A0}.kb{background:#E1F5EE;color:#0F6E56}.tl{background:#EEEDFE;color:#4B38A8}.oth{background:#FBEFE1;color:#8A5A16}
+.scb{background:#E6F1FB;color:#1450A0}.se{background:#E0F7F5;color:#0C7A72}.kb{background:#E1F5EE;color:#0F6E56}.tl{background:#EEEDFE;color:#4B38A8}.oth{background:#FBEFE1;color:#8A5A16}
 .bnew{background:var(--green-light);color:var(--green)}.bold{background:var(--bg2);color:var(--t2)}
 .aib{background:var(--bg2);border-radius:var(--radius-lg);padding:14px;font-size:12px;color:var(--t1);line-height:1.7;border:0.5px solid var(--border)}
 .ab{font-size:11px;padding:6px 10px;cursor:pointer;border-radius:var(--radius-sm);border:0.5px solid var(--border2);background:var(--bg);color:var(--t1);font-family:var(--f-body);transition:background .12s,border-color .12s}
@@ -420,6 +420,7 @@ input:focus, select:focus, .nfi:focus {
 .buy  { background: rgba(0,212,140,.12) !important; color: #00d48c !important; }
 .sell { background: rgba(255,85,85,.12) !important; color: #ff5555 !important; }
 .scb  { background: rgba(20,80,160,.18) !important; color: #5ab4ff !important; }
+.se   { background: rgba(12,122,114,.20) !important; color: #2fe0cf !important; }
 .kb   { background: rgba(15,110,86,.18) !important; color: #00d48c !important; }
 .tl   { background: rgba(75,56,168,.20) !important; color: #a67cff !important; }
 .oth  { background: rgba(184,130,10,.18) !important; color: #f0b03e !important; }
@@ -547,6 +548,7 @@ body[data-theme="bloomberg"] .tt tr:hover td{ background:rgba(255,149,0,.06) !im
 body[data-theme="bloomberg"] .buy{ background:rgba(0,255,102,.12) !important; color:#00ff66 !important; }
 body[data-theme="bloomberg"] .sell{ background:rgba(255,59,48,.12) !important; color:#ff3b30 !important; }
 body[data-theme="bloomberg"] .scb{ background:rgba(0,217,255,.14) !important; color:#00d9ff !important; }
+body[data-theme="bloomberg"] .se{ background:rgba(0,255,180,.14) !important; color:#00ffb4 !important; }
 body[data-theme="bloomberg"] .kb{ background:rgba(0,255,102,.14) !important; color:#00ff66 !important; }
 body[data-theme="bloomberg"] .tl{ background:rgba(255,204,0,.14) !important; color:#ffcc00 !important; }
 body[data-theme="bloomberg"] .oth{ background:rgba(255,149,0,.14) !important; color:#ff9500 !important; }
@@ -652,6 +654,7 @@ body[data-theme="light"] h2 span#appTitleText, body[data-theme="light"] h2{ text
   <button class="tab" onclick="showTab('entry',this)"><i class="ti ti-edit"></i>บันทึก NAV</button>
   <button class="tab" onclick="showTab('proj',this)"><i class="ti ti-target-arrow"></i>คาดการณ์อนาคต</button>
   <button class="tab" onclick="showTab('analytics',this)"><i class="ti ti-chart-histogram"></i>วิเคราะห์เชิงลึก</button>
+  <button class="tab" onclick="showTab('simulation',this)"><i class="ti ti-dice-5"></i>Simulation</button>
   <button class="tab" onclick="showTab('ai',this)"><i class="ti ti-brain"></i>วิเคราะห์ AI</button>
   <button class="tab" onclick="showTab('defs',this)"><i class="ti ti-book"></i>คำจำกัดความ</button>
 </div>
@@ -673,8 +676,48 @@ body[data-theme="light"] h2 span#appTitleText, body[data-theme="light"] h2{ text
   </div>
   <!-- Metric Cards -->
   <div class="mg" id="ovM"></div>
+
+  <!-- PORTFOLIO INTELLIGENCE v66 -->
+  <div class="card" id="portfolioIntelligenceCard">
+    <div class="sec-title"><i class="ti ti-brain"></i> Portfolio Intelligence</div>
+    <div class="hint" style="margin-bottom:10px">สรุปสุขภาพพอร์ต ความเสี่ยง เป้าหมาย และคำแนะนำสำหรับเงิน DCA เดือนถัดไป</div>
+    <div class="mg" id="piMetrics"></div>
+    <div class="cr">
+      <div><div class="ct">🩺 Portfolio Health Score</div><div id="piHealth"></div></div>
+      <div><div class="ct">⚠️ Smart Risk Alerts</div><div id="piAlerts"></div></div>
+    </div>
+    <div class="cr">
+      <div><div class="ct">🔥 Concentration Risk — Look-through</div><div id="piConcentration"></div></div>
+      <div><div class="ct">⚖️ Smart DCA Rebalancing</div><div id="piRebalance"></div></div>
+    </div>
+    <div class="ct">🎯 Goal Progress & Required DCA</div>
+    <div class="txf-grid" style="margin-bottom:8px">
+      <div class="txf-row"><label class="txf-lbl">เป้าหมายพอร์ต (บาท)</label><input id="piGoalTarget" class="txf-inp" type="number" min="0" placeholder="เช่น 5000000" onchange="savePISettings()"></div>
+      <div class="txf-row"><label class="txf-lbl">ระยะเวลา (ปี)</label><input id="piGoalYears" class="txf-inp" type="number" min="1" step="1" placeholder="10" onchange="savePISettings()"></div>
+      <div class="txf-row"><label class="txf-lbl">ผลตอบแทนคาดหวัง (%/ปี)</label><input id="piGoalReturn" class="txf-inp" type="number" min="0" step="0.1" placeholder="8" onchange="savePISettings()"></div>
+    </div>
+    <div id="piGoal"></div>
+  </div>
   <div id="ovFundGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:1rem"></div>
   <!-- Charts -->
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px;flex-wrap:wrap;gap:6px">
+      <div class="ct" style="margin:0" id="apdTitle">สัดส่วนมูลค่าสินทรัพย์ปัจจุบัน (ไม่รวมเงินฝาก)</div>
+      <div style="display:flex;gap:4px">
+        <button id="apdModeFund" class="pill sel" style="border-radius:var(--radius-sm);padding:4px 10px;font-size:10px" onclick="setApdMode('fund')">รายกองทุน</button>
+        <button id="apdModeAMC" class="pill" style="border-radius:var(--radius-sm);padding:4px 10px;font-size:10px" onclick="setApdMode('amc')">ตาม AMC</button>
+      </div>
+    </div>
+    <div id="apdSubDate" style="font-size:10px;color:var(--t2);margin-bottom:2px"></div>
+    <div id="apdTotalLine" style="font-size:12px;color:var(--t2);margin-bottom:8px"></div>
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+      <div style="position:relative;height:300px;flex:2 1 300px;min-width:260px;perspective:1100px">
+        <canvas id="cAPDShadow" style="position:absolute;left:0;top:18px;width:100%;height:100%;transform:rotateX(52deg) scale(0.94);filter:blur(1.5px);opacity:.65"></canvas>
+        <canvas id="cAPD" style="position:absolute;left:0;top:0;width:100%;height:100%;transform:rotateX(52deg) scale(0.94)"></canvas>
+      </div>
+      <div class="leg" id="lAPD" style="flex:1 1 190px;flex-direction:column;flex-wrap:nowrap;align-content:flex-start;align-items:stretch;gap:7px;max-height:300px;overflow-y:auto;margin:0;padding-right:2px"></div>
+    </div>
+  </div>
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px;flex-wrap:wrap;gap:4px">
       <div class="ct" style="margin:0">สัดส่วนมูลค่าสินทรัพย์ปัจจุบัน (รวมเงินฝาก)</div>
@@ -750,7 +793,7 @@ body[data-theme="light"] h2 span#appTitleText, body[data-theme="light"] h2{ text
     <div style="overflow-x:auto;margin-top:10px"><table class="tt" id="dpTable"><thead><tr><th>วันที่</th><th>ธนาคาร/บัญชี</th><th>จำนวนเงิน</th><th>ดอกเบี้ย</th><th>หมายเหตุ</th><th width="40"></th></tr></thead><tbody id="dpBody"></tbody></table></div>
   </div>
   <div class="cr">
-    <div class="card"><div class="ct">สัดส่วน AMC</div><div class="leg" id="lAMC"></div><div style="position:relative;height:155px"><canvas id="cAMC"></canvas></div></div>
+    <div class="card"><div class="ct" id="cAMCTitle">สัดส่วน AMC</div><div class="leg" id="lAMC"></div><div style="position:relative;height:155px"><canvas id="cAMC"></canvas></div></div>
     <div class="card"><div class="ct">สัดส่วน Theme</div><div class="leg" id="lTH"></div><div style="position:relative;height:155px"><canvas id="cTH"></canvas></div></div>
   </div>
   <div class="card" id="goalCard">
@@ -1213,6 +1256,39 @@ body[data-theme="light"] h2 span#appTitleText, body[data-theme="light"] h2{ text
   </div>
 </div>
 
+<!-- V67 SIMULATION -->
+<div id="p-simulation" class="panel">
+  <div class="card">
+    <div class="sec-title">🎲 Monte Carlo Simulation</div>
+    <div class="hint">จำลองเส้นทางอนาคตจากมูลค่าพอร์ตปัจจุบัน ผลตอบแทนคาดหวัง Volatility และ DCA ปัจจุบัน ผลลัพธ์เป็นการจำลอง ไม่ใช่การรับประกันผลตอบแทน</div>
+    <div class="txf-grid" style="margin-top:10px">
+      <div class="txf-row"><label class="txf-lbl">ระยะเวลาลงทุน (ปี)</label><input id="mcYears" class="txf-inp" type="number" min="1" max="50" value="10"></div>
+      <div class="txf-row"><label class="txf-lbl">Expected Return (%/ปี)</label><input id="mcReturn" class="txf-inp" type="number" step="0.1" value="8"></div>
+      <div class="txf-row"><label class="txf-lbl">Volatility (%/ปี)</label><input id="mcVol" class="txf-inp" type="number" step="0.1" value="15"></div>
+      <div class="txf-row"><label class="txf-lbl">DCA ต่อเดือน (บาท)</label><input id="mcDca" class="txf-inp" type="number" value=""></div>
+      <div class="txf-row"><label class="txf-lbl">เป้าหมายพอร์ต (บาท)</label><input id="mcTarget" class="txf-inp" type="number" value="5000000"></div>
+      <div class="txf-row" style="justify-content:end"><button class="bp" onclick="runMonteCarlo()">▶ จำลองใหม่</button></div>
+    </div>
+    <div class="mg" id="mcMetrics"></div>
+    <div style="height:330px"><canvas id="cMonteCarlo"></canvas></div>
+    <div id="mcNote" class="hint"></div>
+  </div>
+  <div class="card">
+    <div class="sec-title">💥 Market Crash Stress Test</div>
+    <div class="txf-grid">
+      <div class="txf-row"><label class="txf-lbl">Scenario</label><select id="stressScenario" class="txf-inp" onchange="renderStressTest()"><option value="tech">US Tech Crash</option><option value="broad">Broad Market -20%</option><option value="gold">Gold Correction</option><option value="custom">Custom Shock</option></select></div>
+      <div class="txf-row"><label class="txf-lbl">Custom Shock (%)</label><input id="stressCustom" class="txf-inp" type="number" value="-20" onchange="renderStressTest()"></div>
+    </div>
+    <div class="mg" id="stressMetrics"></div><div id="stressBreakdown"></div>
+    <div class="hint">หมายเหตุ: Stress Test เป็นการจำลองตาม Scenario ที่กำหนด ไม่ใช่การทำนายตลาด</div>
+  </div>
+  <div class="card">
+    <div class="sec-title">🏆 Investment Milestones & Journey</div>
+    <div id="milestoneSummary" class="mg"></div>
+    <div id="milestoneTimeline"></div>
+  </div>
+</div>
+
 <!-- AI -->
 <div id="p-ai" class="panel">
   <div style="margin-bottom:.8rem;font-size:12px;color:var(--t2)">วิเคราะห์พอร์ตด้วย Claude Sonnet — เลือกหัวข้อหรือถามเองได้เลย</div>
@@ -1312,6 +1388,7 @@ body[data-theme="light"] h2 span#appTitleText, body[data-theme="light"] h2{ text
       <div style="font-size:10.5px;color:var(--t2);margin-bottom:10px">
         หลังจากเชื่อมต่อสำเร็จ ข้อมูล NAV ใหม่, Transaction ใหม่ และ Deposit จะ sync ข้ามอุปกรณ์โดยอัตโนมัติ
       </div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--t1);margin-bottom:10px;cursor:pointer"><input type="checkbox" id="autoSyncChk" onchange="setAutoSyncEnabled(this.checked)"> ดึงข้อมูลอัตโนมัติตอนเปิดแอป / กลับมาที่แอป (ตั้งแยกแต่ละเครื่อง)</label>
       <div style="display:flex;gap:8px;justify-content:flex-end">
         <button onclick="showSyncStep(2)" class="bs">← แก้ไข URL</button>
         <button onclick="clearGSConfig()" style="padding:5px 11px;background:var(--red-light);color:var(--red);border:0.5px solid var(--red);border-radius:var(--radius-sm);font-size:11px;cursor:pointer;font-family:var(--f-body)">ลบการตั้งค่า</button>
@@ -1723,7 +1800,7 @@ function fmtPct(v,dp=2){return v!=null?v.toFixed(dp)+'%':'-';}
 // ===== DATA =====
 let FUNDS=['SCBS&P500E','SCBNDQE','SCBWORLDE','SCBGOLDE','SCBKEQTGE','SCBSEMIE','K-CHANGE','K-US-500X','K-GTECH','K-WORLDX','TLUS500-UH-X','TLUSNDQ-UH-X','TLWORLD-X','SCBCEH','SCBS&P500OLD','SCBSET1','SCBSET2','SCBSFF','GOLD-HSH'];
 let FN={'SCBS&P500E':'SCB S&P500','SCBNDQE':'SCB NASDAQ','SCBWORLDE':'SCB World','SCBGOLDE':'SCB Gold','SCBKEQTGE':'SCB Korea','SCBSEMIE':'SCB Semi','K-CHANGE':'K-Change','K-US-500X':'K-US500X','K-GTECH':'K-Gtech','K-WORLDX':'K-WorldX','TLUS500-UH-X':'TL US500','TLUSNDQ-UH-X':'TL NASDAQ','TLWORLD-X':'TL World','SCBCEH':'SCB China H','SCBS&P500OLD':'SCB S&P500 OLD','SCBSET1':'SCB SET1','SCBSET2':'SCB SET2','SCBSFF':'SCB SFF','GOLD-HSH':'ทองคำ Gold Now (ฮั่วเซ่งฮง)'};
-let AMC={'SCBS&P500E':'SCB','SCBNDQE':'SCB','SCBWORLDE':'SCB','SCBGOLDE':'SCB','SCBKEQTGE':'SCB','SCBSEMIE':'SCB','K-CHANGE':'Kbank','K-US-500X':'Kbank','K-GTECH':'Kbank','K-WORLDX':'Kbank','TLUS500-UH-X':'Talis','TLUSNDQ-UH-X':'Talis','TLWORLD-X':'Talis','SCBCEH':'SCB','SCBS&P500OLD':'SCB','SCBSET1':'SCB','SCBSET2':'SCB','SCBSFF':'SCB','GOLD-HSH':'ฮั่วเซ่งฮง'};
+let AMC={'SCBS&P500E':'SCB','SCBNDQE':'SCB','SCBWORLDE':'SCB','SCBGOLDE':'SCB','SCBKEQTGE':'SCB','SCBSEMIE':'SCB','K-CHANGE':'Kbank','K-US-500X':'Kbank','K-GTECH':'Kbank','K-WORLDX':'Kbank','TLUS500-UH-X':'Talis','TLUSNDQ-UH-X':'Talis','TLWORLD-X':'Talis','SCBCEH':'SCB easy','SCBS&P500OLD':'SCB easy','SCBSET1':'SCB easy','SCBSET2':'SCB easy','SCBSFF':'SCB easy','GOLD-HSH':'ฮั่วเซ่งฮง'};
 let TH={'SCBS&P500E':'S&P500','SCBNDQE':'NASDAQ100','SCBWORLDE':'WORLD','SCBGOLDE':'GOLD','SCBKEQTGE':'KOREA','SCBSEMIE':'SEMI','K-CHANGE':'TECH','K-US-500X':'S&P500','K-GTECH':'TECH','K-WORLDX':'WORLD','TLUS500-UH-X':'S&P500','TLUSNDQ-UH-X':'NASDAQ100','TLWORLD-X':'WORLD','SCBCEH':'CHINA','SCBS&P500OLD':'S&P500','SCBSET1':'SET','SCBSET2':'SET','SCBSFF':'SET','GOLD-HSH':'GOLD'};
 let AS={'SCBS&P500E':'Equity','SCBNDQE':'Equity','SCBWORLDE':'Equity','SCBGOLDE':'Commodity','SCBKEQTGE':'Equity','SCBSEMIE':'Equity','K-CHANGE':'Equity','K-US-500X':'Equity','K-GTECH':'Equity','K-WORLDX':'Equity','TLUS500-UH-X':'Equity','TLUSNDQ-UH-X':'Equity','TLWORLD-X':'Equity','SCBCEH':'Equity','SCBS&P500OLD':'Equity','SCBSET1':'Equity','SCBSET2':'Equity','SCBSFF':'Equity','GOLD-HSH':'Commodity'};
 let ALLOC={'SCBS&P500E':305600,'SCBNDQE':102400,'SCBWORLDE':51100,'SCBGOLDE':50800,'SCBKEQTGE':10300,'SCBSEMIE':10300,'K-CHANGE':19000,'K-US-500X':14000,'K-GTECH':14000,'K-WORLDX':9000,'TLUS500-UH-X':19000,'TLUSNDQ-UH-X':8500,'TLWORLD-X':5500,'SCBCEH':2000,'SCBS&P500OLD':2000,'SCBSET1':2693,'SCBSET2':4748.56,'SCBSFF':101857.35,'GOLD-HSH':0};
@@ -1739,7 +1816,7 @@ const THC={'S&P500':'#2C5BDB','NASDAQ100':'#D44B2A','WORLD':'#0D9373','GOLD':'#B
 
 // ===== AMC LIST (dynamic — supports adding AMCs beyond SCB/Kbank/Talis) =====
 const AMC_SK='custom_amc_v1';
-const BASE_AMCS=['SCB','Kbank','Talis'];
+const BASE_AMCS=['SCB','SCB easy','Kbank','Talis'];
 function getCustomAMCs(){try{return JSON.parse(localStorage.getItem(AMC_SK)||'[]');}catch(e){return[];}}
 function setCustomAMCs(a){try{localStorage.setItem(AMC_SK,JSON.stringify(a));}catch(e){toast('Storage เต็ม','#D44B2A');}}
 // One-time seed: ฮั่วเซ่งฮง (Gold Now) is used by the built-in GOLD-HSH asset, so make
@@ -1749,7 +1826,7 @@ function setCustomAMCs(a){try{localStorage.setItem(AMC_SK,JSON.stringify(a));}ca
   if(!list.includes('ฮั่วเซ่งฮง')){list.push('ฮั่วเซ่งฮง');setCustomAMCs(list);}
 })();
 function getAMCList(){return[...BASE_AMCS,...getCustomAMCs()];}
-function amcBadgeClass(amc){return amc==='SCB'?'scb':amc==='Kbank'?'kb':amc==='Talis'?'tl':(amc?'oth':'');}
+function amcBadgeClass(amc){return amc==='SCB'?'scb':amc==='SCB easy'?'se':amc==='Kbank'?'kb':amc==='Talis'?'tl':(amc?'oth':'');}
 function showAddAMCModal(){document.getElementById('mamcName').value='';document.getElementById('addAMCModal').style.display='flex';}
 function closeAddAMCModal(){document.getElementById('addAMCModal').style.display='none';}
 function confirmAddAMC(){
@@ -1880,15 +1957,33 @@ function touchStockMeta(f){STOCKS_META[f]=Date.now();saveSM();}
   FUNDS.length=0; FUNDS.push(...keep);
 })();
 
-const TX=[{"date":"2026-03-18","fund":"SCBS&P500E","type":"Buy","amount":300000,"nav":38.7914,"units":7733.6729,"amc":"SCB"},{"date":"2026-03-18","fund":"SCBNDQE","type":"Buy","amount":100000,"nav":14.3377,"units":6974.6194,"amc":"SCB"},{"date":"2026-03-18","fund":"SCBWORLDE","type":"Buy","amount":50000,"nav":12.9943,"units":3847.841,"amc":"SCB"},{"date":"2026-03-18","fund":"SCBGOLDE","type":"Buy","amount":50000,"nav":27.1038,"units":1844.7598,"amc":"SCB"},{"date":"2026-03-20","fund":"K-CHANGE","type":"Buy","amount":17500,"nav":18.5097,"units":945.4502,"amc":"Kbank"},{"date":"2026-03-20","fund":"K-US-500X","type":"Buy","amount":12500,"nav":13.908,"units":898.7633,"amc":"Kbank"},{"date":"2026-03-23","fund":"K-GTECH","type":"Buy","amount":12500,"nav":19.1206,"units":653.7452,"amc":"Kbank"},{"date":"2026-03-20","fund":"K-WORLDX","type":"Buy","amount":7500,"nav":15.9267,"units":470.9073,"amc":"Kbank"},{"date":"2026-04-16","fund":"SCBS&P500E","type":"Buy","amount":1800,"nav":41.0124,"units":43.8892,"amc":"SCB"},{"date":"2026-04-16","fund":"SCBNDQE","type":"Buy","amount":600,"nav":15.3629,"units":39.0551,"amc":"SCB"},{"date":"2026-04-16","fund":"SCBWORLDE","type":"Buy","amount":300,"nav":13.7581,"units":21.8053,"amc":"SCB"},{"date":"2026-04-16","fund":"SCBGOLDE","type":"Buy","amount":300,"nav":25.8924,"units":11.5864,"amc":"SCB"},{"date":"2026-04-17","fund":"K-CHANGE","type":"Buy","amount":500,"nav":19.2312,"units":25.9994,"amc":"Kbank"},{"date":"2026-04-17","fund":"K-US-500X","type":"Buy","amount":500,"nav":14.7287,"units":33.9473,"amc":"Kbank"},{"date":"2026-04-20","fund":"K-GTECH","type":"Buy","amount":500,"nav":21.1611,"units":23.6283,"amc":"Kbank"},{"date":"2026-04-17","fund":"K-WORLDX","type":"Buy","amount":500,"nav":16.9053,"units":29.5765,"amc":"Kbank"},{"date":"2026-05-12","fund":"TLUS500-UH-X","type":"Buy","amount":18000,"nav":13.0355,"units":1380.8446,"amc":"Talis"},{"date":"2026-05-12","fund":"TLUSNDQ-UH-X","type":"Buy","amount":7500,"nav":12.4574,"units":602.0518,"amc":"Talis"},{"date":"2026-05-12","fund":"TLWORLD-X","type":"Buy","amount":4500,"nav":10.9119,"units":412.3938,"amc":"Talis"},{"date":"2026-05-15","fund":"SCBS&P500E","type":"Buy","amount":1800,"nav":43.1954,"units":41.6711,"amc":"SCB"},{"date":"2026-05-15","fund":"SCBNDQE","type":"Buy","amount":600,"nav":16.9762,"units":35.3436,"amc":"SCB"},{"date":"2026-05-15","fund":"SCBWORLDE","type":"Buy","amount":300,"nav":14.2037,"units":21.1213,"amc":"SCB"},{"date":"2026-05-15","fund":"SCBGOLDE","type":"Buy","amount":300,"nav":24.9666,"units":12.0161,"amc":"SCB"},{"date":"2026-05-18","fund":"K-CHANGE","type":"Buy","amount":500,"nav":19.4941,"units":25.6488,"amc":"Kbank"},{"date":"2026-05-18","fund":"K-US-500X","type":"Buy","amount":500,"nav":15.5175,"units":32.2217,"amc":"Kbank"},{"date":"2026-05-19","fund":"K-GTECH","type":"Buy","amount":500,"nav":19.4941,"units":25.6488,"amc":"Kbank"},{"date":"2026-05-18","fund":"K-WORLDX","type":"Buy","amount":500,"nav":17.499,"units":28.5731,"amc":"Kbank"},{"date":"2026-06-02","fund":"SCBKEQTGE","type":"Buy","amount":10000,"nav":31.0938,"units":321.6075,"amc":"SCB"},{"date":"2026-06-02","fund":"SCBSEMIE","type":"Buy","amount":10000,"nav":41.1822,"units":242.8234,"amc":"SCB"},{"date":"2026-06-16","fund":"SCBS&P500E","type":"Buy","amount":2000,"nav":43.7518,"units":45.7124,"amc":"SCB"},{"date":"2026-06-16","fund":"SCBNDQE","type":"Buy","amount":1200,"nav":17.4303,"units":68.8456,"amc":"SCB"},{"date":"2026-06-16","fund":"SCBWORLDE","type":"Buy","amount":500,"nav":14.486,"units":34.5161,"amc":"SCB"},{"date":"2026-06-16","fund":"SCBGOLDE","type":"Buy","amount":200,"nav":23.8,"units":8.4034,"amc":"SCB"},{"date":"2026-06-16","fund":"SCBKEQTGE","type":"Buy","amount":300,"nav":29.6932,"units":10.1033,"amc":"SCB"},{"date":"2026-06-16","fund":"SCBSEMIE","type":"Buy","amount":300,"nav":41.686,"units":7.1967,"amc":"SCB"},{"date":"2026-06-16","fund":"K-CHANGE","type":"Buy","amount":500,"nav":20.6745,"units":24.1844,"amc":"Kbank"},{"date":"2026-06-16","fund":"K-US-500X","type":"Buy","amount":500,"nav":15.7058,"units":31.8354,"amc":"Kbank"},{"date":"2026-06-16","fund":"K-GTECH","type":"Buy","amount":500,"nav":25.9281,"units":19.2841,"amc":"Kbank"},{"date":"2026-06-16","fund":"K-WORLDX","type":"Buy","amount":500,"nav":17.9104,"units":27.9167,"amc":"Kbank"},{"date":"2026-06-16","fund":"TLUS500-UH-X","type":"Buy","amount":1000,"nav":13.2833,"units":75.2825,"amc":"Talis"},{"date":"2026-06-16","fund":"TLUSNDQ-UH-X","type":"Buy","amount":1000,"nav":12.8938,"units":77.5567,"amc":"Talis"},{"date":"2026-06-16","fund":"TLWORLD-X","type":"Buy","amount":1000,"nav":11.189,"units":89.3735,"amc":"Talis"},{"date":"2026-03-23","fund":"SCBSFF","type":"Buy","amount":1857.35,"nav":19.6286,"units":94.6247,"amc":"SCB"},{"date":"2026-03-23","fund":"SCBSET2","type":"Buy","amount":4748.56,"nav":18.6162,"units":255.0768,"amc":"SCB"},{"date":"2026-03-23","fund":"SCBSET1","type":"Buy","amount":2693,"nav":18.5232,"units":145.3852,"amc":"SCB"},{"date":"2026-03-23","fund":"SCBS&P500OLD","type":"Buy","amount":2000,"nav":28.4244,"units":70.3621,"amc":"SCB"},{"date":"2026-03-23","fund":"SCBCEH","type":"Buy","amount":2000,"nav":8.4098,"units":237.8178,"amc":"SCB"},{"date":"2026-05-08","fund":"SCBSFF","type":"Buy","amount":100000,"nav":21.699,"units":4608.5073,"amc":"SCB"},{"date":"2026-03-27","fund":"GOLD-HSH","type":"Buy","amount":68800,"nav":4513.2511,"units":15.2440,"amc":"ฮั่วเซ่งฮง"},{"date":"2026-04-16","fund":"GOLD-HSH","type":"Buy","amount":1000,"nav":4768.7172,"units":0.2097,"amc":"ฮั่วเซ่งฮง"},{"date":"2026-05-15","fund":"GOLD-HSH","type":"Buy","amount":1000,"nav":4625.3469,"units":0.2162,"amc":"ฮั่วเซ่งฮง"},{"date":"2026-06-09","fund":"GOLD-HSH","type":"Buy","amount":1000,"nav":4382.1209,"units":0.2282,"amc":"ฮั่วเซ่งฮง"}];
+const TX=[{"date":"2026-03-18","fund":"SCBS&P500E","type":"Buy","amount":300000,"nav":38.7914,"units":7733.6729,"amc":"SCB"},{"date":"2026-03-18","fund":"SCBNDQE","type":"Buy","amount":100000,"nav":14.3377,"units":6974.6194,"amc":"SCB"},{"date":"2026-03-18","fund":"SCBWORLDE","type":"Buy","amount":50000,"nav":12.9943,"units":3847.841,"amc":"SCB"},{"date":"2026-03-18","fund":"SCBGOLDE","type":"Buy","amount":50000,"nav":27.1038,"units":1844.7598,"amc":"SCB"},{"date":"2026-03-20","fund":"K-CHANGE","type":"Buy","amount":17500,"nav":18.5097,"units":945.4502,"amc":"Kbank"},{"date":"2026-03-20","fund":"K-US-500X","type":"Buy","amount":12500,"nav":13.908,"units":898.7633,"amc":"Kbank"},{"date":"2026-03-23","fund":"K-GTECH","type":"Buy","amount":12500,"nav":19.1206,"units":653.7452,"amc":"Kbank"},{"date":"2026-03-20","fund":"K-WORLDX","type":"Buy","amount":7500,"nav":15.9267,"units":470.9073,"amc":"Kbank"},{"date":"2026-04-16","fund":"SCBS&P500E","type":"Buy","amount":1800,"nav":41.0124,"units":43.8892,"amc":"SCB"},{"date":"2026-04-16","fund":"SCBNDQE","type":"Buy","amount":600,"nav":15.3629,"units":39.0551,"amc":"SCB"},{"date":"2026-04-16","fund":"SCBWORLDE","type":"Buy","amount":300,"nav":13.7581,"units":21.8053,"amc":"SCB"},{"date":"2026-04-16","fund":"SCBGOLDE","type":"Buy","amount":300,"nav":25.8924,"units":11.5864,"amc":"SCB"},{"date":"2026-04-17","fund":"K-CHANGE","type":"Buy","amount":500,"nav":19.2312,"units":25.9994,"amc":"Kbank"},{"date":"2026-04-17","fund":"K-US-500X","type":"Buy","amount":500,"nav":14.7287,"units":33.9473,"amc":"Kbank"},{"date":"2026-04-20","fund":"K-GTECH","type":"Buy","amount":500,"nav":21.1611,"units":23.6283,"amc":"Kbank"},{"date":"2026-04-17","fund":"K-WORLDX","type":"Buy","amount":500,"nav":16.9053,"units":29.5765,"amc":"Kbank"},{"date":"2026-05-12","fund":"TLUS500-UH-X","type":"Buy","amount":18000,"nav":13.0355,"units":1380.8446,"amc":"Talis"},{"date":"2026-05-12","fund":"TLUSNDQ-UH-X","type":"Buy","amount":7500,"nav":12.4574,"units":602.0518,"amc":"Talis"},{"date":"2026-05-12","fund":"TLWORLD-X","type":"Buy","amount":4500,"nav":10.9119,"units":412.3938,"amc":"Talis"},{"date":"2026-05-15","fund":"SCBS&P500E","type":"Buy","amount":1800,"nav":43.1954,"units":41.6711,"amc":"SCB"},{"date":"2026-05-15","fund":"SCBNDQE","type":"Buy","amount":600,"nav":16.9762,"units":35.3436,"amc":"SCB"},{"date":"2026-05-15","fund":"SCBWORLDE","type":"Buy","amount":300,"nav":14.2037,"units":21.1213,"amc":"SCB"},{"date":"2026-05-15","fund":"SCBGOLDE","type":"Buy","amount":300,"nav":24.9666,"units":12.0161,"amc":"SCB"},{"date":"2026-05-18","fund":"K-CHANGE","type":"Buy","amount":500,"nav":19.4941,"units":25.6488,"amc":"Kbank"},{"date":"2026-05-18","fund":"K-US-500X","type":"Buy","amount":500,"nav":15.5175,"units":32.2217,"amc":"Kbank"},{"date":"2026-05-19","fund":"K-GTECH","type":"Buy","amount":500,"nav":19.4941,"units":25.6488,"amc":"Kbank"},{"date":"2026-05-18","fund":"K-WORLDX","type":"Buy","amount":500,"nav":17.499,"units":28.5731,"amc":"Kbank"},{"date":"2026-06-02","fund":"SCBKEQTGE","type":"Buy","amount":10000,"nav":31.0938,"units":321.6075,"amc":"SCB"},{"date":"2026-06-02","fund":"SCBSEMIE","type":"Buy","amount":10000,"nav":41.1822,"units":242.8234,"amc":"SCB"},{"date":"2026-06-16","fund":"SCBS&P500E","type":"Buy","amount":2000,"nav":43.7518,"units":45.7124,"amc":"SCB"},{"date":"2026-06-16","fund":"SCBNDQE","type":"Buy","amount":1200,"nav":17.4303,"units":68.8456,"amc":"SCB"},{"date":"2026-06-16","fund":"SCBWORLDE","type":"Buy","amount":500,"nav":14.486,"units":34.5161,"amc":"SCB"},{"date":"2026-06-16","fund":"SCBGOLDE","type":"Buy","amount":200,"nav":23.8,"units":8.4034,"amc":"SCB"},{"date":"2026-06-16","fund":"SCBKEQTGE","type":"Buy","amount":300,"nav":29.6932,"units":10.1033,"amc":"SCB"},{"date":"2026-06-16","fund":"SCBSEMIE","type":"Buy","amount":300,"nav":41.686,"units":7.1967,"amc":"SCB"},{"date":"2026-06-16","fund":"K-CHANGE","type":"Buy","amount":500,"nav":20.6745,"units":24.1844,"amc":"Kbank"},{"date":"2026-06-16","fund":"K-US-500X","type":"Buy","amount":500,"nav":15.7058,"units":31.8354,"amc":"Kbank"},{"date":"2026-06-16","fund":"K-GTECH","type":"Buy","amount":500,"nav":25.9281,"units":19.2841,"amc":"Kbank"},{"date":"2026-06-16","fund":"K-WORLDX","type":"Buy","amount":500,"nav":17.9104,"units":27.9167,"amc":"Kbank"},{"date":"2026-06-16","fund":"TLUS500-UH-X","type":"Buy","amount":1000,"nav":13.2833,"units":75.2825,"amc":"Talis"},{"date":"2026-06-16","fund":"TLUSNDQ-UH-X","type":"Buy","amount":1000,"nav":12.8938,"units":77.5567,"amc":"Talis"},{"date":"2026-06-16","fund":"TLWORLD-X","type":"Buy","amount":1000,"nav":11.189,"units":89.3735,"amc":"Talis"},{"date":"2026-03-23","fund":"SCBSFF","type":"Buy","amount":1857.35,"nav":19.6286,"units":94.6247,"amc":"SCB easy"},{"date":"2026-03-23","fund":"SCBSET2","type":"Buy","amount":4748.56,"nav":18.6162,"units":255.0768,"amc":"SCB easy"},{"date":"2026-03-23","fund":"SCBSET1","type":"Buy","amount":2693,"nav":18.5232,"units":145.3852,"amc":"SCB easy"},{"date":"2026-03-23","fund":"SCBS&P500OLD","type":"Buy","amount":2000,"nav":28.4244,"units":70.3621,"amc":"SCB easy"},{"date":"2026-03-23","fund":"SCBCEH","type":"Buy","amount":2000,"nav":8.4098,"units":237.8178,"amc":"SCB easy"},{"date":"2026-05-08","fund":"SCBSFF","type":"Buy","amount":100000,"nav":21.699,"units":4608.5073,"amc":"SCB easy"},{"date":"2026-03-27","fund":"GOLD-HSH","type":"Buy","amount":68800,"nav":4513.2511,"units":15.2440,"amc":"ฮั่วเซ่งฮง"},{"date":"2026-04-16","fund":"GOLD-HSH","type":"Buy","amount":1000,"nav":4768.7172,"units":0.2097,"amc":"ฮั่วเซ่งฮง"},{"date":"2026-05-15","fund":"GOLD-HSH","type":"Buy","amount":1000,"nav":4625.3469,"units":0.2162,"amc":"ฮั่วเซ่งฮง"},{"date":"2026-06-09","fund":"GOLD-HSH","type":"Buy","amount":1000,"nav":4382.1209,"units":0.2282,"amc":"ฮั่วเซ่งฮง"}];
 
 // ===== STATE =====
 let selFund='ALL'; // shared fund selector state
 let ovMode='fund'; // 'fund' or 'amc'
 let selAMC='ALL'; // for amc mode
+let amcPieSel='ALL'; // drilldown state for the "สัดส่วน AMC" donut chart
+let apdAmcSel='ALL'; // drilldown state for the "สัดส่วนมูลค่าสินทรัพย์ปัจจุบัน" (ตาม AMC) donut chart
+let apdMode='fund'; // for the "ไม่รวมเงินฝาก" donut: 'fund' | 'amc'
 const SK='nav_v4';
 function getNew(){try{return JSON.parse(localStorage.getItem(SK)||'[]');}catch(e){return[];}}
 function setNew(a){try{localStorage.setItem(SK,JSON.stringify(a));}catch(e){toast('Storage เต็ม','#D44B2A');}}
+// ข้อมูล NAV ที่ push ขึ้น Google Sheets ถูกแบ่งเป็นคีย์รายเดือน (nav_v4_YYYY-MM)
+// แทนที่จะรวมทุกวันไว้ในคีย์ 'nav_v4' คีย์เดียว — เพราะ Sheets จำกัดไว้ที่ 50,000
+// ตัวอักษรต่อเซลล์ และ NAV รายวันของ 18 กองทุนรวมกันแค่ปีเดียวก็เกินขีดจำกัดนี้ไปมาก
+// แล้ว การเขียนที่เกินขีดจำกัดจะล้มเหลวแบบเงียบๆ ฝั่ง Apps Script (ข้อมูลหายไปเลย
+// โดยไม่มีอะไรแจ้งฝั่งแอป) localStorage ไม่มีข้อจำกัดนี้ จึงยังเก็บเป็นก้อนเดียวเหมือนเดิม
+// (SK/getNew()/setNew() ด้านบน) — การแบ่งคีย์ใช้เฉพาะตอนคุยกับ Google Sheets เท่านั้น
+function navShardKey(d){return SK+'_'+String(d).slice(0,7);} // เช่น 'nav_v4_2026-09'
+function splitNavByShard(rows){
+  const shards={};
+  rows.forEach(r=>{
+    const k=navShardKey(r.d);
+    (shards[k]=shards[k]||[]).push(r);
+  });
+  return shards;
+}
 function getAllNAV(){
   const rows=BASE_NAV.map(r=>({...r}));
   getNew().forEach(nr=>{const i=rows.findIndex(r=>r.d===nr.d);if(i>=0)Object.assign(rows[i],nr);else rows.push({...nr});});
@@ -1939,6 +2034,39 @@ function fundValSingle(f,row){return fundVal(f,row);}
 let CC={};
 function dc(id){if(CC[id]){CC[id].destroy();delete CC[id];}}
 function leg(id,labels,colors){const el=document.getElementById(id);if(el)el.innerHTML=labels.map((l,i)=>`<span class="li"><span class="ld" style="background:${colors[i%colors.length]}"></span>${l}</span>`).join('');}
+// "สัดส่วน AMC" donut — clicking a slice/legend drills into that AMC's fund breakdown; click again (or the back label) to return.
+function renderAMCPie(){
+  const amcColors=['#2C5BDB','#0D9373','#7B61C4','#B8820A','#888780'];
+  let aL,aV,aColors;
+  const titleEl=document.getElementById('cAMCTitle');
+  if(amcPieSel==='ALL'||!FUNDS.some(f=>AMC[f]===amcPieSel)){
+    amcPieSel='ALL';
+    const amcT={};FUNDS.forEach(f=>{const a=AMC[f]||'Other';amcT[a]=(amcT[a]||0)+(ALLOC[f]||0);});
+    aL=Object.keys(amcT);aV=Object.values(amcT);aColors=amcColors.slice(0,aL.length);
+    if(titleEl)titleEl.textContent='สัดส่วน AMC';
+  }else{
+    const subFunds=FUNDS.filter(f=>AMC[f]===amcPieSel);
+    aL=subFunds.map(f=>FN[f]||f);
+    aV=subFunds.map(f=>ALLOC[f]||0);
+    aColors=subFunds.map(f=>PAL[FUNDS.indexOf(f)%PAL.length]);
+    if(titleEl)titleEl.innerHTML='สัดส่วน '+amcPieSel+' <span style="cursor:pointer;opacity:.65;font-weight:400;font-size:11px" onclick="setAMCSel(\'ALL\');">‹ กลับ</span>';
+  }
+  const pieTotal=aV.reduce((s,v)=>s+v,0);
+  leg('lAMC',aL.map((l,i)=>`${l} ${(pieTotal>0?(aV[i]/pieTotal*100):0).toFixed(0)}%`),aColors);
+  dc('cAMC');
+  const canvas=document.getElementById('cAMC');
+  canvas.style.cursor='pointer';
+  CC['cAMC']=new Chart(canvas,{type:'doughnut',data:{labels:aL,datasets:[{data:aV,backgroundColor:aColors,borderWidth:2,borderColor:['var(--bg)']}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',onClick:(evt,elements)=>{
+    if(!elements.length)return;
+    const idx=elements[0].index;
+    if(amcPieSel==='ALL'){
+      const clicked=aL[idx];
+      if(FUNDS.some(f=>AMC[f]===clicked)){setAMCSel(clicked);}
+    }else{
+      setAMCSel('ALL');
+    }
+  },plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{const v=c.raw,p=pieTotal>0?(v/pieTotal*100):0;return c.label+': ฿'+fmtMoney(v)+' ('+p.toFixed(1)+'%)';}}}}}});
+}
 // Hover-to-bold-legend: on multi-line "combined" charts (all funds shown together),
 // bold the legend entry for whichever line the cursor is nearest to, so it's clear
 // which fund's line you're actually looking at. Bound once per canvas — survives
@@ -2095,6 +2223,22 @@ function setOvMode(mode){
   buildFundPills();buildAMCPills();renderOverview();
 }
 
+function setApdMode(m){
+  apdMode=m;
+  apdAmcSel='ALL';
+  const fBtn=document.getElementById('apdModeFund'),aBtn=document.getElementById('apdModeAMC');
+  if(fBtn&&aBtn){fBtn.classList.toggle('sel',m==='fund');aBtn.classList.toggle('sel',m==='amc');}
+  renderOverview();
+}
+
+// Consistent color per AMC, based on its position in the AMC list (base + custom)
+function amcColor(amc){
+  const list=getAMCList();
+  const idx=list.indexOf(amc);
+  const pal=['#2C5BDB','#0D9373','#7B61C4','#B8820A','#C2410C','#639922','#D4537E','#3B6D11'];
+  return idx>=0?pal[idx%pal.length]:'#888780';
+}
+
 // ===== FUND PILLS (shared selector) =====
 function buildFundPills(){
   const container=document.getElementById('ovPills');
@@ -2114,7 +2258,7 @@ function buildAMCPills(){
   });
   container.innerHTML=html;
 }
-function setAMCSel(a){selAMC=a;buildAMCPills();renderOverview();}
+function setAMCSel(a){selAMC=a;amcPieSel=a;buildAMCPills();renderOverview();}
 
 function setFundSel(f){
   selFund=f;
@@ -2449,8 +2593,11 @@ function renderOverview(){
   const cPVStatsEl=document.getElementById('cPVStats');
   if(cPVStatsEl)cPVStatsEl.innerHTML=maxMinStatsHTML(valid.map((r,i)=>({v:pvData[i],d:r.d})),v=>'฿'+Math.round(v).toLocaleString());
   const pvColor=isAMCMode?'#7B61C4':(!isAll?PAL[FUNDS.indexOf(selFund)%PAL.length]:'#2C5BDB');
-  // ต้นทุนรวมของกองที่แสดงอยู่ (คงที่ทุกวัน เพราะกราฟนี้จำลอง "ถ้าถือหน่วยปัจจุบันมาตลอด" เหมือนกับ pvData ที่ใช้ UNITS ปัจจุบันคูณ NAV ย้อนหลัง)
-  const pvCost=showF.reduce((s,f)=>s+(ALLOC[f]||0),0);
+  // ต้นทุนของกองที่แสดงอยู่ ณ แต่ละวัน (FIFO cost-basis ตามธุรกรรมจริงที่ถือครองอยู่
+  // ณ วันนั้นๆ ไม่ใช่ยอดต้นทุนปัจจุบันคงที่ทุกวัน)
+  const pvDates=valid.map(r=>r.d);
+  const pvCostByFund=showF.map(f=>costBasisSeriesForDates(f,pvDates));
+  const pvCostSeries=pvDates.map((d,i)=>pvCostByFund.reduce((s,arr)=>s+(arr[i]||0),0));
   const singleFundView=(!isAMCMode&&!isAll&&!!selFund);
   dc('cPV');CC['cPV']=new Chart(document.getElementById('cPV'),{type:'line',data:{labels:valid.map(r=>r.d.slice(5)),datasets:[{label:labelPrefix,data:pvData,borderColor:pvColor,backgroundColor:hexToRgba(pvColor,0.07),fill:true,borderWidth:2,pointRadius:0,spanGaps:true}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{
     backgroundColor:'#0a0a0a',
@@ -2467,12 +2614,13 @@ function renderOverview(){
       title:()=>labelPrefix,
       label:c=>{
         const idx=c.dataIndex;const r=valid[idx];const val=pvData[idx];
-        const ret=pvCost>0?((val-pvCost)/pvCost*100):null;
+        const costHere=pvCostSeries[idx]||0;
+        const ret=costHere>0?((val-costHere)/costHere*100):null;
         const lines=[];
         if(singleFundView&&r[selFund]!=null)lines.push('NAV      '+r[selFund].toFixed(4));
         lines.push('Return   '+(ret!=null?(ret>=0?'+':'')+ret.toFixed(2)+'%':'-'));
         lines.push('Value    ฿'+Math.round(val).toLocaleString());
-        lines.push('Cost     ฿'+Math.round(pvCost).toLocaleString());
+        lines.push('Cost     ฿'+Math.round(costHere).toLocaleString());
         return lines;
       },
       footer:items=>items[0]?valid[items[0].dataIndex].d:''
@@ -2488,20 +2636,87 @@ function renderOverview(){
   renderPLChart();
 
   // Pie charts
-  const amcT={};FUNDS.forEach(f=>{const a=AMC[f]||'Other';amcT[a]=(amcT[a]||0)+(ALLOC[f]||0);});
-  const aL=Object.keys(amcT),aV=Object.values(amcT),aC=['#2C5BDB','#0D9373','#7B61C4','#B8820A','#888780'];
-  leg('lAMC',aL.map((l,i)=>`${l} ${((aV[i]/totalAlloc())*100).toFixed(0)}%`),aC);
-  dc('cAMC');CC['cAMC']=new Chart(document.getElementById('cAMC'),{type:'doughnut',data:{labels:aL,datasets:[{data:aV,backgroundColor:aC.slice(0,aL.length),borderWidth:2,borderColor:['var(--bg)']}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:false}}}});
+  renderAMCPie();
   const thT={};FUNDS.forEach(f=>{const t=TH[f];thT[t]=(thT[t]||0)+(ALLOC[f]||0);});
   const tL=Object.keys(thT),tV=Object.values(thT),tC=tL.map(t=>THC[t]||'#888');
   leg('lTH',tL.map((l,i)=>`${l} ${((tV[i]/totalAlloc())*100).toFixed(0)}%`),tC);
   dc('cTH');CC['cTH']=new Chart(document.getElementById('cTH'),{type:'doughnut',data:{labels:tL,datasets:[{data:tV,backgroundColor:tC,borderWidth:2,borderColor:['var(--bg)']}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:false}}}});
+
+  // Asset value composition donut (3D-style) — investment funds only, excludes deposits, toggles by fund/AMC
+  renderAssetDonut3D(latestNAV,lastRow);
 
   // Asset value composition pie (3D-style) — all funds' current value + deposits
   renderAssetPie3D(all,latestNAV,lastRow);
 
   // Goal progress & NAV-change alerts (uses whole-portfolio figures regardless of fund filter)
   renderGoal();
+}
+
+function renderAssetDonut3D(latestNAV,lastRow){
+  let items=[];
+  const titleEl=document.getElementById('apdTitle');
+  if(apdMode==='amc'&&apdAmcSel!=='ALL'&&FUNDS.some(f=>AMC[f]===apdAmcSel&&(latestNAV[f]!=null?latestNAV[f]*(UNITS[f]||0):0)>0)){
+    // Drilled into a single AMC: show its funds' current market value
+    FUNDS.filter(f=>AMC[f]===apdAmcSel).forEach(f=>{
+      const u=UNITS[f]||0,n=latestNAV[f];
+      const v=n!=null?n*u:0;
+      if(v>0)items.push({label:FN[f]||f,value:v,color:PAL[FUNDS.indexOf(f)%PAL.length]});
+    });
+    if(titleEl)titleEl.innerHTML='สัดส่วน '+apdAmcSel+' (มูลค่าปัจจุบัน) <span style="cursor:pointer;opacity:.65;font-weight:400;font-size:11px" onclick="apdAmcSel=\'ALL\';renderOverview();">‹ กลับ</span>';
+  }else if(apdMode==='amc'){
+    apdAmcSel='ALL';
+    const t={};
+    FUNDS.forEach(f=>{
+      const u=UNITS[f]||0,n=latestNAV[f];
+      const v=n!=null?n*u:0;
+      if(v<=0)return;
+      const key=AMC[f]||'Other';
+      t[key]=(t[key]||0)+v;
+    });
+    items=Object.keys(t).map(k=>({label:k,value:t[k],color:amcColor(k)}));
+    if(titleEl)titleEl.textContent='สัดส่วนมูลค่าสินทรัพย์ปัจจุบัน (ไม่รวมเงินฝาก)';
+  }else{
+    FUNDS.forEach(f=>{
+      const u=UNITS[f]||0,n=latestNAV[f];
+      const v=n!=null?n*u:0;
+      if(v>0)items.push({label:FN[f]||f,value:v,color:PAL[FUNDS.indexOf(f)%PAL.length]});
+    });
+    if(titleEl)titleEl.textContent='สัดส่วนมูลค่าสินทรัพย์ปัจจุบัน (ไม่รวมเงินฝาก)';
+  }
+  items.sort((a,b)=>b.value-a.value);
+  const total=items.reduce((s,i)=>s+i.value,0);
+
+  const dateEl=document.getElementById('apdSubDate');
+  if(dateEl)dateEl.textContent='ข้อมูล ณ '+(lastRow?lastRow.d:'-');
+  const totalEl=document.getElementById('apdTotalLine');
+  if(totalEl)totalEl.textContent=total>0?'มูลค่าเงินลงทุนรวม (ไม่รวมเงินฝาก): ฿'+fmtMoney(total)+' ('+items.length+' รายการ)':'ยังไม่มีข้อมูลมูลค่าสินทรัพย์';
+
+  const labels=items.map(i=>i.label);
+  const values=items.map(i=>i.value);
+  const colors=items.map(i=>i.color);
+  const shadowColors=colors.map(c=>shadeColor(c,-38));
+
+  leg('lAPD',items.map(i=>`${i.label} · ฿${fmtMoney(i.value)} · ${(total>0?(i.value/total*100):0).toFixed(1)}%`),colors);
+
+  dc('cAPD');dc('cAPDShadow');
+  const shadowCanvas=document.getElementById('cAPDShadow');
+  if(shadowCanvas&&values.length){
+    CC['cAPDShadow']=new Chart(shadowCanvas,{type:'doughnut',data:{labels,datasets:[{data:values,backgroundColor:shadowColors,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,animation:false,cutout:'58%',plugins:{legend:{display:false},tooltip:{enabled:false}}}});
+  }
+  const mainCanvas=document.getElementById('cAPD');
+  if(mainCanvas&&values.length){
+    mainCanvas.style.cursor=apdMode==='amc'?'pointer':'default';
+    CC['cAPD']=new Chart(mainCanvas,{type:'doughnut',data:{labels,datasets:[{data:values,backgroundColor:colors,borderWidth:2,borderColor:'var(--bg)'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',onClick:(evt,elements)=>{
+    if(apdMode!=='amc'||!elements.length)return;
+    const idx=elements[0].index;
+    if(apdAmcSel==='ALL'){
+      const clicked=labels[idx];
+      if(FUNDS.some(f=>AMC[f]===clicked)){apdAmcSel=clicked;renderOverview();}
+    }else{
+      apdAmcSel='ALL';renderOverview();
+    }
+  },plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{const v=c.raw,p=total>0?(v/total*100):0;return c.label+': ฿'+fmtMoney(v)+' ('+p.toFixed(1)+'%)';}}}}}});
+  }
 }
 
 function renderAssetPie3D(all,latestNAV,lastRow){
@@ -2656,6 +2871,7 @@ function renderPLChart(){
       }
     });
   }
+  renderPortfolioIntelligence();
 }
 
 // ===== NAV =====
@@ -3833,6 +4049,39 @@ function fifoCostBasis(fund){
   const avgCpu=remUnits>0?remCost/remUnits:null;
   return{remUnits,avgCpu,realized};
 }
+// FIFO remaining cost-basis checkpoints over time for one fund: returns
+// ascending [{date,cost}] where `cost` is the total cost of units still
+// held immediately after each transaction on that date (last tx of a date wins).
+function costBasisCheckpoints(fund){
+  const tx=getAllTx().filter(t=>t.fund===fund).slice().sort((a,b)=>a.date.localeCompare(b.date));
+  const lots=[];
+  const points=[];
+  tx.forEach(t=>{
+    if(t.type==='Buy'&&t.units>0){lots.push({units:t.units,cpu:(t.amount||0)/t.units});}
+    else if(t.type==='Sell'&&t.units>0){
+      let toSell=t.units;
+      while(toSell>0.0001&&lots.length){
+        const lot=lots[0];
+        const take=Math.min(lot.units,toSell);
+        lot.units-=take;toSell-=take;
+        if(lot.units<=0.0001)lots.shift();
+      }
+    }
+    points.push({date:t.date,cost:lots.reduce((s,l)=>s+l.units*l.cpu,0)});
+  });
+  return points;
+}
+// Maps an ascending list of dates to that fund's FIFO cost-basis as of each
+// date (step function: cost stays flat between transactions, 0 before the
+// first buy). `dates` must already be sorted ascending.
+function costBasisSeriesForDates(fund,dates){
+  const points=costBasisCheckpoints(fund);
+  let pi=0,cost=0;
+  return dates.map(d=>{
+    while(pi<points.length&&points[pi].date<=d){cost=points[pi].cost;pi++;}
+    return cost;
+  });
+}
 function renderAnalyticsCost(){
   const all=getAllNAV();
   const latestNAV={};
@@ -4244,6 +4493,74 @@ function resetProjToHistorical(){
   setProjSettings(S);
   renderProj();
   toast('รีเซ็ตเป็นค่า XIRR จริง/ค่าเริ่มต้นแล้ว');
+}
+
+
+// ===== PORTFOLIO INTELLIGENCE v66 =====
+function piSettings(){try{return JSON.parse(localStorage.getItem('portfolio_intelligence_v66')||'{}')}catch(e){return {}}}
+function piSave(S){try{localStorage.setItem('portfolio_intelligence_v66',JSON.stringify(S))}catch(e){}}
+function savePISettings(){
+  const S=piSettings();
+  S.target=parseFloat(document.getElementById('piGoalTarget')?.value)||0;
+  S.years=parseFloat(document.getElementById('piGoalYears')?.value)||10;
+  S.ret=parseFloat(document.getElementById('piGoalReturn')?.value)||8;
+  piSave(S);renderPortfolioIntelligence();
+}
+function piLatestValues(){
+  const all=getAllNAV(), nav={};
+  FUNDS.forEach(f=>{for(let i=all.length-1;i>=0;i--){if(all[i][f]!=null){nav[f]=all[i][f];break;}}});
+  const vals={},held=[];let total=0;
+  FUNDS.forEach(f=>{const v=(UNITS[f]||0)*(nav[f]||0);if(v>0){vals[f]=v;held.push(f);total+=v;}});
+  return {nav,vals,held,total};
+}
+function piExposure(vals,total){
+  const agg={},count={};
+  Object.keys(vals).forEach(f=>{
+    const fw=total?vals[f]/total:0;
+    (STOCKS_DATA[f]||[]).forEach(x=>{const e=fw*(x.p||0);agg[x.c]=(agg[x.c]||0)+e;count[x.c]=(count[x.c]||0)+1;});
+  });
+  return Object.keys(agg).map(k=>({name:k,pct:agg[k],funds:count[k]||0})).sort((a,b)=>b.pct-a.pct);
+}
+function renderPortfolioIntelligence(){
+  const metric=document.getElementById('piMetrics');if(!metric)return;
+  const {vals,held,total}=piLatestValues();
+  const totalInv=held.reduce((a,f)=>a+(ALLOC[f]||0),0);
+  const exp=piExposure(vals,total);
+  const top=exp[0]||{name:'-',pct:0,funds:0};
+  const topFund=held.map(f=>({f,p:total?vals[f]/total*100:0})).sort((a,b)=>b.p-a.p)[0]||{f:'-',p:0};
+  const amcs=new Set(held.map(f=>AMC[f])).size;
+  const themes=new Set(held.map(f=>TH[f])).size;
+  let score=100;
+  const penalties=[];
+  if(topFund.p>35){score-=20;penalties.push('กองทุนใหญ่สุดเกิน 35%');}else if(topFund.p>25){score-=10;penalties.push('กองทุนใหญ่สุดเกิน 25%');}
+  if(top.pct>20){score-=20;penalties.push('หุ้น/สินทรัพย์ตัวเดียวเกิน 20%');}else if(top.pct>12){score-=10;penalties.push('หุ้น/สินทรัพย์ตัวเดียวเกิน 12%');}
+  if(themes<3)score-=10;if(amcs<2)score-=5;if(held.length<4)score-=10;
+  const roi=totalInv>0?(total-totalInv)/totalInv*100:0;
+  if(roi<-10)score-=10;
+  score=Math.max(0,Math.round(score));
+  const grade=score>=85?'Excellent':score>=70?'Good':score>=50?'Moderate':'Needs Attention';
+  metric.innerHTML=`<div class="m"><div class="ml">Health Score</div><div class="mv ${score>=70?'pos':score>=50?'':'neg'}">${score}/100</div><div class="ms">${grade}</div></div><div class="m"><div class="ml">กองทุนที่ถือ</div><div class="mv">${held.length}</div><div class="ms">${amcs} AMC · ${themes} Theme</div></div><div class="m"><div class="ml">Top Concentration</div><div class="mv sm">${top.name}</div><div class="ms ${top.pct>12?'neg':'pos'}">${top.pct.toFixed(2)}% · ${top.funds} กองทุน</div></div><div class="m"><div class="ml">ROI ปัจจุบัน</div><div class="mv ${roi>=0?'pos':'neg'}">${roi>=0?'+':''}${roi.toFixed(2)}%</div><div class="ms">กำไร/ขาดทุนจากเงินลงทุน</div></div>`;
+  document.getElementById('piHealth').innerHTML=`<div style="display:flex;align-items:center;gap:14px"><div style="font-size:42px;font-family:var(--f-mono);font-weight:700;color:${score>=85?'var(--green)':score>=70?'var(--blue)':score>=50?'var(--gold)':'var(--red)'}">${score}</div><div style="flex:1"><div style="height:12px;background:var(--border2);border-radius:8px;overflow:hidden"><div style="height:100%;width:${score}%;background:${score>=85?'var(--green)':score>=70?'var(--blue)':score>=50?'var(--gold)':'var(--red)'}"></div></div><div class="ms" style="margin-top:7px">${grade}${penalties.length?' · '+penalties.join(' · '):' · โครงสร้างพอร์ตอยู่ในเกณฑ์ดี'}</div></div></div>`;
+  const alerts=[];
+  if(topFund.p>25)alerts.push(`🔴 ${FN[topFund.f]||topFund.f} มีสัดส่วน ${topFund.p.toFixed(1)}% ของพอร์ต`);
+  if(top.pct>12)alerts.push(`⚠️ Exposure ${top.name} รวม ${top.pct.toFixed(1)}% ผ่าน ${top.funds} กองทุน`);
+  if(themes<3)alerts.push('🟡 ธีมการลงทุนยังน้อยกว่า 3 กลุ่ม');
+  if(roi<-10)alerts.push(`🔴 ROI ปัจจุบัน ${roi.toFixed(1)}% ควรตรวจสอบ Drawdown และแผนลงทุน`);
+  if(!alerts.length)alerts.push('🟢 ไม่พบความเสี่ยงเด่นจากเกณฑ์พื้นฐานของ Dashboard');
+  document.getElementById('piAlerts').innerHTML=alerts.map(a=>`<div style="padding:7px 9px;margin-bottom:5px;background:var(--bg2);border:0.5px solid var(--border);border-radius:7px;font-size:11px">${a}</div>`).join('');
+  document.getElementById('piConcentration').innerHTML=exp.slice(0,6).map((x,i)=>`<div style="margin-bottom:7px"><div style="display:flex;justify-content:space-between;font-size:10.5px"><span>${i+1}. ${x.name} <span style="color:var(--t2)">(${x.funds} กองทุน)</span></span><b>${x.pct.toFixed(2)}%</b></div><div style="height:6px;background:var(--border2);border-radius:5px;overflow:hidden;margin-top:3px"><div style="height:100%;width:${Math.min(100,x.pct*3)}%;background:${x.pct>12?'var(--red)':x.pct>8?'var(--gold)':'var(--blue)'}"></div></div></div>`).join('')||'<div class="hint">ยังไม่มีข้อมูลหุ้นสำหรับ Look-through analysis</div>';
+  const rows=held.map(f=>{const cur=total?vals[f]/total*100:0;const tgt=REBAL_TARGETS[f]!=null?REBAL_TARGETS[f]:100/Math.max(1,held.length);return{f,cur,tgt,gap:tgt-cur};}).sort((a,b)=>b.gap-a.gap);
+  const buy=rows.filter(x=>x.gap>0.5).slice(0,3), avoid=rows.filter(x=>x.gap<-0.5).slice(0,3);
+  document.getElementById('piRebalance').innerHTML=`<div class="ms" style="margin-bottom:6px">ใช้ Target จากหน้า Rebalance ถ้าตั้งไว้ มิฉะนั้นใช้ Equal Weight</div><div style="font-size:11px"><b class="pos">ควรเน้น DCA:</b><br>${buy.length?buy.map(x=>`${FN[x.f]||x.f} (+${x.gap.toFixed(1)}%)`).join('<br>'):'พอร์ตอยู่ใกล้เป้าหมาย'}</div><div style="font-size:11px;margin-top:8px"><b class="neg">ควรชะลอการเพิ่ม:</b><br>${avoid.length?avoid.map(x=>`${FN[x.f]||x.f} (${x.gap.toFixed(1)}%)`).join('<br>'):'ไม่มีรายการเกินเป้าหมายชัดเจน'}</div>`;
+  const S=piSettings();
+  const targetEl=document.getElementById('piGoalTarget'),yearsEl=document.getElementById('piGoalYears'),retEl=document.getElementById('piGoalReturn');
+  if(targetEl)targetEl.value=S.target||'';if(yearsEl)yearsEl.value=S.years||10;if(retEl)retEl.value=S.ret||8;
+  const target=S.target||0, years=S.years||10, r=(S.ret||8)/100/12, n=years*12;
+  let currentDCA=0;try{const ps=getProjSettings();FUNDS.forEach(f=>{currentDCA+=(ps.funds?.[f]?.dca||0)})}catch(e){}
+  if(!currentDCA){try{currentDCA=getAllTx().filter(t=>t.type==='Buy').reduce((a,t)=>a+t.amount,0)/Math.max(1,Math.ceil((Date.now()-new Date(getAllTx()[0]?.date||Date.now()))/2629800000))}catch(e){}}
+  if(target>0){const fvCurrent=total*Math.pow(1+r,n);const req=Math.max(0,(target-fvCurrent)*r/(Math.pow(1+r,n)-1));const progress=Math.min(100,total/target*100);const est=currentDCA>0?total*Math.pow(1+r,n)+currentDCA*((Math.pow(1+r,n)-1)/r):fvCurrent;
+    document.getElementById('piGoal').innerHTML=`<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px"><span>ปัจจุบัน ฿${Math.round(total).toLocaleString()}</span><span>เป้าหมาย ฿${Math.round(target).toLocaleString()} · ${progress.toFixed(1)}%</span></div><div style="height:10px;background:var(--border2);border-radius:6px;overflow:hidden"><div style="height:100%;width:${progress}%;background:var(--blue)"></div></div><div class="mg" style="margin-top:10px;margin-bottom:0"><div class="m"><div class="ml">DCA ปัจจุบันโดยประมาณ</div><div class="mv sm">฿${Math.round(currentDCA).toLocaleString()}/ด.</div></div><div class="m"><div class="ml">DCA ที่ต้องใช้เพื่อถึงเป้าหมาย</div><div class="mv sm ${req>currentDCA?'neg':'pos'}">฿${Math.ceil(req).toLocaleString()}/ด.</div></div><div class="m"><div class="ml">คาดการณ์ตาม DCA ปัจจุบัน</div><div class="mv sm">฿${Math.round(est).toLocaleString()}</div></div></div>`;
+  }else document.getElementById('piGoal').innerHTML='<div class="hint">ตั้งเป้าหมายพอร์ต ระยะเวลา และผลตอบแทนคาดหวัง เพื่อคำนวณ Required DCA</div>';
 }
 
 // ===== ADD FUND MODAL =====
@@ -4897,6 +5214,38 @@ function getOrCreateSheet() {
   }
   return sheet;
 }
+
+// ── NAV ถูกแบ่งเก็บเป็นคีย์รายเดือน (nav_v4_YYYY-MM) แทนที่จะรวมทุกวันไว้ใน
+// คีย์ 'nav_v4' คีย์เดียวเหมือนเดิม — เพราะ Google Sheets จำกัดไว้ที่ 50,000
+// ตัวอักษรต่อเซลล์ ส่วน NAV รายวันของ 18 กองทุนรวมกันแค่ปีเดียวก็ยาวเกิน
+// ขีดจำกัดนี้ไปมากแล้ว (~400+ ตัวอักษร/แถว x 365 วัน ≈ 150,000+ ตัวอักษร)
+// การเขียนที่เกินขีดจำกัดจะล้มเหลว (throw error ตอน setValue) แต่ log ที่พิมพ์
+// ไปก่อนหน้าในฟังก์ชันเดียวกันจะยังค้างอยู่ ทำให้ดูเหมือนสำเร็จทั้งที่ไม่ได้บันทึกจริง
+function navShardKey_(d) { return 'nav_v4_' + String(d).slice(0, 7); } // เช่น 'nav_v4_2026-09'
+
+// อ่านแถวของคีย์รายเดือนหนึ่งจาก data ที่ดึงมาแล้ว (sheet.getDataRange().getValues())
+function getNavShardRow_(data, key) {
+  for (let i = 0; i < data.length; i++) {
+    if (data[i][0] === key) {
+      try { return { rowIdx: i, arr: JSON.parse(data[i][1]) || [] }; }
+      catch (e) { return { rowIdx: i, arr: [] }; }
+    }
+  }
+  return { rowIdx: -1, arr: [] };
+}
+
+// เขียนแถวของคีย์รายเดือนหนึ่งกลับเข้า sheet (สร้างแถวใหม่ถ้ายังไม่มี)
+function writeNavShardRow_(sheet, rowIdx, key, arr, device) {
+  arr.sort(function(a, b) { return a.d < b.d ? -1 : (a.d > b.d ? 1 : 0); });
+  const value = JSON.stringify(arr);
+  if (rowIdx >= 0) {
+    sheet.getRange(rowIdx + 1, 2).setValue(value);
+    sheet.getRange(rowIdx + 1, 3).setValue(new Date().toISOString());
+    sheet.getRange(rowIdx + 1, 4).setValue(device);
+  } else {
+    sheet.appendRow([key, value, new Date().toISOString(), device]);
+  }
+}
 // ============================================================
 // SEC Open API v2 - อัพเดต NAV อัตโนมัติทุกวัน 8:00 น. (Asia/Bangkok)
 // ============================================================
@@ -4986,6 +5335,42 @@ function isoDate_(d) {
   return Utilities.formatDate(d, 'GMT+7', 'yyyy-MM-dd');
 }
 
+// ── ตัวช่วยแก้ปัญหา (ไม่รันอัตโนมัติ): ดึง NAV ดิบของกองทุนหนึ่งแบบละเอียด แล้ว
+// พิมพ์ URL ที่เรียกจริง, HTTP status, headers และ response body เต็มๆ ออกทาง
+// Logger — ใช้ตอนสงสัยว่ากองทุนหนึ่งไม่มี NAV จริงหรือเปล่า (ต่างจาก updateNAVFromSEC
+// ที่ยิงทุกกองพร้อมกันแล้ว log แค่สรุป) ลองครั้งที่สองแบบไม่ส่ง fund_class_name เลย
+// ด้วย เผื่อ param นี้เป็นสาเหตุ (แม้จะ encode ถูกต้องแล้วก็ตาม)
+// วิธีใช้: รัน debugFundNav('SCBS&P500E', 180) แล้วดู View > Logs
+function debugFundNav(code, lookbackDays) {
+  const info = FUND_MAP[code];
+  if (!info) { Logger.log('✗ ไม่รู้จักรหัสกองทุนนี้ใน FUND_MAP: ' + code); return; }
+  const days = lookbackDays || 90;
+  const start = new Date();
+  start.setDate(start.getDate() - days);
+  const baseParams = {
+    proj_id: info.proj_id,
+    start_nav_date: isoDate_(start),
+    end_nav_date: isoDate_(new Date()),
+    page_size: 100
+  };
+
+  function tryFetch_(label, params) {
+    const qs = Object.keys(params).map(function(k) {
+      return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
+    }).join('&');
+    const url = SEC_BASE + '/v2/fund/daily-info/nav?' + qs;
+    Logger.log('── ' + label + ' ──');
+    Logger.log('เรียก URL: ' + url);
+    const resp = UrlFetchApp.fetch(url, { headers: secHeaders_(), muteHttpExceptions: true });
+    Logger.log('HTTP status: ' + resp.getResponseCode());
+    Logger.log('Response headers: ' + JSON.stringify(resp.getHeaders()));
+    Logger.log('Response body: ' + resp.getContentText());
+  }
+
+  tryFetch_('รอบ 1: พร้อม fund_class_name=' + info.fund_class_name, Object.assign({}, baseParams, { fund_class_name: info.fund_class_name }));
+  tryFetch_('รอบ 2: ไม่ส่ง fund_class_name เลย (proj_id อย่างเดียว)', baseParams);
+}
+
 // ── ดึงราคาทองคำแท่งวันนี้ (crawl จากสมาคมค้าทองคำผ่าน api.chnwt.dev) แล้วเขียนลง
 // nav_v4 เป็นคอลัมน์ GOLD-HSH (บาท/กรัม) ของวันนี้ — รันคู่กับ updateNAVFromSEC ทุกวัน 8 โมง
 // หมายเหตุ: API นี้ให้ได้เฉพาะราคา "วันนี้" เท่านั้น ไม่มีราคาย้อนหลัง ดังนั้นช่วงวันที่ก่อนติดตั้ง
@@ -5020,27 +5405,12 @@ function updateGoldPriceFromAPI() {
 
   const sheet = getOrCreateSheet();
   const data = sheet.getDataRange().getValues();
-  let rowIdx = -1, navArr = [];
-  for (let i = 0; i < data.length; i++) {
-    if (data[i][0] === 'nav_v4') {
-      rowIdx = i;
-      try { navArr = JSON.parse(data[i][1]) || []; } catch (e) { navArr = []; }
-      break;
-    }
-  }
-  let row = navArr.find(function (r) { return r.d === today; });
-  if (!row) { row = { d: today }; navArr.push(row); }
+  const key = navShardKey_(today);
+  const shard = getNavShardRow_(data, key);
+  let row = shard.arr.find(function (r) { return r.d === today; });
+  if (!row) { row = { d: today }; shard.arr.push(row); }
   row['GOLD-HSH'] = pricePerGram;
-  navArr.sort(function (a, b) { return a.d < b.d ? -1 : (a.d > b.d ? 1 : 0); });
-
-  const value = JSON.stringify(navArr);
-  if (rowIdx >= 0) {
-    sheet.getRange(rowIdx + 1, 2).setValue(value);
-    sheet.getRange(rowIdx + 1, 3).setValue(new Date().toISOString());
-    sheet.getRange(rowIdx + 1, 4).setValue('auto-gold-trigger');
-  } else {
-    sheet.appendRow(['nav_v4', value, new Date().toISOString(), 'auto-gold-trigger']);
-  }
+  writeNavShardRow_(sheet, shard.rowIdx, key, shard.arr, 'auto-gold-trigger');
   Logger.log('✓ อัพเดตราคาทอง GOLD-HSH สำเร็จ: ' + pricePerGram + ' บาท/กรัม (ราคาทองคำแท่งรับซื้อคืน ' + buyPerBaht + ' บาท/บาททองคำ) วันที่ ' + today);
   return { ok: true, date: today, pricePerGram: pricePerGram, pricePerBaht: buyPerBaht };
 }
@@ -5055,41 +5425,61 @@ function dailyAutoUpdate() {
 
 function updateNAVFromSEC() {
   const codes = Object.keys(FUND_MAP);
-
   const today = new Date();
-  const start = new Date(today);
-  start.setDate(start.getDate() - 7); // ย้อนหลัง 7 วัน กันวันหยุดยาว
-  const startStr = isoDate_(start);
-  const endStr = isoDate_(today);
 
   // { 'YYYY-MM-DD': { d: 'YYYY-MM-DD', CODE1: val, CODE2: val, ... } }
   const rowsByDate = {};
 
-  codes.forEach(function(code) {
+  // ── ดึง NAV ของกองทุนหนึ่งในช่วง lookbackDays วันย้อนหลัง แล้วเติมผลลงใน
+  // rowsByDate — คืนค่า true ถ้าเจอ NAV อย่างน้อย 1 รายการ ──
+  function fetchAndFill_(code, lookbackDays) {
     const info = FUND_MAP[code];
+    const start = new Date(today);
+    start.setDate(start.getDate() - lookbackDays);
     const rawItems = secFetchAllPages_('/v2/fund/daily-info/nav', {
       proj_id: info.proj_id,
       fund_class_name: info.fund_class_name,
-      start_nav_date: startStr,
-      end_nav_date: endStr
+      start_nav_date: isoDate_(start),
+      end_nav_date: isoDate_(today)
     });
     // สำคัญ: SEC API ไม่กรอง fund_class_name ให้จริงฝั่ง server (คืนทุก class ของ
     // proj_id นั้นปนกันมา) ต้องกรองเองที่นี่แบบ exact match ทั้ง proj_id และ fund_class_name
     const items = rawItems.filter(function(item) {
       return item.proj_id === info.proj_id && item.fund_class_name === info.fund_class_name;
     });
+    let found = false;
     items.forEach(function(item) {
       if (item.last_val == null) return;
+      found = true;
       const d = item.nav_date;
       if (!rowsByDate[d]) rowsByDate[d] = { d: d };
       rowsByDate[d][code] = item.last_val;
     });
+    return found;
+  }
+
+  // รอบแรก: ย้อนหลัง 7 วัน กันวันหยุดยาวปกติ
+  const missingAfter7 = [];
+  codes.forEach(function(code) {
+    const found = fetchAndFill_(code, 7);
+    if (!found) missingAfter7.push(code);
     Utilities.sleep(150);
   });
 
+  // รอบสอง: เฉพาะกองที่ยังไม่เจอ NAV เลยใน 7 วันแรก — ลองขยายเป็น 30 วัน ก่อน
+  // จะสรุปว่า "ไม่มีข้อมูล" เผื่อเป็นกองที่ไม่ประกาศ NAV ทุกวัน (เช่นกอง feeder
+  // ต่างประเทศ หรือกองรุ่นเก่าที่เปลี่ยนไปใช้คลาสใหม่แล้ว)
+  if (missingAfter7.length > 0) {
+    Logger.log('⏳ ' + missingAfter7.length + ' กองไม่พบ NAV ใน 7 วัน กำลังลองขยายเป็น 30 วัน: ' + missingAfter7.join(', '));
+    missingAfter7.forEach(function(code) {
+      fetchAndFill_(code, 30);
+      Utilities.sleep(150);
+    });
+  }
+
   const dates = Object.keys(rowsByDate).sort();
   if (dates.length === 0) {
-    Logger.log('⚠ ไม่พบ NAV ใน 7 วันล่าสุดของทุกกองทุนเลย - ลอง verifyMapping() เพื่อเช็คว่า mapping ยังถูกต้องอยู่ไหม');
+    Logger.log('⚠ ไม่พบ NAV ใน 30 วันล่าสุดของทุกกองทุนเลย - ลอง verifyMapping() เพื่อเช็คว่า mapping ยังถูกต้องอยู่ไหม');
     return { ok: false, reason: 'no_data', funds: 0, total: codes.length };
   }
 
@@ -5110,36 +5500,29 @@ function updateNAVFromSEC() {
     return { ok: false, reason: 'no_recent_nav', funds: 0, total: codes.length };
   }
 
-  // เขียน/merge เข้า key "nav_v4" ใน sheet PortfolioData (คีย์เดียวกับที่แอปใช้ sync)
+  // เขียน/merge เข้าคีย์รายเดือน "nav_v4_YYYY-MM" ใน sheet PortfolioData (แยกคีย์
+  // ตามเดือนของวันที่ NAV แต่ละแถว — ดู navShardKey_() ด้านบนว่าทำไมต้องแยก)
   const sheet = getOrCreateSheet();
   const data = sheet.getDataRange().getValues();
-  let rowIdx = -1;
-  let navArr = [];
-  for (let i = 0; i < data.length; i++) {
-    if (data[i][0] === 'nav_v4') {
-      rowIdx = i;
-      try { navArr = JSON.parse(data[i][1]) || []; } catch (e) { navArr = []; }
-      break;
-    }
+  const shardCache = {}; // navShardKey_(d) -> {rowIdx, arr}
+  function shardFor(key) {
+    if (!shardCache[key]) shardCache[key] = getNavShardRow_(data, key);
+    return shardCache[key];
   }
 
-  // แต่ละกองทุนไปลงในแถววันที่ของตัวเอง (สร้างแถววันที่ใหม่ถ้ายังไม่มี)
+  // แต่ละกองทุนไปลงในแถววันที่ของตัวเอง ในคีย์รายเดือนของวันที่นั้น (สร้างแถว/คีย์ใหม่ถ้ายังไม่มี)
   foundCodes.forEach(function(code) {
     const info = latestByCode[code];
-    let row = navArr.find(function(r) { return r.d === info.d; });
-    if (!row) { row = { d: info.d }; navArr.push(row); }
+    const shard = shardFor(navShardKey_(info.d));
+    let row = shard.arr.find(function(r) { return r.d === info.d; });
+    if (!row) { row = { d: info.d }; shard.arr.push(row); }
     row[code] = info.val;
   });
-  navArr.sort(function(a, b) { return a.d < b.d ? -1 : (a.d > b.d ? 1 : 0); });
 
-  const value = JSON.stringify(navArr);
-  if (rowIdx >= 0) {
-    sheet.getRange(rowIdx + 1, 2).setValue(value);
-    sheet.getRange(rowIdx + 1, 3).setValue(new Date().toISOString());
-    sheet.getRange(rowIdx + 1, 4).setValue('auto-nav-trigger');
-  } else {
-    sheet.appendRow(['nav_v4', value, new Date().toISOString(), 'auto-nav-trigger']);
-  }
+  Object.keys(shardCache).forEach(function(key) {
+    const shard = shardCache[key];
+    writeNavShardRow_(sheet, shard.rowIdx, key, shard.arr, 'auto-nav-trigger');
+  });
 
   Logger.log('✓ อัพเดต NAV สำเร็จ ' + foundCodes.length + '/' + codes.length + ' กอง:');
   foundCodes.forEach(function(code) {
@@ -5148,7 +5531,7 @@ function updateNAVFromSEC() {
 
   const missing = codes.filter(function(c) { return latestByCode[c] === undefined; });
   if (missing.length > 0) {
-    Logger.log('⚠ กองที่ไม่มี NAV เลยใน 7 วันล่าสุด: ' + missing.join(', ') + ' (ลอง verifyMapping() เช็คว่า proj_id/class ยังถูกไหม)');
+    Logger.log('⚠ กองที่ไม่มี NAV เลยใน 30 วันล่าสุด: ' + missing.join(', ') + ' (ลอง verifyMapping() เช็คว่า proj_id/class ยังถูกไหม หรือกองนี้อาจไม่ประกาศ NAV บ่อยขนาดนั้น)');
   }
 
   const latestDate = foundCodes.map(function(c){ return latestByCode[c].d; }).sort().pop();
@@ -5198,6 +5581,7 @@ function openSyncSettings(){
   } else {
     showSyncStep(1);
   }
+  const _asc=document.getElementById('autoSyncChk'); if(_asc) _asc.checked=autoSyncEnabled();
   document.getElementById('syncModal').style.display='flex';
 }
 
@@ -5269,7 +5653,7 @@ async function triggerSecNavUpdate(){
       toast('ดึง NAV จาก SEC API สำเร็จ ✓');
       await syncNow();
     } else {
-      if(out) out.innerHTML = '<span style="color:#f7c948">⚠ ไม่พบ NAV ใหม่ในช่วง 7 วันล่าสุด (อาจเป็นวันหยุด หรือ proj_id เปลี่ยนไป — ลองรัน verifyMapping() ใน Apps Script Editor) ดู View → Logs เพื่อดูรายละเอียด</span>';
+      if(out) out.innerHTML = '<span style="color:#f7c948">⚠ ไม่พบ NAV ใหม่แม้ขยายเป็น 30 วันแล้ว (อาจเป็นวันหยุดยาว หรือ proj_id เปลี่ยนไป — ลองรัน verifyMapping() ใน Apps Script Editor) ดู View → Logs เพื่อดูรายละเอียด</span>';
       toast('ไม่พบ NAV ใหม่ในช่วงนี้','#f7c948');
     }
   } catch(e){
@@ -5352,41 +5736,216 @@ function updateSyncBar(){
 // ── Write helpers ──────────────────────────────────────────────
 async function gsPush(key, value){
   try {
-    await gsRequest('POST',{key,value});
+    const r = await gsRequest('POST',{key,value});
+    if(r && r.ok===false) throw new Error(r.error||'push rejected');
+    return true;
   } catch(e){
     console.warn('GS push failed:',e.message);
+    _gsPushFails++;
+    return false;
   }
 }
+let _gsPushFails=0;
 
 async function gsPull(){
   try {
     const r = await gsRequest('GET');
-    if(!r.ok) throw new Error(r.error);
-    return r.data||{};
+    if(!r || !r.ok) throw new Error((r&&r.error)||'ตอบกลับไม่ถูกต้อง');
+    if(!r.data || typeof r.data!=='object' || Array.isArray(r.data)) throw new Error('รูปแบบข้อมูลจาก Sheet ไม่ถูกต้อง');
+    return r.data;
   } catch(e){
     console.warn('GS pull failed:',e.message);
+    gsPull.lastError = e.message;
     return null;
   }
 }
 
+// ═══════════════════════════════════════
+//  v71: SYNC SAFETY NET + AUTO SYNC
+//  - snapshot/rollback: ถ้า Sync error ที่ขั้นใดก็ตาม คืนค่า localStorage + ตัวแปรใน
+//    หน่วยความจำกลับเป็นก่อน Sync ทั้งหมด (มูลค่าพอร์ตยังครบด้วย NAV ล่าสุดรายกองทุน)
+//  - validate: ตรวจรูปแบบข้อมูลจาก Sheet และความสมบูรณ์ของ NAV ก่อนยอมรับ
+//  - auto sync: ดึงตอนเปิดแอป / กลับมาที่แอป / ออนไลน์ใหม่ (เปิด-ปิดได้ในหน้า Sync)
+// ═══════════════════════════════════════
+const AUTO_SYNC_KEY = 'auto_sync_v1';   // '0' = ปิด (ไม่ถูก sync ขึ้น Sheet — ตั้งแยกแต่ละเครื่อง)
+let _syncBusy = false;
+let _lastAutoSync = 0;
+function autoSyncEnabled(){ return localStorage.getItem(AUTO_SYNC_KEY) !== '0'; }
+function setAutoSyncEnabled(on){
+  try{ localStorage.setItem(AUTO_SYNC_KEY, on ? '1' : '0'); }catch(e){}
+  toast(on ? 'เปิดดึงข้อมูลอัตโนมัติแล้ว' : 'ปิดดึงข้อมูลอัตโนมัติแล้ว', on ? '#00d48c' : '#6a88b8');
+}
+function autoSync(reason){
+  if(!autoSyncEnabled() || !getGSConfig() || _syncBusy) return;
+  if(typeof navigator!=='undefined' && navigator.onLine===false) return;
+  const now = Date.now();
+  if(now - _lastAutoSync < 60000) return;     // กันยิงถี่เกินไป (เช่น สลับแอปไปมา)
+  _lastAutoSync = now;
+  syncNow({auto:true, reason});
+}
+
+function takeSyncSnapshot(){
+  const ls = {};
+  for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); ls[k]=localStorage.getItem(k); }
+  return {
+    ls,
+    g: {
+      STOCKS_DATA: JSON.stringify(STOCKS_DATA),
+      STOCKS_META: JSON.stringify(STOCKS_META),
+      FUND_TAGS: JSON.stringify(FUND_TAGS),
+      SHARPE_RF: JSON.stringify(SHARPE_RF),
+      SELL_SIM_FEE: JSON.stringify(SELL_SIM_FEE),
+      SCENARIO_SHOCKS: JSON.stringify(SCENARIO_SHOCKS)
+    }
+  };
+}
+function rollbackSyncSnapshot(snap){
+  const cur = [];
+  for(let i=0;i<localStorage.length;i++) cur.push(localStorage.key(i));
+  cur.forEach(k=>{ if(!(k in snap.ls)) localStorage.removeItem(k); });
+  Object.keys(snap.ls).forEach(k=>{
+    if(localStorage.getItem(k) !== snap.ls[k]){
+      try{ localStorage.setItem(k, snap.ls[k]); }catch(e){ console.warn('rollback setItem failed', k, e); }
+    }
+  });
+  STOCKS_DATA = JSON.parse(snap.g.STOCKS_DATA);
+  STOCKS_META = JSON.parse(snap.g.STOCKS_META);
+  FUND_TAGS = JSON.parse(snap.g.FUND_TAGS);
+  SHARPE_RF = JSON.parse(snap.g.SHARPE_RF);
+  SELL_SIM_FEE = JSON.parse(snap.g.SELL_SIM_FEE);
+  SCENARIO_SHOCKS = JSON.parse(snap.g.SCENARIO_SHOCKS);
+  if(typeof buildAMCOptions==='function'){ try{ buildAMCOptions(); }catch(e){} }
+}
+
+// รูปแบบข้อมูลจาก Sheet ต้องถูกต้องก่อนแตะข้อมูลในเครื่อง
+function validateRemoteShape(remote){
+  const arrKeys = ['tx_custom_v1','tx_base_del_v1','tx_base_edit_v1','deposits_v1','tx_custom_del_v1','deposits_del_v1','custom_funds_v1','custom_amc_v1'];
+  arrKeys.forEach(k=>{
+    if(remote[k]!==undefined && remote[k]!==null && !Array.isArray(remote[k]))
+      throw new Error('ข้อมูล '+k+' จาก Sheet ผิดรูปแบบ');
+  });
+  if(remote.stocks_v1!==undefined && remote.stocks_v1!==null && (typeof remote.stocks_v1!=='object' || Array.isArray(remote.stocks_v1)))
+    throw new Error('ข้อมูล stocks_v1 จาก Sheet ผิดรูปแบบ');
+  Object.keys(remote).forEach(k=>{
+    if(/^nav_v4(_\d{4}-\d{2})?$/.test(k) && remote[k]!==null && remote[k]!=='' && !Array.isArray(remote[k]))
+      throw new Error('ข้อมูล NAV ('+k+') จาก Sheet ผิดรูปแบบ');
+  });
+}
+// คัดแถว NAV ที่ผิดรูปแบบทิ้ง (วันที่ไม่ใช่ YYYY-MM-DD / ค่าไม่ใช่ตัวเลขบวก)
+// หมายเหตุ: null = เครื่องหมาย "ลบ NAV ของกองทุนนั้นในวันนั้น" ต้องเก็บไว้
+// ถ้าแถวเสียเกิน 10% (อย่างน้อย 2 แถว) ถือว่าข้อมูลทั้งชุดน่าสงสัย → throw → rollback
+function sanitizeNavRows(rows){
+  const re = /^\d{4}-\d{2}-\d{2}$/;
+  const out = []; let bad = 0;
+  rows.forEach(r=>{
+    if(!r || typeof r!=='object' || !re.test(String(r.d))){ bad++; return; }
+    const c = {d:r.d}; let ok = true;
+    Object.keys(r).forEach(k=>{
+      if(k==='d') return;
+      const v = r[k];
+      if(v===null || v===undefined) { if(v===null) c[k]=null; return; }
+      if(typeof v==='number' && isFinite(v) && v>0) c[k]=v; else ok=false;
+    });
+    if(!ok){ bad++; return; }
+    out.push(c);
+  });
+  if(bad > Math.max(2, rows.length*0.1))
+    throw new Error('ข้อมูล NAV จาก Sheet ผิดปกติ '+bad+'/'+rows.length+' แถว');
+  return out;
+}
+// NAV ล่าสุดรายกองทุน (ย้อนหาแถวล่าสุดที่มีค่า) — ใช้เทียบก่อน/หลัง merge
+function navLatestSnapshot(){
+  const all = getAllNAV();
+  const map = {};
+  FUNDS.forEach(f=>{
+    for(let i=all.length-1;i>=0;i--){
+      const v = all[i][f];
+      if(v!=null){ map[f] = {nav:v, d:all[i].d}; break; }
+    }
+  });
+  return {date: all.length ? all[all.length-1].d : null, map};
+}
+function assertNavHealthy(before){
+  const after = navLatestSnapshot();
+  if(before.date && after.date && after.date < before.date)
+    throw new Error('วันที่ NAV ล่าสุดถอยหลัง ('+before.date+' → '+after.date+')');
+  Object.keys(before.map).forEach(f=>{
+    const b = before.map[f], a = after.map[f];
+    if(!a) throw new Error('NAV ของ '+f+' หายไปหลัง merge');
+    if(!isFinite(a.nav) || a.nav<=0) throw new Error('NAV ของ '+f+' ไม่ถูกต้อง');
+    const ratio = a.nav / b.nav;
+    if(ratio<0.5 || ratio>2) throw new Error('NAV ของ '+f+' เปลี่ยนผิดปกติ ('+b.nav+' → '+a.nav+')');
+  });
+}
+// อัปเดตหน้าจอทั้งหมดหลัง sync สำเร็จ หรือหลัง rollback
+// (ไม่พึ่งว่าแท็บไหนเปิดอยู่ มิฉะนั้นข้อมูลที่ merge แล้วจะค้างอยู่ใน localStorage ไม่ขึ้นจอ)
+function refreshAllUI(){
+  recomputeUnits();
+  recomputeAlloc();
+  buildTxDateDrop();
+  renderTx();
+  renderOverview();
+  renderDepositOverview();
+  renderNAV();
+  renderAlloc();
+  renderStocks();
+  if(typeof renderTags==='function') renderTags();
+  if(typeof renderAnalyticsRisk==='function') renderAnalyticsRisk();
+  if(typeof renderSellSim==='function') renderSellSim();
+  if(typeof renderScenario==='function') renderScenario();
+  const rfEl=document.getElementById('sharpeRFIn'); if(rfEl) rfEl.value=SHARPE_RF;
+}
+// โหมดอัตโนมัติ: ส่งขึ้น Sheet เฉพาะคีย์ที่ต่างจากที่ดึงมา (server ยัง merge ซ้ำให้อีกชั้น)
+async function pushIfChanged(key, value, remote){
+  try{
+    if(remote && Object.prototype.hasOwnProperty.call(remote,key) && JSON.stringify(remote[key])===JSON.stringify(value)) return true;
+  }catch(e){}
+  return gsPush(key, value);
+}
+
 // ── Full sync: pull from Sheets → merge into localStorage → refresh UI ──
-async function syncNow(){
+async function syncNow(opts){
+  // v71: opts.auto=true → เรียกอัตโนมัติ (ตอนเปิดแอป/กลับมาที่แอป) แบบเงียบ ไม่ล็อกปุ่ม
+  //      และส่งขึ้น Sheet เฉพาะคีย์ที่ต่างจาก Sheet จริง (ลดจำนวน request)
+  // v71: Sync เป็นแบบ transaction — ถ้า error ที่ขั้นใดก็ตาม (ดึงไม่ได้ / ข้อมูลผิดรูป /
+  //      NAV หาย-ผิดปกติ / render พัง) จะ rollback localStorage + ตัวแปรในหน่วยความจำ
+  //      กลับเป็นสถานะก่อน Sync ทั้งหมด ซึ่งแสดงมูลค่าพอร์ตครบด้วย NAV ล่าสุดรายกองทุน
+  const auto = !!(opts && opts.auto);
+  if(_syncBusy) return;
   const cfg = getGSConfig();
-  if(!cfg){toast('กรุณาตั้งค่า Google Sheets ก่อน','#D44B2A');return;}
-  setSyncDot('yellow','กำลัง Sync...');
+  if(!cfg){ if(!auto) toast('กรุณาตั้งค่า Google Sheets ก่อน','#D44B2A'); return; }
+  _syncBusy = true;
+  _gsPushFails = 0;
+  const snap = takeSyncSnapshot();
+  setSyncDot('yellow', auto ? 'กำลังอัพเดตข้อมูลอัตโนมัติ...' : 'กำลัง Sync...');
   const btn = document.getElementById('syncNowBtn');
-  btn.disabled=true; btn.textContent='⏳ Sync...';
+  if(btn && !auto){ btn.disabled=true; btn.textContent='⏳ Sync...'; }
   try {
     // 1. PULL first — never push raw local data before seeing what's already
     //    on the Sheet. Pushing before pulling lets a stale device silently
     //    overwrite changes another device just synced, before this device
     //    ever gets a chance to read them (data loss race condition).
     const remote = await gsPull();
+    // v70 bug: ถ้าดึงไม่ได้ gsPull คืน null แล้วโค้ดเดิมข้ามไป push แล้วรายงาน "สำเร็จ"
+    if(!remote) throw new Error(gsPull.lastError || 'ดึงข้อมูลจาก Sheet ไม่สำเร็จ');
+    validateRemoteShape(remote);
+    const navBefore = navLatestSnapshot();
+    const P = (k,v)=> auto ? pushIfChanged(k,v,remote) : gsPush(k,v);
     if(remote){
-      // Merge NAV: union of local + remote, remote wins on same date
-      if(remote.nav_v4){
+      // Merge NAV: union of local + remote, remote wins on same date. Remote NAV
+      // now lives sharded across nav_v4_YYYY-MM keys (see navShardKey()) to stay
+      // under the Sheets 50,000-char cell limit — gather every shard here. The
+      // legacy unsharded 'nav_v4' key is also read once, for one-time migration
+      // of data saved before sharding existed; it gets cleared during the push
+      // step below once its contents have been folded into the new shards.
+      const remoteNavShards = Object.keys(remote)
+        .filter(k=>/^nav_v4_\d{4}-\d{2}$/.test(k))
+        .reduce((acc,k)=>acc.concat(remote[k]||[]), []);
+      if(remote.nav_v4) remoteNavShards.push(...remote.nav_v4);
+      remoteNavShards.splice(0, remoteNavShards.length, ...sanitizeNavRows(remoteNavShards));
+      if(remoteNavShards.length){
         const localNAV = getNew();
-        const merged = mergeNAV(localNAV, remote.nav_v4);
+        const merged = mergeNAV(localNAV, remoteNavShards);
         _origSetNew(merged);
       }
       // Merge tombstones FIRST (union, deletions only ever accumulate) so the
@@ -5495,58 +6054,68 @@ async function syncNow(){
       }
     }
 
+    // 1.5 v71: ตรวจความสมบูรณ์ของ NAV หลัง merge — ถ้าผิดปกติ throw → rollback
+    assertNavHealthy(navBefore);
+
     // 2. Push the now-merged (complete) local data back up, so the Sheet
     //    always ends up a superset of every device's data, never a regression.
-    await gsPush('nav_v4', getNew());
-    await gsPush('tx_custom_v1', getCustomTx());
-    await gsPush('tx_base_del_v1', getBaseDel());
-    await gsPush('tx_base_edit_v1', getBaseEdit());
-    await gsPush('deposits_v1', getDeposits());
-    await gsPush('tx_custom_del_v1', getCustomTxDel());
-    await gsPush('deposits_del_v1', getDepositsDel());
-    await gsPush('custom_funds_v1', JSON.parse(localStorage.getItem('custom_funds_v1')||'[]'));
-    await gsPush('custom_amc_v1', getCustomAMCs());
-    await gsPush('stocks_v1', STOCKS_DATA);
-    await gsPush('stocks_meta_v1', STOCKS_META);
-    await gsPush(AI_KEY_SK, getAIKey());
-    await gsPush(AI_KEY_TS_SK, getAIKeyTs());
-    await gsPush(AV_KEY_SK, getAVKey());
-    await gsPush(AV_KEY_TS_SK, getAVKeyTs());
-    await gsPush('fund_tags_v1', FUND_TAGS);
-    await gsPush(FUND_TAGS_TS_SK, getFundTagsTs());
-    await gsPush('sharpe_rf_v1', SHARPE_RF);
-    await gsPush(SHARPE_RF_TS_SK, getSharpeRFTs());
-    await gsPush('sell_sim_fee_v1', SELL_SIM_FEE);
-    await gsPush(SELL_SIM_FEE_TS_SK, getSellSimFeeTs());
-    await gsPush('scenario_shocks_v1', SCENARIO_SHOCKS);
-    await gsPush(SCENARIO_SHOCKS_TS_SK, getScenarioShocksTs());
+    // NAV goes up sharded by month (nav_v4_YYYY-MM, see navShardKey()) so no
+    // single cell grows past the Sheets 50,000-char limit. If the legacy
+    // unsharded 'nav_v4' key still had data (from before sharding existed),
+    // it's already been folded into these shards above — clear it so it
+    // doesn't sit around stale.
+    const navShards = splitNavByShard(getNew());
+    for(const k of Object.keys(navShards)) await P(k, navShards[k]);
+    if(remote && remote.nav_v4) await gsPush('nav_v4', []);
+    await P('tx_custom_v1', getCustomTx());
+    await P('tx_base_del_v1', getBaseDel());
+    await P('tx_base_edit_v1', getBaseEdit());
+    await P('deposits_v1', getDeposits());
+    await P('tx_custom_del_v1', getCustomTxDel());
+    await P('deposits_del_v1', getDepositsDel());
+    await P('custom_funds_v1', JSON.parse(localStorage.getItem('custom_funds_v1')||'[]'));
+    await P('custom_amc_v1', getCustomAMCs());
+    await P('stocks_v1', STOCKS_DATA);
+    await P('stocks_meta_v1', STOCKS_META);
+    await P(AI_KEY_SK, getAIKey());
+    await P(AI_KEY_TS_SK, getAIKeyTs());
+    await P(AV_KEY_SK, getAVKey());
+    await P(AV_KEY_TS_SK, getAVKeyTs());
+    await P('fund_tags_v1', FUND_TAGS);
+    await P(FUND_TAGS_TS_SK, getFundTagsTs());
+    await P('sharpe_rf_v1', SHARPE_RF);
+    await P(SHARPE_RF_TS_SK, getSharpeRFTs());
+    await P('sell_sim_fee_v1', SELL_SIM_FEE);
+    await P(SELL_SIM_FEE_TS_SK, getSellSimFeeTs());
+    await P('scenario_shocks_v1', SCENARIO_SHOCKS);
+    await P(SCENARIO_SHOCKS_TS_SK, getScenarioShocksTs());
 
-    // 3. Update timestamp
+    // 3. Update timestamp + refresh UI (render error → catch → rollback)
+    refreshAllUI();
     const now = new Date().toLocaleString('th-TH',{dateStyle:'short',timeStyle:'short'});
     localStorage.setItem(GS_LAST_SYNC_KEY, now);
-    setSyncDot('green','Sync สำเร็จ '+now);
-    toast('Sync สำเร็จ ✓');
-
-    // 4. Refresh all UI (unconditional — don't depend on which tab is active,
-    //    otherwise merged data sits in localStorage but never reaches the screen)
-    recomputeUnits();
-    recomputeAlloc();
-    buildTxDateDrop();
-    renderTx();
-    renderOverview();
-    renderDepositOverview();
-    renderNAV();
-    renderAlloc();
-    renderStocks();
-    if(typeof renderTags==='function') renderTags();
-    if(typeof renderAnalyticsRisk==='function') renderAnalyticsRisk();
-    if(typeof renderSellSim==='function') renderSellSim();
-    if(typeof renderScenario==='function') renderScenario();
-    const rfEl=document.getElementById('sharpeRFIn'); if(rfEl) rfEl.value=SHARPE_RF;
-    setSyncDot('red','Sync ล้มเหลว: '+e.message);
-    toast('Sync ล้มเหลว: '+e.message,'#D44B2A');
+    if(_gsPushFails>0){
+      setSyncDot('yellow','ดึงข้อมูลสำเร็จ แต่ส่งขึ้น Sheet ไม่ครบ '+_gsPushFails+' รายการ ('+now+')');
+      if(!auto) toast('ดึงข้อมูลสำเร็จ แต่ส่งขึ้น Sheet ไม่ครบ','#f7c948');
+    } else {
+      setSyncDot('green',(auto?'อัพเดตอัตโนมัติ ':'Sync สำเร็จ ')+now);
+      if(!auto) toast('Sync สำเร็จ ✓');
+    }
+  } catch(e){
+    console.error('syncNow failed → rollback', e);
+    const msg = (e && e.message) ? e.message : String(e);
+    let rb = '';
+    try{
+      rollbackSyncSnapshot(snap);
+      refreshAllUI();
+      const nv = navLatestSnapshot();
+      rb = nv.date ? ' — แสดงข้อมูลเดิม ณ วันที่ '+nv.date : ' — คืนค่าข้อมูลเดิมแล้ว';
+    }catch(e2){ rb = ' — คืนค่าไม่สมบูรณ์: '+(e2&&e2.message||e2); }
+    setSyncDot('red','Sync ล้มเหลว: '+msg+rb);
+    toast('Sync ล้มเหลว: '+msg+rb,'#D44B2A');
   } finally {
-    btn.disabled=false; btn.innerHTML='<i class="ti ti-refresh" style="font-size:11px"></i> Sync ตอนนี้';
+    _syncBusy = false;
+    if(btn){ btn.disabled=false; btn.innerHTML='<i class="ti ti-refresh" style="font-size:11px"></i> Sync ตอนนี้'; }
   }
 }
 
@@ -5609,7 +6178,10 @@ function mergeByKey(local, remote, keyField){
 const _origSetNew = setNew;
 window.setNew = function(a){
   _origSetNew(a);
-  if(getGSConfig()) gsPush('nav_v4',a).catch(()=>{});
+  if(getGSConfig()){
+    const shards=splitNavByShard(a);
+    Object.keys(shards).forEach(k=>gsPush(k,shards[k]).catch(()=>{}));
+  }
 };
 const _origSetCustomTx = setCustomTx;
 window.setCustomTx = function(a){
@@ -5652,9 +6224,12 @@ window.setBaseEdit = function(a){
   }
   updateSyncBar();
   const cfg = getGSConfig();
+  // v71: เปิดดึงข้อมูลอัตโนมัติอีกครั้ง (ปิดได้ในหน้าตั้งค่า Sync ถ้ามี prompt ขออนุญาตเด้งซ้ำ)
   if(cfg){
-    // Auto sync after 1s delay (let page render first)
-    setTimeout(()=>syncNow().catch(()=>{}), 1200);
+    setTimeout(()=>autoSync('load'), 800);
+    document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') autoSync('visible'); });
+    window.addEventListener('pageshow', e=>{ if(e.persisted) autoSync('pageshow'); });
+    window.addEventListener('online', ()=>autoSync('online'));
   }
 })();
 
@@ -5689,5 +6264,89 @@ initDefHovers();
 </script>
 
 </div>
+
+<style>
+/* v67 chart stability: keep doughnut canvases flat and let Chart.js own sizing */
+#cAPD,#cAPDShadow{transform:none!important;perspective:none!important}
+#cAPDShadow{display:none!important}
+#cAPD{display:block!important;visibility:visible!important;opacity:1!important}
+#milestoneTimeline{border-left:2px solid var(--blue);margin-left:8px;padding-left:18px}
+.v67mile{position:relative;padding:8px 0 14px;color:var(--t1);font-size:12px}
+.v67mile:before{content:'';position:absolute;left:-24px;top:12px;width:10px;height:10px;border-radius:50%;background:var(--blue);box-shadow:0 0 10px var(--blue)}
+.v67sub{font-size:10px;color:var(--t2);margin-top:2px}
+</style>
+<script>
+/* ========================= v67 Simulation Engine ========================= */
+function v67CurrentPortfolio(){
+  try{
+    const nav=(typeof getLatestNAV==='function'?getLatestNAV():{});
+    let total=0, items=[];
+    (window.FUNDS||[]).forEach((f,i)=>{
+      const v=(Number(window.UNITS&&UNITS[f])||0)*(Number(nav[f])||0);
+      if(v>0){total+=v;items.push({f,v});}
+    });
+    if(typeof getDeposits==='function') (getDeposits()||[]).forEach(d=>{total+=Number(d.amount)||Number(d.balance)||0;});
+    return {total,items};
+  }catch(e){return {total:0,items:[]};}
+}
+function v67DcaDefault(){
+  let sum=0;
+  try{(window.FUNDS||[]).forEach(f=>{const x=(window.DCA&&DCA[f]); if(x)sum+=Number(x.amount||x.monthly||x.dca)||0;});}catch(e){}
+  return sum;
+}
+function v67Rand(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function v67Quantile(a,q){const x=[...a].sort((a,b)=>a-b),p=(x.length-1)*q,l=Math.floor(p),h=Math.ceil(p);return x[l]+(x[h]-x[l])*(p-l);}
+function runMonteCarlo(){
+  const base=v67CurrentPortfolio().total;
+  const years=Math.max(1,Number(document.getElementById('mcYears').value)||10);
+  const er=Number(document.getElementById('mcReturn').value)/100||0;
+  const vol=Math.max(0,Number(document.getElementById('mcVol').value)/100||0);
+  const dcaEl=document.getElementById('mcDca'); if(!dcaEl.value)dcaEl.value=v67DcaDefault()||12000;
+  const dca=Math.max(0,Number(dcaEl.value)||0), target=Math.max(0,Number(document.getElementById('mcTarget').value)||0);
+  const n=2000, months=years*12, finals=[], paths={p10:[],p50:[],p90:[]};
+  const sample=[];
+  for(let k=0;k<n;k++){let v=base, path=[v];for(let m=0;m<months;m++){const r=(er-vol*vol/2)/12+vol/Math.sqrt(12)*v67Rand();v=v*Math.exp(r)+dca;path.push(v);} finals.push(v);if(k<400)sample.push(path);}
+  for(let m=0;m<=months;m++){const vals=sample.map(p=>p[m]);paths.p10.push(v67Quantile(vals,.1));paths.p50.push(v67Quantile(vals,.5));paths.p90.push(v67Quantile(vals,.9));}
+  const p10=v67Quantile(finals,.1),p50=v67Quantile(finals,.5),p90=v67Quantile(finals,.9),chance=target?finals.filter(x=>x>=target).length/n*100:0;
+  const fm=x=>'฿'+(Number(x)||0).toLocaleString('th-TH',{maximumFractionDigits:0});
+  document.getElementById('mcMetrics').innerHTML=[
+    ['P10 Conservative',fm(p10)],['P50 Median',fm(p50)],['P90 Optimistic',fm(p90)],['Chance to Reach Target',target?chance.toFixed(1)+'%':'—']
+  ].map(x=>'<div class="m"><div class="ml">'+x[0]+'</div><div class="mv sm">'+x[1]+'</div></div>').join('');
+  if(window.CC&&CC.cMonteCarlo)CC.cMonteCarlo.destroy();
+  const c=document.getElementById('cMonteCarlo'); if(c&&window.Chart){CC=window.CC||{};CC.cMonteCarlo=new Chart(c,{type:'line',data:{labels:Array.from({length:months+1},(_,i)=>(i/12).toFixed(0)+'y'),datasets:[
+    {label:'P10 Conservative',data:paths.p10,borderColor:'#ff5555',borderWidth:2,pointRadius:0},
+    {label:'P50 Median',data:paths.p50,borderColor:'#3d7fff',borderWidth:2,pointRadius:0},
+    {label:'P90 Optimistic',data:paths.p90,borderColor:'#00d48c',borderWidth:2,pointRadius:0}
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},scales:{x:{ticks:{maxTicksLimit:years+1}},y:{ticks:{callback:v=>'฿'+Math.round(v/1000000)+'M'}}},plugins:{legend:{labels:{color:'#9ab8e0'}},tooltip:{callbacks:{label:x=>x.dataset.label+': '+fm(x.raw)}}}}});}
+  document.getElementById('mcNote').textContent='จำลอง '+n.toLocaleString()+' เส้นทาง | เงินเริ่มต้น '+fm(base)+' | DCA '+fm(dca)+'/เดือน | เป้าหมาย '+fm(target);
+}
+function renderStressTest(){
+  const p=v67CurrentPortfolio(), scenario=document.getElementById('stressScenario').value;
+  let totalShock=0, rows=[];
+  p.items.forEach(x=>{
+    const name=x.f.toUpperCase(); let shock=0;
+    if(scenario==='tech') shock=/(NDQ|TECH|SEM|GTECH|US500X)/.test(name)?-35:/(S&P|US500|WORLD)/.test(name)?-15:0;
+    else if(scenario==='broad') shock=/(GOLD)/.test(name)?-5:-20;
+    else if(scenario==='gold') shock=/(GOLD)/.test(name)?-18:0;
+    else shock=Number(document.getElementById('stressCustom').value)||0;
+    const loss=x.v*shock/100; totalShock+=loss; rows.push({f:x.f,v:x.v,shock,loss});
+  });
+  const fm=x=>'฿'+Math.abs(x).toLocaleString('th-TH',{maximumFractionDigits:0});
+  document.getElementById('stressMetrics').innerHTML=`<div class="m"><div class="ml">Portfolio Impact</div><div class="mv neg">-${fm(totalShock)}</div></div><div class="m"><div class="ml">Impact %</div><div class="mv neg">${p.total? (totalShock/p.total*100).toFixed(2):0}%</div></div><div class="m"><div class="ml">Estimated After Shock</div><div class="mv sm">฿${(p.total+totalShock).toLocaleString('th-TH',{maximumFractionDigits:0})}</div></div>`;
+  document.getElementById('stressBreakdown').innerHTML='<table class="tt"><thead><tr><th>สินทรัพย์</th><th>มูลค่าปัจจุบัน</th><th>Shock</th><th>ผลกระทบ</th></tr></thead><tbody>'+rows.filter(r=>r.shock).map(r=>`<tr><td>${r.f}</td><td>฿${r.v.toLocaleString('th-TH',{maximumFractionDigits:0})}</td><td class="neg">${r.shock}%</td><td class="neg">-${fm(r.loss)}</td></tr>`).join('')+'</tbody></table>';
+}
+function renderMilestones(){
+  const p=v67CurrentPortfolio(), total=p.total, thresholds=[100000,500000,1000000,2000000,5000000];
+  let html='<div class="v67mile"><b>🚀 จุดเริ่มต้นการลงทุน</b><div class="v67sub">Journey เริ่มต้นจากข้อมูลธุรกรรมที่บันทึกใน Dashboard</div></div>';
+  thresholds.forEach(t=>{html+=`<div class="v67mile"><b>${total>=t?'🏆':'🎯'} Portfolio ${total>=t?'แตะแล้ว':'เป้าหมาย'} ฿${t.toLocaleString('th-TH')}</b><div class="v67sub">${total>=t?'ปัจจุบันอยู่ที่ ฿'+total.toLocaleString('th-TH',{maximumFractionDigits:0}):'เหลืออีก ฿'+Math.max(0,t-total).toLocaleString('th-TH',{maximumFractionDigits:0})}</div></div>`;});
+  html+='<div class="v67mile"><b>📈 All-Time High</b><div class="v67sub">แสดงจากข้อมูลมูลค่าพอร์ตที่ Dashboard มีในปัจจุบัน/ประวัติที่พร้อมใช้งาน</div></div><div class="v67mile"><b>⚠️ Maximum Drawdown</b><div class="v67sub">จะคำนวณได้แม่นยำขึ้นเมื่อมีประวัติ NAV และจำนวนหน่วยครบทุกช่วงเวลา</div></div>';
+  document.getElementById('milestoneTimeline').innerHTML=html;
+  document.getElementById('milestoneSummary').innerHTML=`<div class="m"><div class="ml">Current Portfolio</div><div class="mv sm">฿${total.toLocaleString('th-TH',{maximumFractionDigits:0})}</div></div><div class="m"><div class="ml">Milestones Reached</div><div class="mv sm">${thresholds.filter(x=>total>=x).length}/${thresholds.length}</div></div>`;
+}
+const _v67showTab=window.showTab; window.showTab=function(id,btn){_v67showTab(id,btn);if(id==='simulation')setTimeout(()=>{runMonteCarlo();renderStressTest();renderMilestones();},50);};
+/* Repair missing overview doughnut after layout/visibility changes */
+window.addEventListener('load',()=>setTimeout(()=>{try{if(typeof renderOverview==='function')renderOverview();}catch(e){}},350));
+</script>
+
 </body>
 </html>
