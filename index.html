@@ -20,7 +20,7 @@
 // + query กันแคช) แล้วเทียบเลขเวอร์ชัน ถ้าไม่ตรงกับที่กำลังรันอยู่ ให้รีโหลด
 // หน้าใหม่ทันทีแบบ hard-reload — แก้ปัญหาไอโฟน/หน้าจอโฮมค้างเวอร์ชันเก่า
 // โดยไม่ต้องให้ผู้ใช้ไปเคลียร์แคชเอง
-var APP_VERSION = 'v71'; // global (single source of truth — also read by applyAppName() later)
+var APP_VERSION = 'v72'; // global (single source of truth — also read by applyAppName() later)
 (function(){
   try{
     var url = location.pathname + (location.pathname.indexOf('?')>-1?'&':'?') + '_v=' + Date.now();
@@ -5260,7 +5260,15 @@ function writeNavShardRow_(sheet, rowIdx, key, arr, device) {
 // (verifyMapping() มีไว้ให้รันเช็คซ้ำได้ทุกเมื่อถ้าสงสัยว่า proj_id เปลี่ยน)
 // ============================================================
 
-const SEC_API_KEY = 'c7c1b38047a74334a3677be30819135e'; // Primary key
+// SEC API key เก็บใน Script Properties ไม่ฝังในโค้ดแล้ว (โค้ดนี้อยู่ในไฟล์ HTML ที่เผยแพร่บน GitHub Pages)
+// ตั้งค่า: Apps Script > Project Settings (ไอคอนเฟือง) > Script Properties > Add script property
+//         Property = SEC_API_KEY , Value = key ของคุณ > Save
+function getSecKey_() {
+  const k = PropertiesService.getScriptProperties().getProperty('SEC_API_KEY');
+  if (!k) throw new Error('ยังไม่ได้ตั้ง SEC_API_KEY ใน Script Properties (Project Settings > Script Properties)');
+  return k;
+}
+let SEC_LAST_ERROR_ = ''; // error ล่าสุดจาก SEC API (ใช้รายงานสาเหตุ)
 const SEC_BASE = 'https://api.sec.or.th';
 
 // รหัสกองทุนในแอป -> proj_id + fund_class_name ที่ยืนยันแล้วจาก SEC Open API
@@ -5286,7 +5294,7 @@ const FUND_MAP = {
 };
 
 function secHeaders_() {
-  return { 'Ocp-Apim-Subscription-Key': SEC_API_KEY };
+  return { 'Ocp-Apim-Subscription-Key': getSecKey_() };
 }
 
 function secFetchAllPages_(path, extraParams) {
@@ -5303,6 +5311,7 @@ function secFetchAllPages_(path, extraParams) {
     const resp = UrlFetchApp.fetch(url, { headers: secHeaders_(), muteHttpExceptions: true });
     if (resp.getResponseCode() !== 200) {
       Logger.log('เรียก ' + path + ' ไม่สำเร็จ: ' + resp.getResponseCode() + ' ' + resp.getContentText().slice(0, 300));
+      SEC_LAST_ERROR_ = resp.getResponseCode() + ' ' + resp.getContentText().slice(0, 200);
       break;
     }
     const j = JSON.parse(resp.getContentText());
@@ -5417,6 +5426,8 @@ function updateGoldPriceFromAPI() {
 
 // ── รันทุกเช้า: อัพเดต NAV กองทุน + ราคาทอง ในรอบเดียวกัน ──
 function dailyAutoUpdate() {
+  // v72: เติมช่องว่างก่อน (ถ้า trigger/SEC เคยล้ม) — ดึงตั้งแต่วันที่ล่าสุดใน Sheet ย้อนหลัง 3 วัน ถึงวันนี้
+  try { backfillNAV(lastStoredNavDate_()); } catch (err) { Logger.log('backfillNAV ล้มเหลว: ' + err); }
   try { updateNAVFromSEC(); } catch (err) { Logger.log('⚠ updateNAVFromSEC ล้มเหลว: ' + err); }
   // ราคาทอง GOLD-HSH: ปิดการดึงอัตโนมัติแล้วตามที่ต้องการ (API ราคาทองภายนอกอ่านค่าไม่ได้/ไม่เสถียร)
   // ผู้ใช้จะกรอกราคาทองเองทุกวันผ่านแท็บ "บันทึก NAV" ในแอปแทน — ฟังก์ชัน updateGoldPriceFromAPI()
@@ -5497,7 +5508,7 @@ function updateNAVFromSEC() {
   const foundCodes = Object.keys(latestByCode);
   if (foundCodes.length === 0) {
     Logger.log('⚠ ไม่พบ NAV ล่าสุดของกองทุนใดเลย - ลอง verifyMapping()');
-    return { ok: false, reason: 'no_recent_nav', funds: 0, total: codes.length };
+    return { ok: false, reason: 'no_recent_nav', detail: SEC_LAST_ERROR_, funds: 0, total: codes.length };
   }
 
   // เขียน/merge เข้าคีย์รายเดือน "nav_v4_YYYY-MM" ใน sheet PortfolioData (แยกคีย์
@@ -5567,7 +5578,144 @@ function removeDailyNAVTrigger() {
     });
   });
   Logger.log('ลบ trigger แล้ว ' + removed + ' รายการ');
-}`;
+}
+
+// ============================================================
+// v72: backfillNAV(startDate, endDate, overwrite) — เติม NAV ย้อนหลังที่ขาดหาย
+// ============================================================
+// updateNAVFromSEC() เขียนเฉพาะ "NAV ล่าสุด" ของแต่ละกอง ถ้า trigger หยุดไปหลายวัน วันที่ตกหล่นจะไม่ถูกเติมเอง
+// ฟังก์ชันนี้ดึง NAV ทุกวันในช่วงที่กำหนดจาก SEC แล้วเขียนลงคีย์รายเดือน nav_v4_YYYY-MM
+//
+// วิธีใช้: เลือกฟังก์ชัน backfillNAV ในแถบด้านบนของ Apps Script แล้วกด Run (ไม่ต้องใส่ค่า)
+//   - ไม่ใส่วันที่ = เติมย้อนหลัง 125 วันถึงวันนี้
+//   - ใส่เอง (เรียกจากฟังก์ชันอื่น): backfillNAV('2026-07-14', '2026-11-04')
+//   - overwrite=true = ทับค่าที่มีอยู่แล้ว (ปกติไม่ทับ เพื่อไม่ลบค่าที่กรอกเอง หรือที่ลบทิ้งไว้ในแอป)
+// ปลอดภัยที่จะรันซ้ำ ถ้าเวลาใกล้หมด (4.5 นาที) จะหยุดและเขียนความคืบหน้าไว้ ให้กด Run อีกครั้ง
+function backfillNAV(startDate, endDate, overwrite) {
+  const t0 = Date.now();
+  const endIso = endDate ? String(endDate).slice(0, 10) : isoDate_(new Date());
+  const startIso = startDate ? String(startDate).slice(0, 10) : addDaysIso_(endIso, -125);
+  if (startIso > endIso) { Logger.log('ไม่มีช่วงวันที่ต้องเติม (' + startIso + ' > ' + endIso + ')'); return { ok: true, added: 0 }; }
+  Logger.log('เริ่มเติม NAV ย้อนหลัง ' + startIso + ' ถึง ' + endIso);
+  SEC_LAST_ERROR_ = '';
+  const codes = Object.keys(FUND_MAP);
+  let added = 0, resumeFrom = '', ws = startIso;
+
+  while (ws <= endIso) {
+    if (Date.now() - t0 > 270000) { resumeFrom = ws; break; }
+    const we = addDaysIso_(ws, 29) < endIso ? addDaysIso_(ws, 29) : endIso;
+    const rowsByDate = {};
+    codes.forEach(function(code) {
+      const info = FUND_MAP[code];
+      const raw = secFetchAllPages_('/v2/fund/daily-info/nav', {
+        proj_id: info.proj_id,
+        fund_class_name: info.fund_class_name,
+        start_nav_date: ws,
+        end_nav_date: we
+      });
+      raw.forEach(function(item) {
+        if (item.proj_id !== info.proj_id || item.fund_class_name !== info.fund_class_name) return;
+        if (typeof item.last_val !== 'number' || !(item.last_val > 0)) return;
+        const d = String(item.nav_date).slice(0, 10);
+        if (d < ws || d > we) return;
+        if (!rowsByDate[d]) rowsByDate[d] = {};
+        rowsByDate[d][code] = item.last_val;
+      });
+      Utilities.sleep(150);
+    });
+    const dates = Object.keys(rowsByDate).sort();
+    if (dates.length === 0 && SEC_LAST_ERROR_) {
+      throw new Error('SEC API ตอบ error: ' + SEC_LAST_ERROR_ + ' (401/403 = key ผิดหรือหมดอายุ, ตรวจ Script Properties)');
+    }
+
+    const lock = LockService.getScriptLock();
+    lock.waitLock(30000);
+    try {
+      const sheet = getOrCreateSheet();
+      const data = sheet.getDataRange().getValues();
+      const shardCache = {};
+      dates.forEach(function(d) {
+        const key = navShardKey_(d);
+        if (!shardCache[key]) shardCache[key] = getNavShardRow_(data, key);
+        const shard = shardCache[key];
+        // รวมแถวที่วันที่ซ้ำกัน (เกิดจาก merge ฝั่ง server) ให้เหลือแถวเดียว
+        const same = shard.arr.filter(function(r) { return r.d === d; });
+        const row = { d: d };
+        same.forEach(function(r) { Object.keys(r).forEach(function(k) { row[k] = r[k]; }); });
+        let changed = same.length !== 1;
+        Object.keys(rowsByDate[d]).forEach(function(code) {
+          const cur = row[code];
+          // undefined = ยังไม่มีค่า -> เติม ; null = ผู้ใช้ลบไว้ -> เคารพ (เว้นแต่ overwrite=true)
+          if (cur === undefined || (overwrite === true && cur !== rowsByDate[d][code])) {
+            row[code] = rowsByDate[d][code];
+            added++; changed = true;
+          }
+        });
+        if (changed) {
+          shard.arr = shard.arr.filter(function(r) { return r.d !== d; });
+          shard.arr.push(row);
+          shard.dirty = true;
+        }
+      });
+      Object.keys(shardCache).forEach(function(k) {
+        if (shardCache[k].dirty) writeNavShardRow_(sheet, shardCache[k].rowIdx, k, shardCache[k].arr, 'backfill-nav');
+      });
+    } finally {
+      lock.releaseLock();
+    }
+    Logger.log('  ' + ws + ' ถึง ' + we + ': พบ NAV ' + dates.length + ' วัน (เขียนแล้วรวม ' + added + ' ค่า)');
+    ws = addDaysIso_(we, 1);
+  }
+
+  if (resumeFrom) Logger.log('⚠ หยุดก่อนเพราะใกล้หมดเวลา — กด Run backfillNAV อีกครั้งเพื่อทำต่อ (หรือ backfillNAV("' + resumeFrom + '"))');
+  Logger.log('✓ backfillNAV เสร็จ: เพิ่ม/แก้ ' + added + ' ค่า ช่วง ' + startIso + ' ถึง ' + endIso);
+  if (SEC_LAST_ERROR_) Logger.log('หมายเหตุ: มี request ที่ SEC ตอบ error บางส่วน: ' + SEC_LAST_ERROR_);
+  return { ok: true, added: added, from: startIso, to: endIso, resumeFrom: resumeFrom };
+}
+
+function addDaysIso_(iso, n) {
+  const p = String(iso).split('-');
+  const d = new Date(Date.UTC(Number(p[0]), Number(p[1]) - 1, Number(p[2])));
+  d.setUTCDate(d.getUTCDate() + n);
+  return d.toISOString().slice(0, 10);
+}
+
+// วันที่ NAV ล่าสุดที่มีใน Sheet (ย้อนหลัง 3 วัน) — ใช้ใน dailyAutoUpdate เพื่อเติมช่องว่างสั้น ๆ อัตโนมัติ
+function lastStoredNavDate_() {
+  const data = getOrCreateSheet().getDataRange().getValues();
+  let maxD = '';
+  for (let i = 0; i < data.length; i++) {
+    if (String(data[i][0]).indexOf('nav_v4') !== 0) continue;
+    try {
+      (JSON.parse(data[i][1]) || []).forEach(function(r) { if (r && r.d && r.d > maxD) maxD = r.d; });
+    } catch (e) {}
+  }
+  if (!maxD) return addDaysIso_(isoDate_(new Date()), -125);
+  return addDaysIso_(maxD, -3);
+}
+
+// ตรวจสถานะ NAV ใน Sheet: แต่ละคีย์รายเดือนมีกี่แถว ช่วงวันไหน เขียนล่าสุดเมื่อไรโดยใคร + วันที่ล่าสุดรายกอง
+function checkNAVStatus() {
+  const data = getOrCreateSheet().getDataRange().getValues();
+  const latest = {};
+  for (let i = 0; i < data.length; i++) {
+    const key = String(data[i][0]);
+    if (key.indexOf('nav_v4') !== 0) continue;
+    let arr = [];
+    try { arr = JSON.parse(data[i][1]) || []; } catch (e) {}
+    const ds = arr.map(function(r) { return r.d; }).sort();
+    Logger.log(key + ': ' + arr.length + ' แถว ' + (ds[0] || '-') + ' ถึง ' + (ds[ds.length - 1] || '-') + ' | เขียนล่าสุด ' + data[i][2] + ' โดย ' + data[i][3]);
+    arr.forEach(function(r) {
+      Object.keys(r).forEach(function(c) {
+        if (c === 'd' || r[c] == null) return;
+        if (!latest[c] || r.d > latest[c]) latest[c] = r.d;
+      });
+    });
+  }
+  Logger.log('--- วันที่ NAV ล่าสุดรายกอง ---');
+  Object.keys(FUND_MAP).forEach(function(c) { Logger.log(c + ': ' + (latest[c] || 'ไม่มีข้อมูล')); });
+}
+`;
 
 // Fill the code element when modal opens
 function openSyncSettings(){
