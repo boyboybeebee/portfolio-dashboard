@@ -20,7 +20,7 @@
 // + query กันแคช) แล้วเทียบเลขเวอร์ชัน ถ้าไม่ตรงกับที่กำลังรันอยู่ ให้รีโหลด
 // หน้าใหม่ทันทีแบบ hard-reload — แก้ปัญหาไอโฟน/หน้าจอโฮมค้างเวอร์ชันเก่า
 // โดยไม่ต้องให้ผู้ใช้ไปเคลียร์แคชเอง
-var APP_VERSION = 'v72'; // global (single source of truth — also read by applyAppName() later)
+var APP_VERSION = 'v73'; // global (single source of truth — also read by applyAppName() later)
 (function(){
   try{
     var url = location.pathname + (location.pathname.indexOf('?')>-1?'&':'?') + '_v=' + Date.now();
@@ -5082,7 +5082,7 @@ const GS_CFG_KEY = 'gs_config_v1';
 const GS_LAST_SYNC_KEY = 'gs_last_sync_v1';
 // URL ของ Google Apps Script ที่ตั้งค่าไว้แล้ว — ฝังไว้ในไฟล์เพื่อให้ทุกเครื่อง
 // ที่เปิดไฟล์นี้เชื่อมต่อ Sheet เดียวกันได้อัตโนมัติ โดยไม่ต้องพิมพ์ URL เอง
-const DEFAULT_GS_URL = 'https://script.google.com/macros/s/AKfycbw9Tm9kptah2-dST2u6N7Y5L_uQk6GDWYiEADpmymOyHFbJphEY1CXhJ1e-9VN4LWS1/exec';
+const DEFAULT_GS_URL = 'https://script.google.com/macros/s/AKfycbzpIVoqqIMjWcubhuaQI8MbD3F5tDcVBtt4pOA7aLzt72kDHvF97JOoozVz3r1vxxiLLQ/exec';
 
 function getGSConfig(){try{return JSON.parse(localStorage.getItem(GS_CFG_KEY)||'null');}catch(e){return null;}}
 function setGSConfig(cfg){localStorage.setItem(GS_CFG_KEY,JSON.stringify(cfg));}
@@ -6370,6 +6370,24 @@ window.setBaseEdit = function(a){
     const devName = 'Device-' + Math.random().toString(36).slice(2,6);
     setGSConfig({url: DEFAULT_GS_URL, device: devName});
   }
+  // v73: ถ้า DEFAULT_GS_URL ในไฟล์เปลี่ยน (เช่น Deploy Web App ใหม่แล้ว URL เปลี่ยน) ให้เครื่องที่เคยบันทึก URL เก่าไว้
+  //      ย้ายมาใช้ URL ใหม่ 1 ครั้ง — เดิมค่าที่บันทึกในเบราว์เซอร์ชนะเสมอ ทำให้ GitHub/iPhone ค้างอยู่กับ Web App เก่า
+  //      (localStorage แยกตาม origin: ไฟล์ในคอม, github.io และไอคอน Home Screen ต่างมีค่าของตัวเอง)
+  //      หลังย้ายแล้ว ถ้าผู้ใช้ตั้ง URL เองในหน้า Sync จะไม่ถูกทับอีก จนกว่า DEFAULT_GS_URL จะเปลี่ยนอีกครั้ง
+  try{
+    const _saved = getGSConfig();
+    const _applied = localStorage.getItem('gs_default_applied_v1');
+    if(_saved && typeof DEFAULT_GS_URL==='string' && DEFAULT_GS_URL.startsWith('https://script.google.com') && _applied !== DEFAULT_GS_URL){
+      if(_saved.url !== DEFAULT_GS_URL){
+        setGSConfig(Object.assign({}, _saved, {url: DEFAULT_GS_URL}));
+        console.info('GS URL migrated to new default');
+        setTimeout(()=>toast('ย้ายไปใช้ Web App URL ใหม่แล้ว','#00d48c'),600);
+      }
+      localStorage.setItem('gs_default_applied_v1', DEFAULT_GS_URL);
+    } else if(!_saved && typeof DEFAULT_GS_URL==='string'){
+      localStorage.setItem('gs_default_applied_v1', DEFAULT_GS_URL);
+    }
+  }catch(e){ console.warn('GS URL migration skipped', e); }
   updateSyncBar();
   const cfg = getGSConfig();
   // v71: เปิดดึงข้อมูลอัตโนมัติอีกครั้ง (ปิดได้ในหน้าตั้งค่า Sync ถ้ามี prompt ขออนุญาตเด้งซ้ำ)
